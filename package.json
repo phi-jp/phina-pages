@@ -1,0 +1,13 @@
+{
+  "name": "phina-pages",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git"
+  },
+  "dependencies": {
+    "express": "^4.13.1"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
