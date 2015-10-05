@@ -1,5 +1,49 @@
 
-img {
+/*
+body {
+  font-family: 'Mystery Quest', cursive;
+}
+*/
+
+header {
+  .brand-logo {
+    font-family: 'Mystery Quest', cursive;
+  }
+}
+
+.section {
+  h3 {
+    font-size: 1.8rem;
+  }
+  /*height: 400px;*/
+  .large {
+    font-size: 2rem;
+  }
+
+  img {
+    width: 100%;
+    max-width: 600px;
+  }
+  .img-guide {
+    max-width: 300px;
+    transform: translate(0px, 20px) scale(1.4);
+  }
+  .img-guide-mini {
+    max-width: 200px;
+    transform: translate(0px, 20px) scale(1.4);
+  }
+}
+
+
+@media only screen and (max-width : 600px) {
+  .section {
+    .img-guide {
+      transform: scale(1.2);
+    }
+  }
+}
+
+img.logo-phina {
   width: 640px;
   position: absolute;
   display: block;
@@ -9,3 +53,5 @@ img {
   top: 0px;
   bottom: 0px;
 }
+
+

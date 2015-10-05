@@ -2,4 +2,85 @@
 extends ./layout
 
 block content
-  img(src='images/logo.png')
+  header
+    nav.green.darken-1
+      div.row
+        div.col.s12
+          a(href='/').brand-logo
+            span phina.js
+
+  div.section
+    div.container
+      div.row
+        div.col.s12.m6.center
+          br 
+          img.img-guide(src='images/logo.png', width='300px')
+        div.col.s12.m6
+          br 
+          br 
+          br 
+          p.center.large Let's start game programming
+          br 
+          p.center
+            a.btn-large.waves-effect.waves-light.teal.lighten-1(href='/') Getting Started
+
+  div.section.red.lighten-2.white-text
+    div.container
+      div.row
+        div.col.s12.m6.center
+          br 
+          br 
+          br 
+          h3 phina.js って何？
+          p ゲームやツールを簡単に作る事ができる JavaScript ライブラリだよ♪
+          p PC とスマートフォンどちらでも動くんだ
+          p 『プログラミングって気軽にできるもんなんだ』『ゲームってこんなに簡単に作れるんだ』って感じてもらえると嬉しいな
+        div.col.s12.m6.center
+          br 
+          img.img-guide(src='images/mikan.png')
+
+  div.section.green.lighten-2.white-text
+    div.container
+      div.row
+        div.col.s12.m6.center
+          br 
+          br 
+          img.img-guide(src='images/takenoko.png')
+        div.col.s12.m6.center
+          br 
+          br 
+          br 
+          h3 かんたんに使えるよ♪
+          p phina.js は初心者から上級者まで幅広く使えるライブラリだよ
+          p Usage を見ればすぐに phina.js を使ってプログラミングを始められるよ
+
+  div.section.blue.lighten-2.white-text
+    div.container
+      div.row
+        div.col.s12.m12.center
+          h3 豊富なサンプルたち
+          p サンプルたくさんあるよー♪
+      div.row
+        div.col.s4.m4.center
+          img.img-guide-mini(src='images/suika.png')
+        div.col.s4.m4.center
+          img.img-guide-mini(src='images/burokkori.png')
+        div.col.s4.m4.center
+          img.img-guide-mini(src='images/nasubi.png')
+
+  div.section
+    div.container
+      div.row
+        div.col.s12.m12.center
+          br 
+          br 
+          h3 たくさんのひとが協力, 応援してくれてるよ. みんなで大きくしていけると良いなぁ〜
+      div.row
+        div.col.s12.m12.center
+          img(src='images/hiyokos.png')
+
+  footer.page-footer.green.darken-1
+    div.footer-copyright
+      div.container
+        | Copyright © 2015 phi. All Rights Reserved.
+        a.grey-text.text-lighten-4.right MIT
