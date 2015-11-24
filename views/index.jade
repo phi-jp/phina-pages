@@ -4,7 +4,7 @@ extends ./layout
 block content
   include parts/header
 
-  div.section
+  div.section.red.lighten-2.white-text
     div.container
       div.row
         div.col.s12.m6.center
@@ -15,11 +15,29 @@ block content
           br 
           br 
           p.center.large Let's start game programming
+          p.center さぁ, 一緒にゲームプログラミングを始めよう!!
           br 
           p.center
             a.btn-large.waves-effect.waves-light.teal.lighten-1(href='/about') Getting Started
 
-  div.section.red.lighten-2.white-text
+  div.section
+    div.container
+      div.row
+        div.col.s12.m12.center
+          br 
+          br 
+          h3 About
+          br 
+          ul
+            li - アイディアを即座に形にできるゲームライブラリです
+            li - 初心者でも手軽にゲームを開発できます
+            li - 様々な Web コンテンツ, アプリで多数の採用実績があります
+            li - 大学や専門学校といった教育機関で利用されています
+            li - 国産かつオープンソースでTwitter 駆動開発, 気軽にコミッターになれます
+          br 
+          br 
+
+  div.section.yellow.darken-3.white-text
     div.container
       div.row
         div.col.s12.m6.center
@@ -52,16 +70,16 @@ block content
       div.row
         div.col.s12.m6.center
           br 
-          br 
           img.img-guide(src='images/takenoko.png')
         div.col.s12.m6.center
           br 
           br 
           br 
-          br 
           h3 かんたんに使えるよ♪
           p phina.js は初心者から上級者まで幅広く使えるライブラリだよ
-          p Usage を見ればすぐに phina.js を使ってプログラミングを始められるよ
+          p ファイルを読み込むだけで使えるようになるから, Runstant で今すぐ始められるよ.
+
+          a.btn.waves-effect.waves-light(href='') Runstant
 
   div.section
     div.container
@@ -72,9 +90,7 @@ block content
           h2.center
             i.material-icons.large flash_on
           h3 Tutorial
-          br 
           p ブログ『<a href='http://phairy.me'>phiary.me</a>』 にて随時更新中...
-          br 
           br 
           a.btn.waves-effect.waves-light(href='') Blog
         div.col.s12.m4.center
@@ -83,10 +99,8 @@ block content
           h2.center
             i.material-icons.large insert_drive_file
           h3 Documents
-          br 
           p api ドキュメントは <a href='/docs'>こちら</a>.
           p 鋭意作成中...  
-          br 
           br 
           a.btn.waves-effect.waves-light(href='') Docs
         div.col.s12.m4.center
@@ -95,10 +109,8 @@ block content
           h2.center
             i.material-icons.large group
           h3 Community
-          br 
           p コミュニティは <a href=''>gitter</a> にて活発にやり取りを行っています.
           p みんな優しいので気軽に覗いてコメントしてや質問してみてください.
-          br 
           br 
           a.btn.waves-effect.waves-light(href='') Gitter
 
@@ -131,6 +143,7 @@ block content
         div.col.s4.m4.center
           img.img-guide-mini(src='images/suika.png')
         div.col.s4.m4.center
+          br
           img.img-guide-mini(src='images/burokkori.png')
         div.col.s4.m4.center
           img.img-guide-mini(src='images/nasubi.png')
