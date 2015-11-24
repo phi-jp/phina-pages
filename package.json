@@ -11,5 +11,9 @@
   },
   "scripts": {
     "start": "node index.js"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.10",
+    "gulp-shell": "^0.4.2"
   }
 }
