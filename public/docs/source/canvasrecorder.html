@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ *
+ */
+
+
+phina.namespace(function() {
+
+<span id='phina-graphics-CanvasRecorder'>  /**
+</span>   * @class phina.graphics.CanvasRecorder
+   * Reference &lt;https://github.com/jnordberg/gif.js/&gt;
+   */
+  phina.define(&#39;phina.graphics.CanvasRecorder&#39;, {
+
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+    _id: null,
+    objectURL: null,
+
+    init: function(canvas, options) {
+      this.superInit();
+
+      this.canvas = canvas;
+
+      this.gif = new GIF((options || {}).$safe({
+        workers: 4,
+        quality: 10,
+        width: canvas.width,
+        height: canvas.height,
+      }));
+
+      this.gif.on(&#39;finished&#39;, function(blob) {
+        this.objectURL = URL.createObjectURL(blob);
+        this.flare(&#39;finished&#39;);
+      }.bind(this));
+    },
+
+<span id='phina-graphics-CanvasRecorder-method-setOption'>    /**
+</span>     * key と value はアクセサを参照
+     */
+    setOption: function(key, value) {
+      this.gif.setOption(key, value);
+      return this;
+    },
+
+<span id='phina-graphics-CanvasRecorder-method-setOptions'>    /**
+</span>     * key と value はアクセサを参照
+     */
+    setOptions: function(options) {
+      this.gif.setOptions(options);
+      return this;
+    },
+
+    start: function(fps, recordingTime) {
+      fps = fps || 30;
+      recordingTime = recordingTime || 2000;
+      var frameTime = 1000 / fps;
+      var time = 0;
+      this._id = setInterval(function() {
+        var ctx = this.canvas.context;
+        this.gif.addFrame(ctx, {
+          copy: true,
+          delay: frameTime,
+        });
+
+        time += frameTime;
+
+        if (time &gt; recordingTime) {
+          this.stop();
+        }
+      }.bind(this), frameTime);
+
+      return this;
+    },
+
+    stop: function() {
+      if (this._id === null) return this;
+      clearInterval(this._id);
+
+      // レンダリング
+      this.gif.render();
+      this._id = null;
+      return this;
+    },
+
+    open: function() {
+      window.open(this.objectURL);
+    },
+
+    _accessor: {
+
+      width: {
+        get: function() {
+          return this.gif.options.width || this.canvas.width;
+        },
+        set: function(width) {
+          this.setOption(&#39;width&#39;, width);
+        },
+      },
+
+      height: {
+        get: function() {
+          return this.gif.options.height || this.canvas.height;
+        },
+        set: function(height) {
+          this.setOption(&#39;height&#39;, height);
+        },
+      },
+
+      // GIF のクオリティ。低いほどハイクオリティ
+      quality: {
+        get: function() {
+          return this.gif.options.quality;
+        },
+        set: function(quality) {
+          this.setOption(&#39;quality&#39;, quality);
+        },
+      },
+
+      // Worker の URL デフォルトで gif.worker.js
+      workerScript: {
+        get: function() {
+          return this.gif.options.workerScript;
+        },
+        set: function(workerScript) {
+          this.setOption(&#39;workerScript&#39;, workerScript);
+        },
+      },
+
+      // 起動する Worker の数
+      workers: {
+        get: function() {
+          return this.gif.options.workers;
+        },
+        set: function(workers) {
+          this.setOption(&#39;workers&#39;, workers);
+        },
+      },
+
+      // ループするか 0 でループ -1 でループしない
+      repeat: {
+        get: function() {
+          return this.gif.options.repeat;
+        },
+        set: function(repeat) {
+          this.setOption(&#39;repeat&#39;, repeat);
+        },
+      },
+
+      // true で ループ false でループしない
+      loop: {
+        get: function() {
+          return this.gif.options.repeat === 0;
+        },
+        set: function(loop) {
+          this.setOption(&#39;repeat&#39;, loop ? 0 : -1);
+        },
+      },
+
+      // 透過する色 ? transparent hex color, 0x00FF00 = green
+      transparent: {
+        get: function() {
+          return this.gif.options.transparent;
+        },
+        set: function(transparent) {
+          this.setOption(&#39;transparent&#39;, transparent);
+        },
+      },
+
+      // background color where source image is transparent
+      background: {
+        get: function() {
+          return this.gif.options.background;
+        },
+        set: function(background) {
+          this.setOption(&#39;background&#39;, background);
+        },
+      },
+    }
+  });
+
+
+});
+</pre>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ *
+ */
+
+
+
+/*
+ * phina.js namespace
+ */
+var phina = phina || {};
+
+;(function() {
+
+<span id='phina'>  /**
+</span>   * @class phina
+   * phina.js namespace
+   */
+
+<span id='phina-VERSION'>  /**
+</span>   * バージョン
+   */
+  phina.VERSION = &#39;0.0.1&#39;;
+
+  phina.method(&#39;isNode&#39;, function() {
+    return (typeof module !== &#39;undefined&#39;);
+  });
+
+  phina.method(&#39;namespace&#39;, function(fn) {
+    fn.call(this);
+  });
+
+  var ns = phina.isNode() ? global : window;
+
+<span id='phina-VERSION-method-global'>  /**
+</span>   * @method global
+   * global
+   */
+  phina.accessor(&#39;global&#39;, {
+    get: function() {
+      return ns;
+    },
+  });
+
+<span id='phina-VERSION-method-isMobile'>  /**
+</span>   * @method isMobile
+   * mobile かどうかをチェック
+   */
+  phina.method(&#39;isMobile&#39;, function() {
+    if (!phina.global.navigator) return false;
+    var ua = phina.global.navigator.userAgent;
+    return (ua.indexOf(&quot;iPhone&quot;) &gt; 0 || ua.indexOf(&quot;iPad&quot;) &gt; 0 || ua.indexOf(&quot;Android&quot;) &gt; 0);
+  });
+
+
+  // support node.js
+  if (phina.isNode()) {
+    module.exports = phina;
+  }
+
+  ns.phina = phina;
+
+})(this);
+
+
+phina.namespace(function() {
+
+<span id='phina-static-method-createClass'>  /**
+</span>   * @member phina
+   * @static
+   * @method createClass
+   * クラスを生成
+   */
+  phina.method(&#39;createClass&#39;, function(params) {
+    var props = {};
+
+    var _class = function() {
+      var instance = new _class.prototype._creator();
+      _class.prototype.init.apply(instance, arguments);
+      return instance;
+    };
+
+    if (params.superClass) {
+      _class.prototype = Object.create(params.superClass.prototype);
+      params.init.owner = _class;
+      _class.prototype.superInit = function() {
+        var caller = this.superInit.caller;
+        var subclass = caller.owner;
+        var superclass = subclass.prototype.superClass;
+        var superInit = superclass.prototype.init;
+
+        superInit.apply(this, arguments);
+      };
+      _class.prototype.constructor = _class;
+    }
+
+    _class.prototype.$extend(params);
+    _class.prototype.selfClass = _class;
+
+    // accessor
+    if (params._accessor) {
+      _class.prototype = Object.create(_class.prototype, params._accessor);
+    }
+
+    _class.prototype._creator = function() { return this; };
+    _class.prototype._creator.prototype = _class.prototype;
+
+    // static method
+    if (params._static) {
+      _class.$extend(params._static);
+    }
+
+    return _class;
+  });
+
+  var chachedClasses = {};
+  /*
+   * 
+   */
+  phina.method(&#39;using&#39;, function(path) {
+    if (!path) {
+      return phina.global;
+    }
+    
+    var pathes = path.split(/[,.\/ ]|::/);
+    var current = phina.global;
+
+    pathes.forEach(function(p) {
+      current = current[p] || (current[p]={});
+    });
+
+    return current;
+  });
+  
+  /*
+   * 
+   */
+  phina.method(&#39;register&#39;, function(path, _class) {
+    var pathes = path.split(/[,.\/ ]|::/);
+    var className = pathes.last;
+    var parentPath = path.substring(0, path.lastIndexOf(&#39;.&#39;));
+    var parent = phina.using(parentPath);
+
+    parent[className] = _class;
+
+    return _class;
+  });
+  
+  var _classDefinedCallback = {};
+
+<span id='phina-static-method-define'>  /**
+</span>   * @member phina
+   * @static
+   * @method define
+   * クラスを定義
+   */
+  phina.method(&#39;define&#39;, function(path, params) {
+    if (params.superClass) {
+      if (typeof params.superClass === &#39;string&#39;) {
+        var _superClass = phina.using(params.superClass);
+        if (typeof _superClass != &#39;function&#39;) {
+          if (_classDefinedCallback[params.superClass] == null) {
+            _classDefinedCallback[params.superClass] = [];
+          }
+          _classDefinedCallback[params.superClass].push(function() {
+            phina.define(path, params);
+          });
+
+          return ;
+        }
+        else {
+          params.superClass = _superClass;
+        }
+      }
+      else {
+        params.superClass = params.superClass;
+      }
+    }
+
+    var _class = phina.createClass(params);
+    _class.prototype.accessor(&#39;className&#39;, {
+      get: function() {
+        return path;
+      },
+    });
+
+    phina.register(path, _class);
+    
+    if (_classDefinedCallback[path]) {
+      _classDefinedCallback[path].forEach(function(callback) {
+        callback();
+      });
+      _classDefinedCallback[path] = null;
+    }
+
+    return _class;
+  });
+
+
+  phina.method(&#39;globalize&#39;, function() {
+    phina.forIn(function(key, value) {
+      var ns = key;
+
+      value.forIn(function(key, value) {
+        // if (phina.global[key]) {
+        //   console.log(ns, key);
+        //   phina.global[&#39;_&#39; + key] = value;
+        // }
+        // else {
+        //   phina.global[key] = value;
+        // }
+        phina.global[key] = value;
+      });
+    });
+  });
+
+  phina._mainListeners = [];
+  phina._mainLoaded = false;
+  phina.method(&#39;main&#39;, function(func) {
+    if (phina._mainLoaded) {
+      func();
+    }
+    else {
+      phina._mainListeners.push(func);
+    }
+  });
+
+  if (phina.global.addEventListener) {
+    phina.global.addEventListener(&#39;load&#39;, function() {
+
+      phina._mainListeners.each(function(func) {
+        func();
+      });
+      phina._mainListeners.clear();
+
+      phina._mainLoaded = true;
+    });
+  }
+  else {
+    phina._mainLoaded = true;
+  }
+
+
+
+});
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>

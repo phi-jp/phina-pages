@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">phina.namespace(function() {
+
+<span id='phina-ui-Gauge'>  /**
+</span>   * @class phina.ui.Gauge
+   * 
+   */
+  phina.define(&#39;phina.ui.Gauge&#39;, {
+    superClass: &#39;phina.display.Shape&#39;,
+
+    init: function(options) {
+      options = (options || {}).$safe({
+        width: 256,
+        height: 32,
+        backgroundColor: &#39;transparent&#39;,
+        fill: &#39;white&#39;,
+        stroke: &#39;#aaa&#39;,
+        strokeWidth: 4,
+
+        value: 100,
+        maxValue: 100,
+        gaugeColor: &#39;#44f&#39;,
+        cornerRadius: 4,
+      });
+
+      this.superInit(options);
+
+      this._value = options.value;
+      this.maxValue = options.maxValue;
+      this.gaugeColor = options.gaugeColor;
+      this.cornerRadius = options.cornerRadius;
+
+      this.visualValue = options.value;
+      this.animation = true;
+      this.animationTime = 1*1000;
+    },
+
+<span id='phina-ui-Gauge-method-isFull'>    /**
+</span>     * 満タンかをチェック
+     */
+    isFull: function() {
+      return this.value === this.maxValue;
+    },
+
+<span id='phina-ui-Gauge-method-isEmpty'>    /**
+</span>     * 空っぽかをチェック
+     */
+    isEmpty: function() {
+      return this.value == 0;
+    },
+
+    setValue: function(value) {
+      value = Math.clamp(value, 0, this._maxValue);
+
+      // end when now value equal value of argument
+      if (this.value === value) return ;
+
+      // fire value change event
+      this.flare(&#39;change&#39;);
+
+      if (this.animation) {
+        var range = Math.abs(this.visualValue-value);
+        var time = (range/this.maxValue)*this.animationTime;
+
+        this.tweener.ontween = function() {
+          this._dirtyDraw = true;
+        }.bind(this);
+        this.tweener
+          .clear()
+          .to({&#39;visualValue&#39;: value}, time)
+          .call(function() {
+            this.flare(&#39;changed&#39;);
+            if (this.isEmpty()) {
+              this.flare(&#39;empty&#39;);
+            }
+            else if (this.isFull()) {
+              this.flare(&#39;full&#39;);
+            }
+          }, this);
+      }
+      else {
+        this.visualValue = value;
+        this.flare(&#39;changed&#39;);
+        if (this.isEmpty()) {
+          this.flare(&#39;empty&#39;);
+        }
+        else if (this.isFull()) {
+          this.flare(&#39;full&#39;);
+        }
+      }
+
+      this._value = value;
+    },
+
+    getRate: function() {
+      var rate = this.visualValue/this.maxValue;
+      return rate;
+    },
+
+    _render: function() {
+      this._renderBackground();
+
+      this.canvas.transformCenter();
+
+      var rate = this.getRate();
+
+      // draw color
+      if (this.fill) {
+        this.canvas.context.fillStyle = this.fill;
+        this.canvas.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+      }
+      // draw gauge
+      this.canvas.context.fillStyle = this.gaugeColor;
+      this.canvas.fillRect(-this.width/2, -this.height/2, this.width*rate, this.height);
+      // draw stroke
+      if (this.stroke) {
+        this.canvas.context.lineWidth = this.strokeWidth;
+        this.canvas.strokeStyle = this.stroke;
+        this.canvas.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+      }
+    },
+
+    _accessor: {
+      value: {
+        get: function() {
+          return this._value;
+        },
+        set: function(v) {
+          this._dirtyDraw = true;
+          this.setValue(v);
+        },
+      },
+      maxValue: {
+        get: function() {
+          return this._maxValue;
+        },
+        set: function(v) {
+          this._dirtyDraw = true; this._maxValue = v;
+        },
+      },
+      gaugeColor: {
+        get: function() {
+          return this._gaugeColor;
+        },
+        set: function(v) {
+          this._dirtyDraw = true; this._gaugeColor = v;
+        },
+      },
+      cornerRadius: {
+        get: function() {
+          return this._cornerRadius;
+        },
+        set: function(v) {
+          this._dirtyDraw = true; this._cornerRadius = v;
+        },
+      },
+    }
+  });
+
+});
+
+
+phina.namespace(function() {
+
+<span id='phina-ui-CircleGauge'>  /**
+</span>   * @class phina.ui.CircleGauge
+   * 
+   */
+  phina.define(&#39;phina.ui.CircleGauge&#39;, {
+    superClass: &#39;phina.ui.Gauge&#39;,
+
+    init: function(options) {
+      options = (options || {}).$safe({
+        backgroundColor: &#39;transparent&#39;,
+        fill: &#39;#aaa&#39;,
+        stroke: &#39;#222&#39;,
+
+        radius: 64,
+        anticlockwise: true,
+        showPercentage: false, // TODO
+      });
+
+      this.superInit(options);
+
+      this.radius = options.radius;
+      this.anticlockwise = options.anticlockwise;
+      this.showPercentage = options.showPercentage;
+    },
+
+    _render: function() {
+      var canvas = this.canvas;
+
+      var size = this.radius*2 + this.padding*2;
+      this._renderBackground(size, size);
+
+      this.canvas.transformCenter();
+      this.canvas.rotate(-Math.PI*0.5);
+      this.canvas.scale(1, -1);
+
+      var rate = this.getRate();
+      var end = (Math.PI*2)*rate;
+      var startAngle = 0;
+      var endAngle = end;
+
+      if (this.stroke) {
+        this.canvas.context.lineWidth = this.strokeWidth;
+        this.canvas.strokeStyle = this.stroke;
+        this.canvas.strokeArc(0, 0, this.radius, startAngle, endAngle);
+      }
+
+      canvas.context.fillStyle = this.fill;
+      canvas.fillPie(0, 0, this.radius, startAngle, endAngle);
+
+      // if (this.showPercentage) {
+      //   // TODO:
+      //   var left = Math.max(0, this.limit-this.time);
+      //   this.label.text = Math.ceil(left/1000)+&#39;&#39;;
+      // }
+    },
+
+  });
+
+
+
+});
+
+</pre>
+</body>
+</html>

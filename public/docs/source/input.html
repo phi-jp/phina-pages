@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+;(function() {
+<span id='phina-input-Input'>  /**
+</span>   * @class phina.input.Input
+   * 
+   */
+  phina.define(&#39;phina.input.Input&#39;, {
+
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+<span id='phina-input-Input-property-domElement'>    /** domElement */
+</span>    domElement: null,
+
+<span id='phina-input-Input-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(domElement) {
+      this.superInit();
+      
+      this.domElement = domElement || window.document;
+
+      this.position = phina.geom.Vector2(0, 0);
+      this.deltaPosition = phina.geom.Vector2(0, 0);
+      this.prevPosition = phina.geom.Vector2(0, 0);
+      this._tempPosition = phina.geom.Vector2(0, 0);
+      this.flags = 0;
+    },
+
+    update: function() {
+      this.last = this.now;
+      this.now = this.flags;
+      this.start = (this.now ^ this.last) &amp; this.now;
+      this.end   = (this.now ^ this.last) &amp; this.last;
+
+      // 変化値を更新
+      this.deltaPosition.x = this._tempPosition.x - this.position.x;
+      this.deltaPosition.y = this._tempPosition.y - this.position.y;
+
+      if (this.deltaPosition.x === 0 &amp;&amp; this.deltaPosition.y === 0) {
+        this._moveFlag = false;
+      }
+      else {
+        this._moveFlag = true;
+      }
+
+      // 前回の座標を更新
+      this.prevPosition.set(this.position.x, this.position.y);
+
+      // 現在の位置を更新
+      this.position.set(this._tempPosition.x, this._tempPosition.y);
+    },
+
+    _start: function(x, y, flag) {
+      flag = (flag !== undefined) ? flag : 1;
+      this._move(x, y);
+
+      this.flags |= flag;
+
+      var x = this._tempPosition.x;
+      var y = this._tempPosition.y;
+      this.position.set(x, y);
+      this.prevPosition.set(x, y);
+    },
+
+    _end: function(flag) {
+      flag = (flag !== undefined) ? flag : 1;
+      this.flags &amp;= ~(flag);
+    },
+
+    // スケールを考慮
+    _move: function(x, y) {
+      this._tempPosition.x = x;
+      this._tempPosition.y = y;
+
+      // adjust scale
+      var elm = this.domElement;
+      if (elm.style.width) {
+        this._tempPosition.x *= elm.width / parseInt(elm.style.width);
+      }
+      if (elm.style.height) {
+        this._tempPosition.y *= elm.height / parseInt(elm.style.height);
+      }
+    },
+
+    _accessor: {
+<span id='phina-input-Input-property-x'>      /**
+</span>       * @property    x
+       * x座標値
+       */
+      x: {
+        &quot;get&quot;: function()   { return this.position.x; },
+        &quot;set&quot;: function(v)  { this.position.x = v; }
+      },
+<span id='phina-input-Input-property-y'>      /**
+</span>       * @property    y
+       * y座標値
+       */
+      y: {
+        &quot;get&quot;: function()   { return this.position.y; },
+        &quot;set&quot;: function(v)  { this.position.y = v; }
+      },
+<span id='phina-input-Input-property-dx'>      /**
+</span>       * @property    dx
+       * dx値
+       */
+      dx: {
+        &quot;get&quot;: function()   { return this.deltaPosition.x; },
+        &quot;set&quot;: function(v)  { this.deltaPosition.x = v; }
+      },
+<span id='phina-input-Input-property-dy'>      /**
+</span>       * @property    dy
+       * dy値
+       */
+      dy: {
+        &quot;get&quot;: function()   { return this.deltaPosition.y; },
+        &quot;set&quot;: function(v)  { this.deltaPosition.y = v; }
+      },
+    },
+  });
+
+
+})();</pre>
+</body>
+</html>

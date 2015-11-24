@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+
+phina.namespace(function() {
+
+<span id='phina-ui-Button'>  /**
+</span>   * @class phina.ui.Button
+   * Button
+   */
+  phina.define(&#39;phina.ui.Button&#39;, {
+    superClass: &#39;phina.display.Shape&#39;,
+<span id='phina-ui-Button-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(options) {
+      options = (options || {}).$safe({
+        width: 200,
+        height: 80,
+        backgroundColor: &#39;transparent&#39;,
+        fill: &#39;hsl(200, 80%, 60%)&#39;,
+        stroke: null,
+
+        cornerRadius: 8,
+        text: &#39;Hello&#39;,
+        fontColor: &#39;white&#39;,
+        fontSize: 32,
+        fontFamily: &quot;&#39;HiraKakuProN-W3&#39;&quot;, // Hiragino or Helvetica,
+      });
+      this.superInit(options);
+
+      this.cornerRadius = options.cornerRadius;
+      this.text         = options.text;
+      this.fontColor    = options.fontColor;
+      this.fontSize     = options.fontSize;
+      this.fontFamily   = options.fontFamily;
+
+      this.setInteractive(true);
+      this.on(&#39;pointend&#39;, function() {
+        this.flare(&#39;push&#39;);
+      });
+    },
+    _render: function() {
+      var canvas = this.canvas;
+      var context = canvas.context;
+
+      this._renderBackground();
+
+      canvas.transformCenter();
+
+      // stroke
+      if (this.stroke) {
+        canvas.context.lineWidth = this.strokeWidth;
+        canvas.strokeStyle = this.stroke;
+        canvas.strokeRoundRect(-this.width/2, -this.height/2, this.width, this.height, this.cornerRadius);
+      }
+
+      // fill
+      if (this.fill) {
+        canvas.context.fillStyle = this.fill;
+        canvas.fillRoundRect(-this.width/2, -this.height/2, this.width, this.height, this.cornerRadius);
+      }
+
+      // text
+      var font = &quot;{fontSize}px {fontFamily}&quot;.format(this);
+      context.font = font;
+      context.textAlign = &#39;center&#39;;
+      context.textBaseline = &#39;middle&#39;;
+      context.fillStyle = this.fontColor;
+      context.fillText(this.text, 0, 0);
+    },
+
+    _accessor: {
+      cornerRadius: {
+        get: function() { return this._cornerRadius; },
+        set: function(v) { this._dirtyDraw = true; this._cornerRadius = v; },
+      },
+      text: {
+        get: function() { return this._text; },
+        set: function(v) { this._dirtyDraw = true; this._text = v; },
+      },
+      fontColor: {
+        get: function() { return this._fontColor; },
+        set: function(v) { this._dirtyDraw = true; this._fontColor = v; },
+      },
+      fontSize: {
+        get: function() { return this._fontSize; },
+        set: function(v) { this._dirtyDraw = true; this._fontSize = v; },
+      },
+      fontFamily: {
+        get: function() { return this._fontFamily; },
+        set: function(v) { this._dirtyDraw = true; this._fontFamily = v; },
+      },
+
+    },
+  });
+
+});
+</pre>
+</body>
+</html>

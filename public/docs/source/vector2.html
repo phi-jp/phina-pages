@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-geom-Vector2'>  /**
+</span>   * @class phina.geom.Vector2
+   * ベクトルクラス
+   */
+  phina.define(&#39;phina.geom.Vector2&#39;, {
+
+<span id='phina-geom-Vector2-property-x'>    /** x座標 */
+</span>    x: 0,
+<span id='phina-geom-Vector2-property-y'>    /** y座標 */
+</span>    y: 0,
+
+<span id='phina-geom-Vector2-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(x, y) {
+      this.x = x;
+      this.y = y;
+    },
+
+<span id='phina-geom-Vector2-method-clone'>    /**
+</span>     * 複製
+     */
+    clone: function() {
+      return phina.geom.Vector2(this.x, this.y);
+    },
+
+<span id='phina-geom-Vector2-method-equals'>    /**
+</span>     * 等しいかどうかをチェック
+     * @return {Boolean}
+     */
+    equals: function(v) {
+      return (this.x === v.x &amp;&amp; this.y === v.y);
+    },
+
+<span id='phina-geom-Vector2-method-set'>    /**
+</span>     * セッター
+     */
+    set: function(x, y) {
+      this.x = x;
+      this.y = y;
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-add'>    /**
+</span>     * 加算
+     */
+    add: function(v) {
+      this.x += v.x;
+      this.y += v.y;
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-sub'>    /**
+</span>     * 減算
+     */
+    sub: function(v) {
+      this.x -= v.x;
+      this.y -= v.y;
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-mul'>    /**
+</span>     * 乗算
+     */
+    mul: function(n) {
+      this.x *= n;
+      this.y *= n;
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-div'>    /**
+</span>     * 除算
+     */
+    div: function(n) {
+      //console.assert(n != 0, &quot;0 division!!&quot;);
+      n = n || 0.01;
+      this.x /= n;
+      this.y /= n;
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-negate'>    /**
+</span>     * 反転
+     */
+    negate: function() {
+      this.x = -this.x;
+      this.y = -this.y;
+      
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-dot'>    /**
+</span>     * @method
+     * 内積.
+     * 投影ベクトルを求めたり, 類似度に使ったり.
+     */
+    dot: function(v) {
+      return this.x * v.x + this.y * v.y;
+    },
+
+<span id='phina-geom-Vector2-method-cross'>    /**
+</span>     * @method
+     * 外積
+     */
+    cross: function(v) {
+      return (this.x*v.y) - (this.y*v.x);
+    },
+
+<span id='phina-geom-Vector2-method-length'>    /**
+</span>     * 長さを取得
+     * ### memo
+     * magnitude って名前の方が良いかも. 検討中.
+     * @return {Number}
+     */
+    length: function() {
+      return Math.sqrt(this.x*this.x + this.y*this.y);
+    },
+    
+<span id='phina-geom-Vector2-method-lengthSquared'>    /**
+</span>     * 2乗された長さを取得
+     * C# の名前を引用
+     * or lengthSquare or lengthSqrt
+     * @return {Number}
+     */
+    lengthSquared: function() {
+      return this.x*this.x + this.y*this.y;
+    },
+    
+<span id='phina-geom-Vector2-method-distance'>    /**
+</span>     * ２点間の距離を返す
+     */
+    distance: function(v) {
+      return Math.sqrt( Math.pow(this.x-v.x, 2) + Math.pow(this.y-v.y, 2) );
+    },
+    
+<span id='phina-geom-Vector2-method-distanceSquared'>    /**
+</span>     * ２点間の距離を返す
+     */
+    distanceSquared: function(v) {
+      return Math.pow(this.x-v.x, 2) + Math.pow(this.y-v.y, 2);
+    },
+
+<span id='phina-geom-Vector2-method-random'>    /**
+</span>     * ランダムベクトルをセット
+     */
+    random: function(min, max) {
+      var degree = phina.util.Random.randfloat(min || 0, max || 360);
+      var rad = degree*Math.DEG_TO_RAD;
+
+      this.x = Math.cos(rad);
+      this.y = Math.sin(rad);
+
+      return this;
+    },
+    
+<span id='phina-geom-Vector2-method-normalize'>    /**
+</span>     * 正規化
+     */
+    normalize: function() {
+      this.div(this.length());
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-toString'>    /**
+</span>     * 文字列に変換
+     * @return {String}
+     */
+    toString: function() {
+      return &quot;{x:{x}, y:{y}}&quot;.format(this);
+    },
+
+<span id='phina-geom-Vector2-method-toAngle'>    /**
+</span>     * 角度に変換
+     * @return {Number}
+     */
+    toAngle: function() {
+      var rad = Math.atan2(this.y, this.x);
+      return (rad + Math.PI*2)%(Math.PI*2);
+    },
+
+<span id='phina-geom-Vector2-method-fromAngle'>    /**
+</span>     * 角度(degree)と長さでベクトルをセット
+     */
+    fromAngle: function(rad, len) {
+      len = len || 1;
+      this.x = Math.cos(rad)*len;
+      this.y = Math.sin(rad)*len;
+      
+      return this;
+    },
+
+    _accessor: {
+    },
+
+    _static: {
+<span id='phina-geom-Vector2-static-method-min'>      /**
+</span>       * @method
+       * @static
+       * min
+       */
+      min: function(a, b) {
+        return phina.geom.Vector2(
+          (a.x &lt; b.x) ? a.x : b.x,
+          (a.y &lt; b.y) ? a.y : b.y
+          );
+      },
+
+<span id='phina-geom-Vector2-static-method-max'>      /**
+</span>       * @method
+       * @static
+       * max
+       */
+      max: function(a, b) {
+        return phina.geom.Vector2(
+          (a.x &gt; b.x) ? a.x : b.x,
+          (a.y &gt; b.y) ? a.y : b.y
+          );
+      },
+
+<span id='phina-geom-Vector2-static-method-add'>      /**
+</span>       * @method
+       * @static
+       * 加算
+       */
+      add: function(lhs, rhs) {
+        return phina.geom.Vector2(lhs.x+rhs.x, lhs.y+rhs.y);
+      },
+      
+<span id='phina-geom-Vector2-static-method-sub'>      /**
+</span>       * @method
+       * @static
+       * 減算
+       */
+      sub: function(lhs, rhs) {
+        return phina.geom.Vector2(lhs.x-rhs.x, lhs.y-rhs.y);
+      },
+      
+<span id='phina-geom-Vector2-static-method-mul'>      /**
+</span>       * @method
+       * @static
+       * 乗算
+       */
+      mul: function(v, n) {
+        return phina.geom.Vector2(v.x*n, v.y*n);
+      },
+      
+<span id='phina-geom-Vector2-static-method-div'>      /**
+</span>       * @method
+       * @static
+       * 割算
+       */
+      div: function(v, n) {
+        return phina.geom.Vector2(v.x/n, v.y/n);
+      },
+      
+<span id='phina-geom-Vector2-static-method-negate'>      /**
+</span>       * @method
+       * @static
+       * 反転
+       */
+      negate: function(v) {
+        return phina.geom.Vector2(-v.x, -v.y);
+      },
+      
+<span id='phina-geom-Vector2-static-method-dot'>      /**
+</span>       * @method
+       * @static
+       * 内積.
+       * 投影ベクトルを求めたり, 類似度に使ったり.
+       */
+      dot: function(lhs, rhs) {
+        return lhs.x * rhs.x + lhs.y * rhs.y;
+      },
+      
+<span id='phina-geom-Vector2-static-method-cross'>      /**
+</span>       * @method
+       * @static
+       * 外積
+       */
+      cross: function(lhs, rhs) {
+        return (lhs.x*rhs.y) - (lhs.y*rhs.x);
+      },
+      
+<span id='phina-geom-Vector2-static-method-distance'>      /**
+</span>       * @method
+       * @static
+       * ２点間の距離を返す
+       */
+      distance: function(lhs, rhs) {
+        return Math.sqrt( Math.pow(lhs.x-rhs.x, 2) + Math.pow(lhs.y-rhs.y, 2) );
+      },
+
+      distanceSquared: function(lhs, rhs) {
+        return Math.pow(lhs.x-rhs.x, 2) + Math.pow(lhs.y-rhs.y, 2);
+      },
+
+
+<span id='phina-geom-Vector2-static-method-manhattanDistance'>      /**
+</span>       * @method
+       * @static
+       * マンハッタン距離
+       */
+      manhattanDistance: function(lhs, rhs) {
+        return Math.abs(lhs.x-rhs.x) + Math.abs(lhs.y-rhs.y);
+      },
+      
+<span id='phina-geom-Vector2-static-method-reflect'>      /**
+</span>       * @method
+       * @static
+       * 反射ベクトル
+       */
+      reflect: function(v, normal) {
+        var len = phina.geom.Vector2.dot(v, normal);
+        var temp= phina.geom.Vector2.mul(normal, 2*len);
+        
+        return phina.geom.sub(v, temp);
+      },
+
+<span id='phina-geom-Vector2-static-method-lerp'>      /**
+</span>       * @method
+       * @static
+       * 補間.
+       * 0.5 で lhs と rhs の中間ベクトルを求めることができます.
+       */
+      lerp: function(lhs, rhs, t) {
+        // TODO: 
+        return phina.geom.Vector2(
+          lhs.x + (rhs.x-lhs.x)*t,
+          lhs.y + (rhs.y-lhs.y)*t
+        );
+      },
+      
+      
+<span id='phina-geom-Vector2-static-method-slerp'>      /**
+</span>       * @method
+       * @static
+       * 補間
+       */
+      slerp: function(lhs, rhs, t) {
+          // TODO:
+          // cos...
+      },
+
+      random: function(len, min, max) {
+        min = min || 0;
+        max = max || 360;
+        len = len || 1;
+        return phina.geom.Vector2().setDegree(Math.randf(min, max), len);
+      },
+    },
+
+  });
+
+});
+</pre>
+</body>
+</html>

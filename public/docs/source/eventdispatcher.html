@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">phina.namespace(function() {
+
+<span id='phina-util-EventDispatcher'>  /**
+</span>   * @class phina.util.EventDispatcher
+   */
+  phina.define(&#39;phina.util.EventDispatcher&#39;, {
+
+    init: function() {
+      this._listeners = {};
+    },
+
+    on: function(type, listener) {
+      if (this._listeners[type] === undefined) {
+        this._listeners[type] = [];
+      }
+
+      this._listeners[type].push(listener);
+      return this;
+    },
+
+    off: function(type, listener) {
+      var listeners = this._listeners[type];
+      var index = listeners.indexOf(listener);
+      if (index != -1) {
+        listeners.splice(index,1);
+      }
+      return this;
+    },
+
+    fire: function(e) {
+      e.target = this;
+      var oldEventName = &#39;on&#39; + e.type;
+      if (this[oldEventName]) this[oldEventName](e);
+      
+      var listeners = this._listeners[e.type];
+      if (listeners) {
+        var temp = listeners.clone();
+        for (var i=0,len=temp.length; i&lt;len; ++i) {
+            temp[i].call(this, e);
+        }
+      }
+      
+      return this;
+    },
+
+    flare: function(type, param) {
+      var e = {type:type};
+      if (param) {
+        param.forIn(function(key, val) {
+          e[key] = val;
+        });
+      }
+      this.fire(e);
+
+      return this;
+    },
+
+    one: function(type, listener) {
+      var self = this;
+      
+      var func = function() {
+        var result = listener.apply(self, arguments);
+        self.off(type, func);
+        return result;
+      };
+      
+      this.on(type, func);
+      
+      return this;
+    },
+
+    has: function(type) {
+      if (this._listeners[type] === undefined &amp;&amp; !this[&quot;on&quot; + type]) return false;
+      return true;
+    },
+
+    clear: function(type) {
+      var oldEventName = &#39;on&#39; + type;
+      if (this[oldEventName]) delete this[oldEventName];
+      this._listeners[type] = [];
+      return this;
+    },
+  });
+
+
+  // 別名のメソッドを定義
+  (function() {
+    var methodMap = {
+      addEventListener: &#39;on&#39;,
+      removeEventListener: &#39;off&#39;,
+      clearEventListener: &#39;clear&#39;,
+      hasEventListener: &#39;has&#39;,
+      dispatchEvent: &#39;fire&#39;,
+      dispatchEventByType: &#39;flare&#39;,
+    };
+    methodMap.forIn(function(old, name) {
+      phina.util.EventDispatcher.prototype.method(old, phina.util.EventDispatcher.prototype[name]);
+    });
+  })();
+
+});
+</pre>
+</body>
+</html>

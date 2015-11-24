@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+;(function() {
+
+<span id='global-Array'>  /**
+</span>   * @class global.Array
+   * Array の拡張
+   */
+
+
+<span id='global-Array-property-first'>  /**
+</span>   * @property  first
+   * 最初の要素
+   */
+  Array.prototype.accessor(&quot;first&quot;, {
+      &quot;get&quot;: function()   { return this[0]; },
+      &quot;set&quot;: function(v)  { this[0] = v; }
+  });
+  
+<span id='global-Array-property-last'>  /**
+</span>   * @property    last
+   * 最後の要素
+   */
+  Array.prototype.accessor(&quot;last&quot;, {
+    &quot;get&quot;: function()   { return this[this.length-1]; },
+    &quot;set&quot;: function(v)  { this[this.length-1] = v; }
+  });
+
+<span id='global-Array-method-equals'>  /**
+</span>   * @method  equals
+   * 渡された配列と等しいかどうかをチェック
+   */
+  Array.prototype.method(&quot;equals&quot;, function(arr) {
+    // 長さチェック
+    if (this.length !== arr.length) return false;
+    
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      if (this[i] !== arr[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+<span id='global-Array-method-deepEquals'>  /**
+</span>   * @method  deepEquals
+   * ネストされている配列含め渡された配列と等しいかどうかをチェック
+   * equalsDeep にするか検討. (Java では deepEquals なのでとりあえず合わせとく)
+   */
+  Array.prototype.method(&quot;deepEquals&quot;, function(arr) {
+    // 長さチェック
+    if (this.length !== arr.length) return false;
+    
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      var result = (this[i].deepEquals) ? this[i].deepEquals(arr[i]) : (this[i] === arr[i]);
+      if (result === false) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+<span id='global-Array-method-contains'>  /**
+</span>   * @method    contains
+   * 要素が含まれいるかをチェック
+   */
+  Array.prototype.method(&quot;contains&quot;, function(item, fromIndex) {
+    return this.indexOf(item, fromIndex) != -1;
+  });
+  
+<span id='global-Array-method-at'>  /**
+</span>   * @method  at
+   * ループ添字アクセス(Ruby っぽいやつ)
+   */
+  Array.prototype.method(&quot;at&quot;, function(i) {
+    i%=this.length;
+    i+=this.length;
+    i%=this.length;
+    return this[i];
+  });
+
+
+  Array.prototype.method(&quot;find&quot;, function(fn, self) {
+    var target = null;
+
+    this.some(function(elm, i) {
+      if (fn.call(self, elm, i, this)) {
+        target = elm;
+        return true;
+      }
+    });
+
+    return target;
+  });
+
+  Array.prototype.method(&quot;findIndex&quot;, function(fn, self) {
+    var target = null;
+
+    this.some(function(elm, i) {
+      if (fn.call(self, elm, i, this)) {
+        target = i;
+        return true;
+      }
+    });
+
+    return target;
+  });
+  
+<span id='global-Array-method-swap'>  /**
+</span>   * @method  swap
+   * a番目 と b番目 を入れ替える
+   */
+  Array.prototype.method(&quot;swap&quot;, function(a, b) {
+    var temp = this[a];
+    this[a] = this[b];
+    this[b] = temp;
+    
+    return this;
+  });
+
+<span id='global-Array-method-erase'>  /**
+</span>   * @method  erase
+   * elm と一致する要素を削除
+   * イレース
+   */
+  Array.prototype.method(&quot;erase&quot;, function(elm) {
+    var index  = this.indexOf(elm);
+    if (index &gt;= 0) {
+      this.splice(index, 1);
+    }
+    return this;
+  });
+  
+<span id='global-Array-method-eraseAll'>  /**
+</span>   * @method  eraseAll
+   * elm と一致する要素を全て削除
+   */
+  Array.prototype.method(&quot;eraseAll&quot;, function(elm) {
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      if (this[i] == elm) {
+        this.splice(i--, 1);
+      }
+    }
+    return this;
+  });
+  
+<span id='global-Array-method-eraseIf'>  /**
+</span>   * @method  eraseIf
+   * 条件にマッチした要素を削除
+   */
+  Array.prototype.method(&quot;eraseIf&quot;, function(fn) {
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      if ( fn(this[i], i, this) ) {
+        this.splice(i, 1);
+        break;
+      }
+    }
+    return this;
+  });
+  
+<span id='global-Array-method-eraseIfAll'>  /**
+</span>   * @method  eraseIfAll
+   * 条件にマッチした要素を削除
+   */
+  Array.prototype.method(&quot;eraseIfAll&quot;, function(fn) {
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      if ( fn(this[i], i, this) ) {
+        this.splice(i--, 1);
+        len--;
+      }
+    }
+    return this;
+  });
+  
+<span id='global-Array-method-random'>  /**
+</span>   * @method  random
+   * 要素の中からランダムで取り出す
+   */
+  Array.prototype.method(&quot;random&quot;, function(min, max) {
+    min = min || 0;
+    max = max || this.length-1;
+    return this[ Math.randint(min, max) ];
+  });
+  
+<span id='global-Array-method-pickup'>  /**
+</span>   * @method  pickup
+   * 要素の中からランダムで取り出す
+   */
+  Array.prototype.method(&quot;pickup&quot;, function(min, max) {
+    min = min || 0;
+    max = max || this.length-1;
+    return this[ Math.randint(min, max) ];
+  });
+  
+<span id='global-Array-method-lot'>  /**
+</span>   * @method  lot
+   * 要素の中からランダムで取り出す
+   */
+  Array.prototype.method(&quot;lot&quot;, function(min, max) {
+    min = min || 0;
+    max = max || this.length-1;
+    return this[ Math.randint(min, max) ];
+  });
+  
+<span id='global-Array-method-uniq'>  /**
+</span>   * @method  uniq
+   * 重複削除
+   */
+  Array.prototype.method(&quot;uniq&quot;, function(deep) {
+    return this.filter(function(value, index, self) {
+      return self.indexOf(value) === index;
+    });
+  });
+  
+
+<span id='global-Array-method-flatten'>  /**
+</span>   * @method  flatten
+   * フラット.
+   * Ruby のやつ.
+   */
+  Array.prototype.method(&quot;flatten&quot;, function(level) {
+    var arr = null;
+
+    if (level) {
+      arr = this;
+      for (var i=0; i&lt;level; ++i) {
+        arr = Array.prototype.concat.apply([], arr);
+      }
+    }
+    else {
+      // 完全フラット
+      arr = this.reduce(function (previousValue, curentValue) {
+        return Array.isArray(curentValue) ?
+          previousValue.concat(curentValue.flatten()) : previousValue.concat(curentValue);
+      }, []);
+    }
+
+    return arr;
+  });
+
+<span id='global-Array-method-clone'>  /**
+</span>   * @method  clone
+   * 配列をクローン
+   */
+  Array.prototype.method(&quot;clone&quot;, function(deep) {
+    if (deep === true) {
+      var a = Array(this.length);
+      for (var i=0,len=this.length; i&lt;len; ++i) {
+        a[i] = (this[i].clone) ? this[i].clone(deep) : this[i];
+      }
+      return a;
+    }
+    else {
+      return Array.prototype.slice.apply(this);
+    }
+  });
+
+
+<span id='global-Array-method-clear'>  /**
+</span>   * @method  clear
+   * クリア
+   */
+  Array.prototype.method(&quot;clear&quot;, function() {
+    this.length = 0;
+    return this;
+  });
+  
+<span id='global-Array-method-fill'>  /**
+</span>   * @method  fill
+   * 特定の値で満たす
+   */
+  Array.prototype.method(&quot;fill&quot;, function(value, start, end) {
+    start = start || 0;
+    end   = end   || (this.length);
+    
+    for (var i=start; i&lt;end; ++i) {
+      this[i] = value;
+    }
+    
+    return this;
+  });
+  
+
+<span id='global-Array-method-range'>  /**
+</span>   * @method  range
+   * python のやつ
+   */
+  Array.prototype.method(&quot;range&quot;, function(start, end, step) {
+    this.clear();
+    
+    if (arguments.length == 1) {
+      for (var i=0; i&lt;start; ++i) this[i] = i;
+    }
+    else if (start &lt; end){
+      step  = step || 1;
+      for (var i=start, index=0; i&lt;end; i+=step, ++index) {
+        this[index] = i;
+      }
+    }
+    else {
+      step  = step || -1;
+      for (var i=start, index=0; i&gt;end; i+=step, ++index) {
+        this[index] = i;
+      }
+    }
+    
+    return this;
+  });
+  
+<span id='global-Array-method-shuffle'>  /**
+</span>   * @method  shuffle
+   * シャッフル
+   */
+  Array.prototype.method(&quot;shuffle&quot;, function() {
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      var j = Math.randint(0, len-1);
+      
+      if (i != j) {
+        this.swap(i, j);
+      }
+    }
+    
+    return this;
+  });
+
+<span id='global-Array-method-sum'>  /**
+</span>   * @method  sum
+   * 合計
+   */
+  Array.prototype.method(&quot;sum&quot;, function() {
+    var sum = 0;
+    for (var i=0,len=this.length; i&lt;len; ++i) {
+      sum += this[i];
+    }
+    return sum;
+  });
+
+<span id='global-Array-method-average'>  /**
+</span>   * @method  average
+   * 平均
+   */
+  Array.prototype.method(&quot;average&quot;, function() {
+    var sum = 0;
+    var len = this.length;
+    for (var i=0; i&lt;len; ++i) {
+      sum += this[i];
+    }
+    return sum/len;
+  });
+
+<span id='global-Array-method-each'>  /**
+</span>   * @method  each
+   * 繰り返し
+   * チェーンメソッド対応
+   */
+  Array.prototype.method(&quot;each&quot;, function() {
+    this.forEach.apply(this, arguments);
+    return this;
+  });
+
+  
+<span id='global-Array-method-toULElement'>  /**
+</span>   * @method  toULElement
+   * ULElement に変換
+   */
+  Array.prototype.method(&quot;toULElement&quot;, function(){
+      // TODO: 
+  });
+
+<span id='global-Array-method-toOLElement'>  /**
+</span>   * @method  toOLElement
+   * OLElement に変換
+   */
+  Array.prototype.method(&quot;toOLElement&quot;, function(){
+      // TODO:
+  });
+
+  
+<span id='global-Array-static-method-range'>  /**
+</span>   * @static
+   * @method  range
+   * range
+   */
+  Array.method(&quot;range&quot;, function(start, end, step) {
+    return Array.prototype.range.apply([], arguments);
+  });
+
+
+<span id='global-Array-method-of'>  /**
+</span>   * @method of
+   * of関数 可変長引数をとってArrayにして返す
+   * ES6準拠
+   */
+  Array.method(&quot;of&quot;, function() {
+    return Array.prototype.slice.call(arguments);
+  });
+
+<span id='global-Array-method-from'>  /**
+</span>   * @method from
+   * from関数 Array like objectに対してArrayのメソッドを追加する
+   *
+   * ES6準拠
+   */
+  Array.method(&quot;from&quot;, function(arrayLike, callback, context) {
+    if (!Object(arrayLike).length) return [];
+
+    return Array.prototype.map.call(arrayLike, typeof callback == &#39;function&#39; ? callback : function(item) {
+      return item;
+    }, context);
+  });
+
+})();
+</pre>
+</body>
+</html>

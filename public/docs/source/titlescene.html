@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * TitleScene
+ */
+
+
+phina.namespace(function() {
+
+<span id='phina-game-TitleScene'>  /**
+</span>   * @class phina.game.TitleScene
+   * 
+   */
+  phina.define(&#39;phina.game.TitleScene&#39;, {
+    superClass: &#39;phina.display.CanvasScene&#39;,
+<span id='phina-game-TitleScene-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(params) {
+      this.superInit(params);
+
+      params = (params || {}).$safe(phina.game.TitleScene.defaults);
+
+      this.backgroundColor = params.backgroundColor;
+
+      this.fromJSON({
+        children: {
+          titleLabel: {
+            className: &#39;phina.display.Label&#39;,
+            arguments: {
+              text: params.title,
+              fill: params.fontColor,
+              stroke: false,
+              fontSize: 64,
+            },
+            x: this.gridX.center(),
+            y: this.gridY.span(4),
+          }
+        }
+      });
+
+      if (params.exitType === &#39;touch&#39;) {
+        this.fromJSON({
+          children: {
+            touchLabel: {
+              className: &#39;phina.display.Label&#39;,
+              arguments: {
+                text: &quot;TOUCH START&quot;,
+                fill: params.fontColor,
+                stroke: false,
+                fontSize: 32,
+              },
+              x: this.gridX.center(),
+              y: this.gridY.span(12),
+            },
+          },
+        });
+
+        this.on(&#39;pointstart&#39;, function() {
+          this.exit();
+        });
+      }
+    },
+
+    _static: {
+      defaults: {
+        title: &#39;phina.js games&#39;,
+        message: &#39;&#39;,
+        width: 640,
+        height: 960,
+
+        fontColor: &#39;white&#39;,
+        backgroundColor: &#39;hsl(200, 80%, 64%)&#39;,
+        backgroundImage: &#39;&#39;,
+
+        exitType: &#39;touch&#39;,
+      },
+    },
+
+  });
+
+});
+</pre>
+</body>
+</html>

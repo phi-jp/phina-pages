@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+
+phina.namespace(function() {
+
+<span id='phina-accessory-Flickable'>  /**
+</span>   * @class phina.accessory.Flickable
+   * Flickable
+   */
+  phina.define(&#39;phina.accessory.Flickable&#39;, {
+    superClass: &#39;phina.accessory.Accessory&#39;,
+
+<span id='phina-accessory-Flickable-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(target) {
+      this.superInit(target);
+
+      this.initialPosition = phina.geom.Vector2(0, 0);
+      var self = this;
+
+      this.friction = 1.0;
+      this.velocity = phina.geom.Vector2(0, 0);
+      this.vertical = true;
+      this.horizontal = true;
+
+      this.on(&#39;attached&#39;, function() {
+        this.target.setInteractive(true);
+
+        this.target.on(&#39;pointstart&#39;, function(e) {
+          self.initialPosition.set(this.x, this.y);
+          self.velocity.set(0, 0);
+        });
+        this.target.on(&#39;pointmove&#39;, function(e) {
+          if (self.horizontal) {
+            this.x += e.pointer.dx;
+          }
+          if (self.vertical) {
+            this.y += e.pointer.dy;
+          }
+        });
+
+        this.target.on(&#39;pointend&#39;, function(e) {
+          var dp = e.pointer.deltaPosition;
+
+          if (dp.lengthSquared() &gt; 10) {
+            self.velocity.x = dp.x;
+            self.velocity.y = dp.y;
+
+            self.flare(&#39;flickstart&#39;, {
+              direction: dp.clone().normalize(),
+            });
+          }
+          else {
+            self.cancel();
+          }
+
+          // self.flare(&#39;flick&#39;);
+          // self.flare(&#39;flickend&#39;);
+        });
+      });
+    },
+
+    update: function() {
+      if (!this.target) return ;
+
+      this.velocity.x *= this.friction;
+      this.velocity.y *= this.friction;
+
+      if (this.horizontal) {
+        this.target.position.x += this.velocity.x;
+      }
+      if (this.vertical) {
+        this.target.position.y += this.velocity.y;
+      }
+    },
+
+    cancel: function() {
+      this.target.x = this.initialPosition.x;
+      this.target.y = this.initialPosition.y;
+      this.velocity.set(0, 0);
+
+      // TODO: 
+      // this.setInteractive(false);
+      // this.tweener.clear()
+      //     .move(this.initialX, this.initialY, 500, &quot;easeOutElastic&quot;)
+      //     .call(function () {
+      //         this.setInteractive(true);
+      //         this.fire(tm.event.Event(&quot;backend&quot;));
+      //     }.bind(this));
+    },
+
+    enable: function() {
+      this._enable = true;
+    },
+
+  });
+
+  phina.app.Element.prototype.getter(&#39;flickable&#39;, function() {
+    if (!this._flickable) {
+      this._flickable = phina.accessory.Flickable().attachTo(this);
+    }
+    return this._flickable;
+  });
+  
+});</pre>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ *
+ */
+
+
+;(function() {
+<span id='global-Number'>  /**
+</span>   * @class global.Number
+   * Numberの拡張
+   */
+
+<span id='global-Number-method-round'>  /**
+</span>   * @method  round
+   * 四捨五入
+   * 桁数指定版
+   */
+  Number.prototype.method(&quot;round&quot;, function(figure) {
+    figure = figure || 0;
+    var base = Math.pow(10, figure);
+    var temp = this * base;
+    temp = Math.round(temp);
+    return temp/base;
+  });
+  
+<span id='global-Number-method-ceil'>  /**
+</span>   * @method  ceil
+   * 切り上げ.
+   * 桁数指定版
+   */
+  Number.prototype.method(&quot;ceil&quot;,  function(figure) {
+    figure = figure || 0;
+    var base = Math.pow(10, figure);
+    var temp = this * base;
+    temp = Math.ceil(temp);
+    return temp/base;
+  });
+<span id='global-Number-method-floor'>  /**
+</span>   * @method  floor
+   * 切り捨て
+   * 桁数指定版
+   */
+  Number.prototype.method(&quot;floor&quot;,  function(figure) {
+    figure = figure || 0;
+    var base = Math.pow(10, figure);
+    var temp = this * base;
+    temp = Math.floor(temp);
+    
+    // ~~this
+    // this|0
+    
+    return temp/base;
+  });
+  
+<span id='global-Number-method-toInt'>  /**
+</span>   * @method  toInt
+   * integer 型に変換する
+   */
+  Number.prototype.method(&quot;toInt&quot;,  function() {
+    return (this | 0);
+  });
+  
+<span id='global-Number-method-toHex'>  /**
+</span>   * @method  toHex
+   * 16進数化
+   */
+  Number.prototype.method(&quot;toHex&quot;,  function() {
+    return this.toString(16);
+  });
+  
+<span id='global-Number-method-toBin'>  /**
+</span>   * @method  toBin
+   * 2進数化
+   */
+  Number.prototype.method(&quot;toBin&quot;,  function() {
+    return this.toString(2);
+  });
+  
+  
+<span id='global-Number-method-toUnsigned'>  /**
+</span>   * @method  toUnsigned
+   * unsigned 型に変換する
+   */
+  Number.prototype.method(&quot;toUnsigned&quot;,  function() {
+    return this &gt;&gt;&gt; 0;
+  });
+  
+<span id='global-Number-method-padding'>  /**
+</span>   * @method  padding
+   * 文字埋め
+   */
+  Number.prototype.method(&quot;padding&quot;,  function(n, ch) {
+    var str = this+&#39;&#39;;
+    n  = n-str.length;
+    ch = ch || &#39;0&#39;;
+    
+    while(n-- &gt; 0) { str = ch + str; }
+    
+    return str;
+  });
+
+
+<span id='global-Number-method-times'>  /**
+</span>   * @method  times
+   * 数値分繰り返す
+   */
+  Number.prototype.method(&quot;times&quot;,  function(fn, self) {
+    self = self || this;
+    for (var i=0; i&lt;this; ++i) {
+      fn.call(self, i);
+    }
+    return this;
+  });
+
+<span id='global-Number-method-upto'>  /**
+</span>   * @method  upto
+   * インクリメント繰り返し
+   */
+  Number.prototype.method(&quot;upto&quot;,  function(t, fn, self) {
+    self = self || this;
+    for (var i=+this; i&lt;=t; ++i) {
+      fn.call(self, i);
+    }
+    return this;
+  });
+  
+<span id='global-Number-method-downto'>  /**
+</span>   * @method  downto
+   * デクリメント繰り返し
+   */
+  Number.prototype.method(&quot;downto&quot;,  function(t, fn, self) {
+    self = self || this;
+    for (var i=+this; i&gt;=t; --i) {
+      fn.call(self, i);
+    }
+    return this;
+  });
+
+<span id='global-Number-method-step'>  /**
+</span>   * @method step
+   * ステップ繰り返し(float対応)
+   */
+  Number.prototype.method(&quot;step&quot;,  function(limit, step, fn, self) {
+    self = self || this;
+    for (var i=+this; i&lt;=limit; i+=step) {
+      fn.call(self, i);
+    }
+    return this;
+  });
+
+<span id='global-Number-method-map'>  /**
+</span>   * @method  map
+   * return で返された値の配列を作る
+   */
+  Number.prototype.method(&quot;map&quot;,  function(fn, self) {
+    self = self || this;
+
+    var results = [];
+    for (var i=0; i&lt;this; ++i) {
+      var r = fn.call(self, i);
+      results.push(r);
+    }
+    return results;
+  });
+
+<span id='global-Number-method-abs'>  /**
+</span>   * @method abs
+   * 絶対値
+   */
+  Number.prototype.method(&quot;abs&quot;, function() { return Math.abs(this) });
+
+<span id='global-Number-method-acos'>  /**
+</span>   * @method acos
+   * アークコサイン
+   */
+  Number.prototype.method(&quot;acos&quot;, function() { return Math.acos(this) });
+
+<span id='global-Number-method-asin'>  /**
+</span>   * @method asin
+   * アークサイン
+   */
+  Number.prototype.method(&quot;asin&quot;, function() { return Math.asin(this) });
+
+<span id='global-Number-method-atan'>  /**
+</span>   * @method atan
+   * アークタンジェント
+   */
+  Number.prototype.method(&quot;atan&quot;, function() { return Math.atan(this) });
+
+<span id='global-Number-method-cos'>  /**
+</span>   * @method cos
+   * コサイン
+   */
+  Number.prototype.method(&quot;cos&quot;, function() { return Math.cos(this) });
+
+<span id='global-Number-method-exp'>  /**
+</span>   * @method exp
+   * E^num
+   */
+  Number.prototype.method(&quot;exp&quot;, function() { return Math.exp(this) });
+
+<span id='global-Number-method-log'>  /**
+</span>   * @method log
+   * 自然対数
+   */
+  Number.prototype.method(&quot;log&quot;, function() { return Math.log(this) });
+
+<span id='global-Number-method-max'>  /**
+</span>   * @method max
+   * max
+   */
+  Number.prototype.method(&quot;max&quot;, function(value) { return Math.max(this, value) });
+
+<span id='global-Number-method-min'>  /**
+</span>   * @method min
+   * min
+   */
+  Number.prototype.method(&quot;min&quot;, function(value) { return Math.min(this, value) });
+
+<span id='global-Number-method-pow'>  /**
+</span>   * @method pow
+   * 乗数
+   */
+  Number.prototype.method(&quot;pow&quot;, function(exponent) { return Math.pow(this, exponent) });
+
+<span id='global-Number-method-sin'>  /**
+</span>   * @method sin
+   * サイン
+   */
+  Number.prototype.method(&quot;sin&quot;, function() { return Math.sin(this) });
+
+<span id='global-Number-method-sqrt'>  /**
+</span>   * @method sqrt
+   * 平方根
+   */
+  Number.prototype.method(&quot;sqrt&quot;, function() { return Math.sqrt(this) });
+
+<span id='global-Number-method-tan'>  /**
+</span>   * @method tan
+   * タンジェント
+   */
+  Number.prototype.method(&quot;tan&quot;, function() { return Math.tan(this) });
+
+<span id='global-Number-method-toDegree'>  /**
+</span>   * @method toDegree
+   * to degree
+   */
+  Number.prototype.method(&quot;toDegree&quot;, function() { return (this*Math.RAD_TO_DEG); });
+
+<span id='global-Number-method-toRadian'>  /**
+</span>   * @method toRadian
+   * to degree
+   */
+  Number.prototype.method(&quot;toRadian&quot;, function() { return this*Math.DEG_TO_RAD; });
+
+})();
+
+</pre>
+</body>
+</html>

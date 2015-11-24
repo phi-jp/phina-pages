@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * ResultScene
+ */
+
+
+phina.namespace(function() {
+
+<span id='phina-game-ResultScene'>  /**
+</span>   * @class phina.game.ResultScene
+   *
+   */
+  phina.define(&#39;phina.game.ResultScene&#39;, {
+    superClass: &#39;phina.display.CanvasScene&#39;,
+<span id='phina-game-ResultScene-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(params) {
+      this.superInit(params);
+
+      params = (params || {}).$safe(phina.game.ResultScene.defaults);
+
+      var message = params.message.format(params);
+
+      this.backgroundColor = params.backgroundColor;
+
+      this.fromJSON({
+        children: {
+          scoreText: {
+            className: &#39;phina.display.Label&#39;,
+            arguments: {
+              text: &#39;score&#39;,
+              fill: params.fontColor,
+              stroke: null,
+              fontSize: 48,
+            },
+            x: this.gridX.span(8),
+            y: this.gridY.span(4),
+          },
+          scoreLabel: {
+            className: &#39;phina.display.Label&#39;,
+            arguments: {
+              text: params.score+&#39;&#39;,
+              fill: params.fontColor,
+              stroke: null,
+              fontSize: 80,
+            },
+            x: this.gridX.span(8),
+            y: this.gridY.span(6),
+          },
+
+          messageLabel: {
+            className: &#39;phina.display.Label&#39;,
+            arguments: {
+              text: message,
+              fill: params.fontColor,
+              stroke: null,
+              fontSize: 32,
+            },
+            x: this.gridX.span(8),
+            y: this.gridY.span(8),
+          },
+
+          shareButton: {
+            className: &#39;phina.ui.Button&#39;,
+            arguments: [{
+              text: &#39;★&#39;,
+              width: 128,
+              height: 128,
+              fontSize: 50,
+              cornerRadius: 64,
+            }],
+            x: this.gridX.span(6),
+            y: this.gridY.span(11),
+          },
+          playButton: {
+            className: &#39;phina.ui.Button&#39;,
+            arguments: [{
+              text: &#39;▶&#39;,
+              width: 128,
+              height: 128,
+              fontSize: 50,
+              cornerRadius: 64,
+            }],
+            x: this.gridX.span(10),
+            y: this.gridY.span(11),
+
+            interactive: true,
+            onpush: function() {
+              this.exit();
+            }.bind(this),
+          },
+        }
+      });
+
+      if (params.exitType === &#39;touch&#39;) {
+        this.on(&#39;pointstart&#39;, function() {
+          this.exit();
+        });
+      }
+
+      this.shareButton.onclick = function() {
+        var url = phina.social.Twitter.createURL({
+          text: message,
+          hashtags: params.hashtags,
+        });
+        window.open(url, &#39;share window&#39;, &#39;width=480, height=320&#39;);
+      };
+    },
+
+    _static: {
+      defaults: {
+        score: 16,
+
+        message: &#39;this is phina.js project.\nscore: {score}\n&#39;,
+        hashtags: &#39;phina_js,game,javascript&#39;,
+        url: phina.global.location &amp;&amp; phina.global.location.href,
+
+        width: 640,
+        height: 960,
+
+        fontColor: &#39;white&#39;,
+        backgroundColor: &#39;hsl(200, 80%, 64%)&#39;,
+        backgroundImage: &#39;&#39;,
+      },
+    },
+
+  });
+
+});
+</pre>
+</body>
+</html>

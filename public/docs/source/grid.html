@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+;(function() {
+
+<span id='phina-util-Grid'>  /**
+</span>   * @class phina.util.Grid
+   * tick management class
+   */
+  phina.define(&#39;phina.util.Grid&#39;, {
+
+<span id='phina-util-Grid-property-width'>    /** 幅 */
+</span>    width: 640,
+<span id='phina-util-Grid-property-columns'>    /** 列数 */
+</span>    columns: 12,
+<span id='phina-util-Grid-property-loop'>    /** ループ */
+</span>    loop: false,
+<span id='phina-util-Grid-property-offset'>    /** オフセット値 */
+</span>    offset: 0,
+
+<span id='phina-util-Grid-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function() {
+      if (typeof arguments[0] === &#39;object&#39;) {
+        var param = arguments[0];
+        var width = param.width || 640;
+        var columns = param.columns || 12;
+        var loop = param.loop || false;
+        var offset = param.offset || 0;
+      }
+      else {
+        var width   = arguments[0] || 640;
+        var columns = arguments[1] || 12;
+        var loop    = arguments[2] || false;
+        var offset = arguments[3] || 0;
+      }
+
+      this.width = width;
+      this.columns = columns;
+      this.loop = loop;
+      this.offset = offset;
+      this.unitWidth = this.width/this.columns;
+    },
+
+    // スパン指定で値を取得(負数もok)
+    span: function(index) {
+      if (this.loop) {
+        index += this.columns;
+        index %= this.columns;
+      }
+      return this.unitWidth * index + this.offset;
+    },
+
+    //
+    unit: function() {
+      return this.unitWidth;
+    },
+
+    center: function(offset) {
+      var index = offset || 0;
+      return (this.width/2) + (this.unitWidth * index);
+    },
+
+  });
+
+})();
+</pre>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * date.js
+ */
+
+(function() {
+  
+<span id='global-Date'>  /**
+</span>   * @class   global.Date
+   * Date(日付)の拡張
+   */
+  
+  var MONTH = [
+    &#39;January&#39;, &#39;February&#39;, &#39;March&#39;, &#39;April&#39;, &#39;May&#39;, &#39;June&#39;, &#39;July&#39;, &#39;August&#39;, &#39;September&#39;, &#39;October&#39;, &#39;November&#39;, &#39;December&#39;
+  ];
+  
+  var WEEK = [
+    &#39;Sunday&#39;, &#39;Monday&#39;, &#39;Tuesday&#39;, &#39;Wednesday&#39;, &#39;Thursday&#39;, &#39;Friday&#39;, &#39;Saturday&#39;
+  ];
+  
+<span id='global-Date-method-format'>  /**
+</span>   * @method  format
+   * 日付フォーマットに合わせた文字列を返す
+   */
+  Date.prototype.method(&#39;format&#39;, function(pattern) {
+    /*
+    var str = &#39;{y}/{m}/{d}&#39;.format({
+      y: this.getYear()+1900,
+      m: this.getMonth()+1,
+      d: this.getDate(),
+    });
+    
+    return str;
+    */
+    
+    var year    = this.getFullYear();
+    var month   = this.getMonth();
+    var date    = this.getDate();
+    var day     = this.getDay();
+    var hours   = this.getHours();
+    var minutes = this.getMinutes();
+    var seconds = this.getSeconds();
+    var millseconds = this.getMilliseconds();
+    var str = &#39;&#39;;
+    
+    for (var i=0,len=pattern.length; i&lt;len; ++i) {
+      var ch = pattern.charAt(i);
+      var temp = &#39;&#39;;
+      switch(ch) {
+        // 日
+        case &#39;d&#39;: temp = date.padding(2, &#39;0&#39;); break;
+        case &#39;D&#39;: temp = WEEK[day].substr(0, 3); break;
+        case &#39;j&#39;: temp = date; break;
+        case &#39;l&#39;: temp = WEEK[day]; break;
+        // case &#39;N&#39;: temp = ; break;
+        // case &#39;S&#39;: temp = ; break;
+        // case &#39;w&#39;: temp = ; break;
+        // case &#39;z&#39;: temp = ; break;
+        
+        // 月
+        case &#39;F&#39;: temp = MONTH[month]; break;
+        case &#39;m&#39;: temp = (month+1).padding(2, &#39;0&#39;); break;
+        case &#39;M&#39;: temp = MONTH[month].substr(0, 3); break;
+        case &#39;n&#39;: temp = (month+1); break;
+        // case &#39;t&#39;: temp = (month+1); break;
+        
+        // 年
+        // case &#39;L&#39;: temp = ; break;
+        // case &#39;o&#39;: temp = ; break;
+        case &#39;Y&#39;: temp = year; break;
+        case &#39;y&#39;: temp = year.toString().substr(2, 2); break;
+        
+        
+        // 時間
+        // case &quot;a&quot;: temp = ; break;
+        // case &quot;A&quot;: temp = ; break;
+        // case &quot;B&quot;: temp = ; break;
+        // case &quot;g&quot;: temp = ; break;
+        case &quot;G&quot;: temp = hours; break;
+        // case &quot;h&quot;: temp = ; break;
+        case &quot;H&quot;: temp = hours.padding(2, &#39;0&#39;); break;
+        case &quot;i&quot;: temp = minutes.padding(2, &#39;0&#39;); break;
+        case &quot;s&quot;: temp = seconds.padding(2, &#39;0&#39;); break;
+        case &quot;S&quot;: temp = millseconds.padding(3, &#39;0&#39;); break;
+        
+        default : temp = ch; break;
+      }
+      str += temp;
+    }
+    return str;
+  });
+
+
+  Date.prototype.method(&#39;calculateAge&#39;, function(birthday, when) {
+    // birthday
+    if (typeof birthday === &#39;string&#39;) {
+      birthday = new Date(birthday);
+    }
+    // when
+    if (!when) {
+      when = new Date();
+    }
+    else if (typeof when === &#39;string&#39;) {
+      when = new Date(when);
+    }
+
+    var bn = new Date(birthday.getTime()).setFullYear(256);
+    var wn = new Date(when.getTime()).setFullYear(256);
+    var step = (wn &lt; bn) ? 1 : 0;
+
+    return (when.getFullYear() - birthday.getFullYear()) - step;
+  });
+  
+})();
+</pre>
+</body>
+</html>

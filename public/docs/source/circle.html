@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-geom-Circle'>  /**
+</span>   * @class phina.geom.Circle
+   * 
+   */
+  phina.define(&#39;phina.geom.Circle&#39;, {
+
+<span id='phina-geom-Circle-property-x'>    /** x */
+</span>    x: 0,
+<span id='phina-geom-Circle-property-y'>    /** y */
+</span>    y: 0,
+<span id='phina-geom-Circle-property-radius'>    /** 半径 */
+</span>    radius: 32,
+
+    init: function(x, y, radius) {
+      this.set(x, y, radius);
+    },
+
+    set: function(x, y, radius) {
+      this.x = x;
+      this.y = y;
+      this.radius = radius;
+
+      return this;
+    },
+
+    moveTo: function(x, y) {
+      this.x = x;
+      this.y = y;
+      return this;
+    },
+
+    moveBy: function(x, y) {
+      this.x += x;
+      this.y += y;
+      return this;
+    },
+
+    contains: function(x, y) {
+      var lenX = this.x-x;
+      var lenY = this.y-y;
+      var lenSquared = (lenX*lenX)+(lenY*lenY);
+
+      return lenSquared &lt;= this.radius*this.radius;
+    },
+
+    clone: function() {
+      return phina.geom.Circle(this.x, this.y, this.radius);
+    },
+
+    toRect: function() {
+      var size = this.size;
+      return phina.geom.Rect(this.x - this.radius, this.y - this.radius, size, size);
+    },
+
+<span id='phina-geom-Circle-method-toArray'>    /**
+</span>     * 配列に変換
+     */
+    toArray: function() {
+      return [this.x, this.y, this.radius];
+    },
+
+    _accessor: {
+      
+<span id='phina-geom-Circle-property-left'>      /**
+</span>       * @property  left
+       * left
+       */
+      left: {
+        &quot;get&quot;: function()   { return this.x - this.radius; },
+        &quot;set&quot;: function(v)  {
+          // TODO: 
+        }
+      },
+<span id='phina-geom-Circle-property-top'>      /**
+</span>       * @property  top
+       * top
+       */
+      top: {
+        &quot;get&quot;: function()   { return this.y - this.radius; },
+        &quot;set&quot;: function(v)  {
+          // TODO: 
+        }
+      },
+<span id='phina-geom-Circle-property-right'>      /**
+</span>       * @property  right
+       * right
+       */
+      right: {
+        &quot;get&quot;: function()   { return this.x + this.radius; },
+        &quot;set&quot;: function(v)  {
+          // TODO: 
+        }
+      },
+<span id='phina-geom-Circle-property-bottom'>      /**
+</span>       * @property  bottom
+       * bottom
+       */
+      bottom: {
+        &quot;get&quot;: function()   { return this.y + this.radius; },
+        &quot;set&quot;: function(v)  {
+          // TODO: 
+        }
+      },
+      
+<span id='phina-geom-Circle-property-size'>      /**
+</span>       * @property  size
+       * size
+       */
+      size: {
+        &quot;get&quot;: function()   { return this.radius*2; },
+        &quot;set&quot;: function(v)  {
+          // TODO: 検討中
+        },
+      },
+    }
+
+  });
+
+});
+</pre>
+</body>
+</html>

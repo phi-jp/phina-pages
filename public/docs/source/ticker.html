@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+;(function() {
+
+<span id='phina-util-Ticker'>  /**
+</span>   * @class phina.util.Ticker
+   * tick management class
+   */
+  phina.define(&#39;phina.util.Ticker&#39;, {
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+<span id='phina-util-Ticker-property-frame'>    /** 経過フレーム数 */
+</span>    frame: null,
+<span id='phina-util-Ticker-property-deltaTime'>    /** 1フレームの経過時間 */
+</span>    deltaTime: null,
+<span id='phina-util-Ticker-property-elapsedTime'>    /** 全体の経過時間 */
+</span>    elapsedTime: null,
+
+<span id='phina-util-Ticker-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function() {
+      this.superInit();
+
+      this.fps = 30;
+      this.frame = 0;
+      this.deltaTime = 0;
+      this.elapsedTime = 0;
+    },
+
+    tick: function(func) {
+      this.on(&#39;tick&#39;, func);
+    },
+
+    run: function() {
+      var now = (new Date()).getTime();
+      // 1フレームに掛かった時間
+      this.deltaTime = now - this.currentTime;
+      // 全体の経過時間
+      this.elapsedTime = now - this.startTime;
+
+      var start = this.currentTime = now;
+      this.flare(&#39;tick&#39;);
+      var end = (new Date()).getTime();
+
+      // フレームを更新
+      this.frame += 1;
+
+      // calculate elapsed time
+      var elapsed = end-start;
+
+      // calculate next waiting time
+      var delay = Math.max(this.frameTime-elapsed, 0);
+
+      return delay;
+    },
+
+    start: function() {
+      var self = this;
+
+      this.startTime = this.currentTime = (new Date()).getTime();
+
+      (function() {
+        var delay = self.run();
+        setTimeout(arguments.callee, delay);
+      })();
+
+      return this;
+    },
+
+    resume: function() {
+      // TODO: 
+    },
+
+    stop: function() {
+      // TODO: 
+    },
+
+    rewind: function() {
+      // TODO: 
+    },
+
+    _accessor: {
+      fps: {
+        &quot;get&quot;: function()   { return this._fps; },
+        &quot;set&quot;: function(v)  {
+          this._fps = v;
+          this.frameTime = 1000/this._fps;
+        },
+      },
+    },
+  });
+
+})();</pre>
+</body>
+</html>

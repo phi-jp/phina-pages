@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-app-Element'>  /**
+</span>   * @class phina.app.Element
+   * @extends phina.util.EventDispatcher
+   */
+  phina.define(&#39;phina.app.Element&#39;, {
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+    /// 親
+    parent: null,
+
+    /// 子供
+    children: null,
+
+<span id='phina-app-Element-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function() {
+      this.superInit();
+      this.children = [];
+    },
+
+    addChild: function(child) {
+      if (child.parent) child.remove();
+
+      child.parent = this;
+      this.children.push(child);
+
+      child.has(&#39;added&#39;) &amp;&amp; child.flare(&#39;added&#39;);
+
+      return child;
+    },
+
+    addChildTo: function(parent) {
+      parent.addChild(this);
+
+      return this;
+    },
+
+    addChildAt: function(child, index) {
+      if (child.parent) child.remove();
+
+      child.parent = this;
+      this.children.splice(index, 0, child);
+
+      child.has(&#39;added&#39;) &amp;&amp; child.flare(&#39;added&#39;);
+
+      return child;
+    },
+
+    getChildAt: function(index) {
+      return this.children.at(index);
+    },
+
+    getChildByName: function(name) {
+      // TODO: 
+    },
+
+    getChildIndex: function(child) {
+      return this.children.indexOf(child);
+    },
+
+    getParent: function() {
+      return this.parent;
+    },
+
+    getRoot: function() {
+      var elm = this;
+      for (elm=this.parent; elm.parent != null; elm = elm.parent) {
+
+      }
+      return elm;
+    },
+
+    removeChild: function(child) {
+      var index = this.children.indexOf(child);
+      if (index !== -1) {
+        this.children.splice(index, 1);
+        child.has(&#39;removed&#39;) &amp;&amp; child.flare(&#39;removed&#39;);
+      }
+      return this;
+    },
+
+    remove: function() {
+      if (!this.parent) return ;
+
+      this.parent.removeChild(this);
+      this.parent = null;
+      
+      return this;
+    },
+
+    fromJSON: function(json) {
+
+      var createChildren = function(name, data) {
+        // 
+        var args = data.arguments;
+        args = (args instanceof Array) ? args : [args];
+        // 
+        var _class = phina.using(data.className);
+        // 
+        var element = _class.apply(null, args);
+        
+        element.name = name;
+        this[name] = element;
+
+        element.fromJSON(data);
+        element.addChildTo(this)
+      }.bind(this);
+
+      json.forIn(function(key, value) {
+        if (key === &#39;children&#39;) {
+          value.forIn(function(name, data) {
+            createChildren(name, data);
+          });
+        }
+        else {
+          if (key !== &#39;type&#39;) {
+            this[key] = value;
+          }
+        }
+      }, this);
+
+      return this;
+    },
+
+    toJSON: function() {
+      var json = {};
+
+      // this.forIn(function(key, value) {
+      //   if (key[0] === &#39;_&#39;) return ;
+      //   json[key] = value;
+      // });
+
+      var keys = [
+        &#39;x&#39;, &#39;y&#39;,
+        &#39;rotation&#39;,
+        &#39;scaleX&#39;, &#39;scaleY&#39;,
+        &#39;originX&#39;, &#39;originY&#39;,
+        &#39;className&#39;,
+        &#39;name&#39;,
+      ];
+
+      keys.each(function(key) {
+        json[key] = this[key];
+      }, this);
+
+      var children = this.children.map(function(child) {
+        return child.toJSON();
+      });
+
+      if (children.length) {
+        json.children = {};
+        children.each(function(child) {
+          json.children[child.name] = child;
+        });
+      }
+
+      return json;
+    },
+  });
+  
+});
+</pre>
+</body>
+</html>

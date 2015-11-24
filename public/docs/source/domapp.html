@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">phina.namespace(function() {
+
+<span id='phina-display-DomApp'>  /**
+</span>   * @class phina.display.DomApp
+   * @extends phina.app.BaseApp
+   */
+  phina.define(&#39;phina.display.DomApp&#39;, {
+    superClass: &#39;phina.app.BaseApp&#39;,
+
+    domElement: null,
+
+<span id='phina-display-DomApp-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(options) {
+      this.superInit(options);
+
+      if (options.domElement) {
+        this.domElement = options.domElement;
+      }
+      else {
+        if (options.query) {
+          this.domElement = document.querySelector(options.query);
+        }
+        else {
+          console.assert(&#39;error&#39;);
+        }
+      }
+
+      this.mouse = phina.input.Mouse(this.domElement);
+      this.touch = phina.input.Touch(this.domElement);
+      this.touchList = phina.input.TouchList(this.domElement, 5);
+      this.keyboard = phina.input.Keyboard(document);
+
+      // ポインタをセット(PC では Mouse, Mobile では Touch)
+      this.pointer = this.touch;
+      this.pointers = this.touchList.touches;
+
+      this.domElement.addEventListener(&quot;touchstart&quot;, function () {
+        this.pointer = this.touch;
+        this.pointers = this.touchList.touches;
+      }.bind(this));
+      this.domElement.addEventListener(&quot;mouseover&quot;, function () {
+        this.pointer = this.mouse;
+        this.pointers = [this.mouse];
+      }.bind(this));
+
+      // keyboard event
+      this.keyboard.on(&#39;keydown&#39;, function(e) {
+        this.currentScene &amp;&amp; this.currentScene.flare(&#39;keydown&#39;, {
+          keyCode: e.keyCode,
+        });
+      }.bind(this));
+      this.keyboard.on(&#39;keyup&#39;, function(e) {
+        this.currentScene &amp;&amp; this.currentScene.flare(&#39;keyup&#39;, {
+          keyCode: e.keyCode,
+        });
+      }.bind(this));
+      this.keyboard.on(&#39;keypress&#39;, function(e) {
+        this.currentScene &amp;&amp; this.currentScene.flare(&#39;keypress&#39;, {
+          keyCode: e.keyCode,
+        });
+      }.bind(this));
+
+      // interactive
+      this.interactive = phina.app.Interactive(this);
+
+      // click 対応
+      var eventName = phina.isMobile() ? &#39;touchend&#39; : &#39;mouseup&#39;;
+      this.domElement.addEventListener(eventName, this._checkClick.bind(this));
+
+      // 決定時の処理をオフにする(iPhone 時のちらつき対策)
+      this.domElement.addEventListener(&quot;touchstart&quot;, function(e) { e.stop(); });
+      this.domElement.addEventListener(&quot;touchmove&quot;, function(e) { e.stop(); });
+    },
+
+    update: function() {
+      this.mouse.update();
+      this.touch.update();
+      this.touchList.update();
+      this.keyboard.update();
+    },
+
+    _checkClick: function(e) {
+      var _check = function(element) {
+        if (element.children.length &gt; 0) {
+          element.children.each(function(child) {
+            _check(child);
+          });
+        }
+        if (element._clicked &amp;&amp; element.has(&#39;click&#39;)) {
+          element.flare(&#39;click&#39;);
+        }
+        element._clicked = false;
+      };
+
+      _check(this.currentScene);
+    },
+
+  });
+
+  
+});
+</pre>
+</body>
+</html>

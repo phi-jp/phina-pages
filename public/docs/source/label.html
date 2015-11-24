@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-display-Label'>  /**
+</span>   * @class phina.display.Label
+   * 
+   */
+  phina.define(&#39;phina.display.Label&#39;, {
+    superClass: &#39;phina.display.Shape&#39;,
+
+<span id='phina-display-Label-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(options) {
+      if (typeof arguments[0] !== &#39;object&#39;) {
+        options = { text: arguments[0], };
+      }
+      else {
+        options = arguments[0];
+      }
+
+      options = (options || {}).$safe({
+        backgroundColor: &#39;transparent&#39;,
+
+        fill: &#39;black&#39;,
+        stroke: null,
+        strokeWidth: 2,
+
+        // 
+        text: &#39;Hello, world!&#39;,
+        // 
+        fontSize: 32,
+        fontWeight: &#39;&#39;,
+        fontFamily: &quot;&#39;HiraKakuProN-W3&#39;&quot;, // Hiragino or Helvetica,
+        // 
+        align: &#39;center&#39;,
+        baseline: &#39;middle&#39;,
+        lineHeight: 1.2,
+      });
+
+      this.superInit(options);
+
+      this.text = options.text;
+      this.fontSize = options.fontSize;
+      this.fontWeight = options.fontWeight;
+      this.fontFamily = options.fontFamily;
+      this.align = options.align;
+      this.baseline = options.baseline;
+      this.lineHeight = options.lineHeight;
+    },
+
+    calcWidth: function() {
+      var width = 0;
+      var canvas = this.canvas;
+      this._lines.forEach(function(line) {
+        var w = canvas.context.measureText(line).width;
+        if (width &lt; w) {
+          width = w;
+        }
+      }, this);
+      if (this.align !== &#39;center&#39;) width*=2;
+      return width;
+    },
+
+    calcHeight: function() {
+      var height = this.fontSize * this._lines.length;
+      if (this.baseline !== &#39;middle&#39;) height*=2;
+      return height*this.lineHeight;
+    },
+
+    _render: function() {
+      var canvas = this.canvas;
+      var context = canvas.context;
+
+      var fontSize = this.fontSize;
+      var font = &quot;{fontWeight} {fontSize}px {fontFamily}&quot;.format(this);
+      var text = this.text + &#39;&#39;;
+      var lines = this._lines = text.split(&#39;\n&#39;);
+      canvas.context.font = font;
+
+      var w = this.calcWidth() + this.padding*2;
+      var h = this.calcHeight() + this.padding*2;
+      this._renderBackground(w, h);
+
+      canvas.transformCenter();
+      context.font = font;
+      context.textAlign = this.align;
+      context.textBaseline = this.baseline;
+
+      var lineSize = fontSize*this.lineHeight;
+      var offset = -Math.floor(lines.length/2)*lineSize;
+      offset += ((lines.length+1)%2) * (lineSize/2);
+
+      if (this.stroke) {
+        context.strokeStyle = this.stroke;
+        context.lineWidth = this.strokeWidth;
+        context.lineJoin = &quot;round&quot;;
+        context.shadowBlur = 0;
+        lines.forEach(function(line, i) {
+          context.strokeText(line, 0, i*lineSize+offset);
+        }, this);
+      }
+
+      if (this.shadow) {
+        context.shadowColor = this.shadow;
+        context.shadowBlur = this.shadowBlur;
+      }
+
+      if (this.fill) {
+        context.fillStyle = this.fill;
+        lines.forEach(function(line, i) {
+          context.fillText(line, 0, i*lineSize+offset);
+        }, this);
+      }
+    },
+
+    _accessor: {
+<span id='phina-display-Label-property-text'>      /**
+</span>       * text
+       */
+      text: {
+        get: function() { return this._text; },
+        set: function(v) { this._dirtyDraw = true; this._text = v; },
+      },
+<span id='phina-display-Label-property-fontSize'>      /**
+</span>       * font size
+       */
+      fontSize: {
+        get: function() { return this._fontSize; },
+        set: function(v) { this._dirtyDraw = true; this._fontSize = v; },
+      },
+<span id='phina-display-Label-property-fontWeight'>      /**
+</span>       * font weight
+       */
+      fontWeight: {
+        get: function() { return this._fontWeight; },
+        set: function(v) { this._dirtyDraw = true; this._fontWeight = v; },
+      },
+<span id='phina-display-Label-property-fontFamily'>      /**
+</span>       * font family
+       */
+      fontFamily: {
+        get: function() { return this._fontFamily; },
+        set: function(v) { this._dirtyDraw = true; this._fontFamily = v; },
+      },
+<span id='phina-display-Label-property-align'>      /**
+</span>       * align
+       */
+      align: {
+        get: function() { return this._align; },
+        set: function(v) { this._dirtyDraw = true; this._align = v; },
+      },
+<span id='phina-display-Label-property-baseline'>      /**
+</span>       * baseline
+       */
+      baseline: {
+        get: function() { return this._baseline; },
+        set: function(v) { this._dirtyDraw = true; this._baseline = v; },
+      },
+<span id='phina-display-Label-property-lineHeight'>      /**
+</span>       * line height
+       */
+      lineHeight: {
+        get: function() { return this._lineHeight; },
+        set: function(v) { this._dirtyDraw = true; this._lineHeight = v; },
+      },
+    }
+  });
+
+});
+
+</pre>
+</body>
+</html>

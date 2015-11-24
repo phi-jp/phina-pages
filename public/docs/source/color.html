@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * color.js
+ */
+
+phina.namespace(function() {
+
+<span id='phina-util-Color'>  /**
+</span>   * @class phina.util.Color
+   * カラークラス
+   */
+  phina.define(&quot;phina.util.Color&quot;, {
+<span id='phina-util-Color-property-r'>    /** R値 */
+</span>    r: 255,
+<span id='phina-util-Color-property-g'>    /** G値 */
+</span>    g: 255,
+<span id='phina-util-Color-property-b'>    /** B値 */
+</span>    b: 255,
+<span id='phina-util-Color-property-a'>    /** A値 */
+</span>    a: 1.0,
+
+<span id='phina-util-Color-method-init'>    /**
+</span>     * 初期化
+     */
+    init: function(r, g, b, a) {
+      this.set.apply(this, arguments);
+    },
+
+<span id='phina-util-Color-method-set'>    /**
+</span>     * セッター.
+     */
+    set: function(r, g, b, a) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = (a !== undefined) ? a : 1.0;
+      return this;
+    },
+
+<span id='phina-util-Color-method-setFromNumber'>    /**
+</span>     * 数値によるセッター.
+     */
+    setFromNumber: function(r, g, b, a) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = (a !== undefined) ? a : 1.0;
+      return this;
+    },
+
+<span id='phina-util-Color-method-setFromArray'>    /**
+</span>     * 配列によるセッター
+     */
+    setFromArray: function(arr) {
+      return this.set.apply(this, arr);
+    },
+
+<span id='phina-util-Color-method-setFromObject'>    /**
+</span>     * オブジェクトによるセッター
+     */
+    setFromObject: function(obj) {
+      return this.set(obj.r, obj.g, obj.b, obj.a);
+    },
+
+<span id='phina-util-Color-method-setFromString'>    /**
+</span>     * 文字列によるセッター
+     */
+    setFromString: function(str) {
+      var color = phina.util.Color.stringToNumber(str);
+      return this.set(color[0], color[1], color[2], color[3]);
+    },
+
+<span id='phina-util-Color-method-setSmart'>    /**
+</span>     * 賢いセッター
+     */
+    setSmart: function() {
+      var arg = arguments[0];
+      if (arguments.length &gt;= 3) {
+        this.set(arguments.r, arguments.g, arguments.b, arguments.a);
+      } else if (arg instanceof Array) {
+        this.setFromArray(arg);
+      } else if (arg instanceof Object) {
+        this.setFromObject(arg);
+      } else if (typeof(arg) == &quot;string&quot;) {
+        this.setFromString(arg);
+      }
+      return this;
+    },
+
+<span id='phina-util-Color-method-toStyleAsHex'>    /**
+</span>     * CSS 用 16進数文字列に変換
+     */
+    toStyleAsHex: function() {
+      return &quot;#{0}{1}{2}&quot;.format(
+        this.r.toString(16).padding(2, &#39;0&#39;),
+        this.g.toString(16).padding(2, &#39;0&#39;),
+        this.b.toString(16).padding(2, &#39;0&#39;)
+      );
+    },
+
+<span id='phina-util-Color-method-toStyleAsRGB'>    /**
+</span>     * CSS 用 RGB文字列に変換
+     */
+    toStyleAsRGB: function() {
+      return &quot;rgb({r},{g},{b})&quot;.format({
+        r: ~~this.r,
+        g: ~~this.g,
+        b: ~~this.b
+      });
+    },
+
+
+<span id='phina-util-Color-method-toStyleAsRGBA'>    /**
+</span>     * CSS 用 RGBA文字列に変換
+     */
+    toStyleAsRGBA: function() {
+      return &quot;rgba({r},{g},{b},{a})&quot;.format({
+        r: ~~this.r,
+        g: ~~this.g,
+        b: ~~this.b,
+        a: this.a
+      });
+    },
+
+<span id='phina-util-Color-method-toStyle'>    /**
+</span>     * CSS 用 RGBA 文字列に変換
+     */
+    toStyle: function() {
+      return &quot;rgba({r},{g},{b},{a})&quot;.format({
+        r: ~~this.r,
+        g: ~~this.g,
+        b: ~~this.b,
+        a: this.a
+      });
+    },
+
+    _static: {
+
+<span id='phina-util-Color-static-property-COLOR_LIST'>      /**
+</span>       * @static
+       * カラーリスト
+       */
+      COLOR_LIST: {
+<span id='phina-util-Color-property-black'>        /** @property black */
+</span>        &quot;black&quot;: [0x00, 0x00, 0x00],
+<span id='phina-util-Color-property-silver'>        /** @property silver */
+</span>        &quot;silver&quot;: [0xc0, 0xc0, 0xc0],
+<span id='phina-util-Color-property-gray'>        /** @property gray */
+</span>        &quot;gray&quot;: [0x80, 0x80, 0x80],
+<span id='phina-util-Color-property-white'>        /** @property white */
+</span>        &quot;white&quot;: [0xff, 0xff, 0xff],
+<span id='phina-util-Color-property-maroon'>        /** @property maroon */
+</span>        &quot;maroon&quot;: [0x80, 0x00, 0x00],
+<span id='phina-util-Color-property-red'>        /** @property red */
+</span>        &quot;red&quot;: [0xff, 0x00, 0x00],
+<span id='phina-util-Color-property-purple'>        /** @property purple */
+</span>        &quot;purple&quot;: [0x80, 0x00, 0x80],
+<span id='phina-util-Color-property-fuchsia'>        /** @property fuchsia */
+</span>        &quot;fuchsia&quot;: [0xff, 0x00, 0xff],
+<span id='phina-util-Color-property-green'>        /** @property green */
+</span>        &quot;green&quot;: [0x00, 0x80, 0x00],
+<span id='phina-util-Color-property-lime'>        /** @property lime */
+</span>        &quot;lime&quot;: [0x00, 0xff, 0x00],
+<span id='phina-util-Color-property-olive'>        /** @property olive */
+</span>        &quot;olive&quot;: [0x80, 0x80, 0x00],
+<span id='phina-util-Color-property-yellow'>        /** @property yellow */
+</span>        &quot;yellow&quot;: [0xff, 0xff, 0x00],
+<span id='phina-util-Color-property-navy'>        /** @property navy */
+</span>        &quot;navy&quot;: [0x00, 0x00, 0x80],
+<span id='phina-util-Color-property-blue'>        /** @property blue */
+</span>        &quot;blue&quot;: [0x00, 0x00, 0xff],
+<span id='phina-util-Color-property-teal'>        /** @property teal */
+</span>        &quot;teal&quot;: [0x00, 0x80, 0x80],
+<span id='phina-util-Color-property-aqua'>        /** @property aqua */
+</span>        &quot;aqua&quot;: [0x00, 0xff, 0xff],
+      },
+
+<span id='phina-util-Color-static-method-strToNum'>      /**
+</span>       * @static
+       * @member phina.util.Color
+       * @method strToNum
+       */
+      strToNum: function(str) {
+        return this.stringToNumber(str);
+      },
+      stringToNumber: function(str) {
+        var vlaue = null;
+        var type = null;
+
+        if (str[0] === &#39;#&#39;) {
+          type = (str.length == 4) ? &quot;hex111&quot; : &quot;hex222&quot;;
+        } else if (str[0] === &#39;r&#39; &amp;&amp; str[1] === &#39;g&#39; &amp;&amp; str[2] === &#39;b&#39;) {
+          type = (str[3] == &#39;a&#39;) ? &quot;rgba&quot; : &quot;rgb&quot;;
+        } else if (str[0] === &#39;h&#39; &amp;&amp; str[1] === &#39;s&#39; &amp;&amp; str[2] === &#39;l&#39;) {
+          type = (str[3] == &#39;a&#39;) ? &quot;hsla&quot; : &quot;hsl&quot;;
+        }
+
+        if (type) {
+          var match_set = MATCH_SET_LIST[type];
+          var m = str.match(match_set.reg);
+          value = match_set.exec(m);
+        } else if (phina.util.Color.COLOR_LIST[str]) {
+          value = phina.util.Color.COLOR_LIST[str];
+        }
+
+        return value;
+      },
+
+<span id='phina-util-Color-static-method-HSLtoRGB'>      /**
+</span>       * @static
+       * @method
+       * hsl を rgb に変換
+       */
+      HSLtoRGB: function(h, s, l) {
+        var r, g, b;
+
+        h %= 360;
+        h += 360;
+        h %= 360;
+        s *= 0.01;
+        l *= 0.01;
+
+        if (s == 0) {
+          var l = Math.round(l * 255);
+          return [l, l, l];
+        }
+        var m2 = (l &lt; 0.5) ? l * (1 + s) : l + s - l * s;
+        var m1 = l * 2 - m2;
+
+        // red
+        var temp = (h + 120) % 360;
+        if (temp &lt; 60) {
+          r = m1 + (m2 - m1) * temp / 60;
+        } else if (temp &lt; 180) {
+          r = m2;
+        } else {
+          r = m1;
+        }
+
+        // green
+        temp = h;
+        if (temp &lt; 60) {
+          g = m1 + (m2 - m1) * temp / 60;
+        } else if (temp &lt; 180) {
+          g = m2;
+        } else if (temp &lt; 240) {
+          g = m1 + (m2 - m1) * (240 - temp) / 60;
+        } else {
+          g = m1;
+        }
+
+        // blue
+        temp = ((h - 120) + 360) % 360;
+        if (temp &lt; 60) {
+          b = m1 + (m2 - m1) * temp / 60;
+        } else if (temp &lt; 180) {
+          b = m2;
+        } else if (temp &lt; 240) {
+          b = m1 + (m2 - m1) * (240 - temp) / 60;
+        } else {
+          b = m1;
+        }
+
+        return [
+          parseInt(r * 255),
+          parseInt(g * 255),
+          parseInt(b * 255)
+        ];
+      },
+
+<span id='phina-util-Color-static-method-HSLAtoRGBA'>      /**
+</span>       * @static
+       * @method
+       * hsla を rgba に変換
+       */
+      HSLAtoRGBA: function(h, s, l, a) {
+        var temp = phina.util.Color.HSLtoRGB(h, s, l);
+        temp[3] = a;
+        return rgb;
+      },
+
+<span id='phina-util-Color-static-method-createStyleRGB'>      /**
+</span>       * @static
+       * @method
+       * rgb 値を作成
+       */
+      createStyleRGB: function(r, g, b) {
+        return &quot;rgba(&quot; + r + &quot;,&quot; + g + &quot;,&quot; + b + &quot;)&quot;;
+      },
+
+<span id='phina-util-Color-static-method-createStyleRGBA'>      /**
+</span>       * @static
+       * @method
+       * rgba 値を作成
+       */
+      createStyleRGBA: function(r, g, b, a) {
+        return &quot;rgba(&quot; + r + &quot;,&quot; + g + &quot;,&quot; + b + &quot;,&quot; + a + &quot;)&quot;;
+      },
+
+<span id='phina-util-Color-static-method-createStyleHSL'>      /**
+</span>       * @static
+       * @method
+       * hsl 値を作成
+       */
+      createStyleHSL: function(h, s, l) {
+        return &quot;hsl(&quot; + h + &quot;,&quot; + s + &quot;%,&quot; + l + &quot;%)&quot;;
+      },
+
+<span id='phina-util-Color-static-method-createStyleHSLA'>      /**
+</span>       * @static
+       * @method
+       * hsla 値を作成
+       */
+      createStyleHSLA: function(h, s, l, a) {
+        return &quot;hsla(&quot; + h + &quot;,&quot; + s + &quot;%,&quot; + l + &quot;%,&quot; + a + &quot;)&quot;;
+      },
+    }
+  });
+
+
+  var MATCH_SET_LIST = {
+    &quot;hex111&quot;: {
+      reg: /^#(\w{1})(\w{1})(\w{1})$/,
+      exec: function(m) {
+        return [
+          parseInt(m[1] + m[1], 16),
+          parseInt(m[2] + m[2], 16),
+          parseInt(m[3] + m[3], 16)
+        ];
+      }
+    },
+    &quot;hex222&quot;: {
+      reg: /^#(\w{2})(\w{2})(\w{2})$/,
+      exec: function(m) {
+        return [
+          parseInt(m[1], 16),
+          parseInt(m[2], 16),
+          parseInt(m[3], 16)
+        ];
+      }
+    },
+    &quot;rgb&quot;: {
+      reg: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+      exec: function(m) {
+        return [
+          parseInt(m[1]),
+          parseInt(m[2]),
+          parseInt(m[3])
+        ];
+      }
+    },
+    &quot;rgba&quot;: {
+      reg: /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1}(\.{1}\d+)?)\)$/,
+      exec: function(m) {
+        return [
+          parseInt(m[1]),
+          parseInt(m[2]),
+          parseInt(m[3]),
+          parseFloat(m[4])
+        ];
+      }
+    },
+    &quot;hsl&quot;: {
+      reg: /^hsl\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)$/,
+      exec: function(m) {
+        return phina.util.Color.HSLtoRGB(m[1], m[2], m[3]);
+      }
+    },
+    &quot;hsla&quot;: {
+      reg: /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1}(\.{1}\d+)?)\)$/,
+      exec: function(m) {
+        return phina.util.Color.HSLAtoRGBA(m[1], m[2], m[3], m[4]);
+      },
+    }
+  };
+
+});
+</pre>
+</body>
+</html>

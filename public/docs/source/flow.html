@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+;(function() {
+
+<span id='phina-util-Flow'>  /**
+</span>   * @class phina.util.Flow
+   * tick management class
+   */
+  phina.define(&#39;phina.util.Flow&#39;, {
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+<span id='phina-util-Flow-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(func, wait) {
+      this.superInit();
+
+      this.status = &#39;pending&#39;;
+      this.resultValue = null;
+      this._queue = [];
+      this.func = func;
+
+      if (wait !== true) {
+        var self = this;
+        var resolve = function() {
+          self.resolve.apply(self, arguments);
+          self.status = &#39;resolved&#39;;
+        };
+        var reject = function() {
+          self.reject.apply(self, arguments);
+          self.status = &#39;rejected&#39;;
+        };
+
+        this.func(resolve, reject);
+      }
+    },
+
+    /*
+     * 成功
+     */
+    resolve: function(arg) {
+      this.resultValue = arg;
+
+      // キューに積まれた関数を実行
+      this._queue.each(function(func) {
+        func(this.resultValue);
+      }, this);
+      this._queue.clear();
+    },
+
+    /*
+     * 失敗
+     */
+    reject: function() {
+
+    },
+
+    /*
+     * 非同期終了時の処理を登録
+     */
+    then: function(func) {
+      var self = this;
+      // 成功ステータスだった場合は即実行
+      if (this.status === &#39;resolved&#39;) {
+        var value = func(this.resultValue);
+        return phina.util.Flow.resolve(value);
+      }
+      else {
+        var flow = phina.util.Flow(function(resolve) {
+          resolve();
+        }, true);
+
+        this._queue.push(function(arg) {
+          var resultValue = func(arg);
+
+          if (resultValue instanceof phina.util.Flow) {
+            resultValue.then(function(value) {
+              flow.resolve(value);
+            });
+          }
+          else {
+            flow.resolve(arg);
+          }
+        });
+
+        return flow;
+      }
+    },
+
+    _static: {
+      resolve: function(value) {
+        if (value instanceof phina.util.Flow) {
+          return value;
+        }
+        else {
+          var flow = phina.util.Flow(function(resolve) {
+            resolve(value);
+          });
+          return flow;
+        }
+      },
+      all: function(flows) {
+        return phina.util.Flow(function(resolve) {
+          var count = 0;
+
+          var args = [];
+
+          flows.each(function(flow) {
+            flow.then(function(d) {
+              ++count;
+              args.push(d);
+
+              if (count &gt;= flows.length) {
+                resolve(args);
+              }
+            });
+          });
+        });
+      },
+    },
+  });
+
+})();</pre>
+</body>
+</html>

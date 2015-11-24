@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">phina.namespace(function() {
+
+
+  phina.define(&#39;phina.app.Interactive&#39;, {
+
+    init: function(app) {
+      this.app = app;
+      this._enable = true;
+      this.cursor = {
+        normal: &#39;&#39;,
+        hover: &#39;pointer&#39;,
+      };
+
+      this.app.domElement.addEventListener(&#39;mouseover&#39;, function() {
+        this.app.domElement.style.cursor = this.cursor.normal;
+      }.bind(this), false);
+    },
+
+    enable: function() {
+      this._enable = true;
+      return this;
+    },
+    disable: function() {
+      this._enable = false;
+      return this;
+    },
+
+    check: function(root) {
+      if (!this._enable) return ;
+      this._checkElement(root)
+    },
+
+    _checkElement: function(element) {
+      var app = this.app;
+
+      // 更新するかを判定
+      if (element.awake === false) return ;
+
+      // タッチ判定
+      this._checkPoint(element);
+
+      // 子供を更新
+      var len = element.children.length;
+      if (element.children.length &gt; 0) {
+        var tempChildren = element.children.slice();
+        for (var i=0; i&lt;len; ++i) {
+          this._checkElement(tempChildren[i]);
+        }
+      }
+    },
+
+    _checkPoint: function(obj) {
+      this.app.pointers.forEach(function(p) {
+        if (p.id !== null) {
+          this.__checkPoint(obj, p);
+        }
+      }, this);
+    },
+
+    __checkPoint: function(obj, p) {
+      if (!obj.interactive) return ;
+
+      var prevOverFlag = obj._overFlags[p.id];
+      var overFlag = obj.hitTest(p.x, p.y);
+      obj._overFlags[p.id] = overFlag;
+
+      if (!prevOverFlag &amp;&amp; overFlag) {
+        obj.flare(&#39;pointover&#39;, {
+          pointer: p,
+        });
+
+        if (obj.boundingType) {
+          this.app.domElement.style.cursor = this.cursor.hover;
+        }
+      }
+      if (prevOverFlag &amp;&amp; !overFlag) {
+        obj.flare(&#39;pointout&#39;);
+
+        this.app.domElement.style.cursor = this.cursor.normal;
+      }
+
+      if (overFlag) {
+        if (p.getPointingStart()) {
+          obj._touchFlags[p.id] = true;
+          obj.flare(&#39;pointstart&#39;, {
+            pointer: p,
+          });
+          // クリックフラグを立てる
+          obj._clicked = true;
+        }
+      }
+
+      if (obj._touchFlags[p.id]) {
+        obj.flare(&#39;pointstay&#39;);
+        if (p._moveFlag) {
+          obj.flare(&#39;pointmove&#39;, {
+            pointer: p,
+          });
+        }
+      }
+
+      if (obj._touchFlags[p.id]===true &amp;&amp; p.getPointingEnd()) {
+        obj._touchFlags[p.id] = false;
+        obj.flare(&#39;pointend&#39;, {
+          pointer: p,
+        });
+
+        if (obj._overFlags[p.id]) {
+          obj._overFlags[p.id] = false;
+          obj.flare(&#39;pointout&#39;);
+        }
+      }
+    },
+  });
+
+  
+});
+</pre>
+</body>
+</html>

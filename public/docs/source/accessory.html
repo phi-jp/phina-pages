@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-accessory-Accessory'>  /**
+</span>   * @class phina.accessory.Accessory
+   */
+  phina.define(&#39;phina.accessory.Accessory&#39;, {
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+<span id='phina-accessory-Accessory-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(target) {
+      this.superInit();
+
+      this.target = target;
+    },
+    setTarget: function(target) {
+      if (this.target === target) return ;
+
+      this.target = target;
+      return this;
+    },
+    getTarget: function() {
+      return this.target;
+    },
+    isAttached: function() {
+      return !!this.target;
+    },
+    attachTo: function(element) {
+      element.attach(this);
+      this.setTarget(element);
+      return this;
+    },
+    remove: function() {
+      this.target.detach(this);
+      this.target = null;
+    },
+  });
+
+  phina.app.Element.prototype.method(&#39;attach&#39;, function(accessory) {
+    if (!this.accessories) {
+      this.accessories = [];
+      this.on(&#39;enterframe&#39;, function(e) {
+        this.accessories.each(function(accessory) {
+          accessory.update &amp;&amp; accessory.update(e.app);
+        });
+      });
+    }
+
+    this.accessories.push(accessory);
+    accessory.setTarget(this);
+    accessory.flare(&#39;attached&#39;);
+
+    return this;
+  });
+
+  phina.app.Element.prototype.method(&#39;detach&#39;, function(accessory) {
+    if (this.accessories) {
+      this.accessories.erase(accessory);
+      accessory.setTarget(null);
+      accessory.flare(&#39;detached&#39;);
+    }
+
+    return this;
+  });
+
+});
+
+
+</pre>
+</body>
+</html>

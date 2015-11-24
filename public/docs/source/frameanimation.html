@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * frameanimation.js
+ */
+
+
+phina.namespace(function() {
+
+<span id='phina-accessory-FrameAnimation'>  /**
+</span>   * @class phina.accessory.FrameAnimation
+   * FrameAnimation
+   */
+  phina.define(&#39;phina.accessory.FrameAnimation&#39;, {
+    superClass: &#39;phina.accessory.Accessory&#39;,
+
+<span id='phina-accessory-FrameAnimation-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(ss) {
+      this.superInit();
+
+      this.ss = phina.asset.AssetManager.get(&#39;spritesheet&#39;, ss);
+      this.paused = true;
+      this.finished = false;
+    },
+
+    update: function() {
+      if (this.paused) return ;
+      if (!this.currentAnimation) return ;
+
+      if (this.finished) {
+        this.finished = false;
+        this.currentFrameIndex = 0;
+        return ;
+      }
+
+      ++this.frame;
+      if (this.frame%this.currentAnimation.frequency === 0) {
+        ++this.currentFrameIndex;
+        this._updateFrame();
+      }
+    },
+
+    gotoAndPlay: function(name) {
+      this.frame = 0;
+      this.currentFrameIndex = 0;
+      this.currentAnimation = this.ss.getAnimation(name);
+      this._updateFrame();
+
+      this.paused = false;
+
+      return this;
+    },
+
+    gotoAndStop: function(name) {
+      this.frame = 0;
+      this.currentFrameIndex = 0;
+      this.currentAnimation = this.ss.getAnimation(name);
+      this._updateFrame();
+
+      this.paused = true;
+
+      return this;
+    },
+
+    _updateFrame: function() {
+      var anim = this.currentAnimation;
+      if (anim) {
+        if (this.currentFrameIndex &gt;= anim.frames.length) {
+          if (anim.next) {
+            this.gotoAndPlay(anim.next);
+            return ;
+          }
+          else {
+            this.paused = true;
+            this.finished = true;
+            return ;
+          }
+        }
+      }
+
+      var index = anim.frames[this.currentFrameIndex];
+      var frame = this.ss.getFrame(index);
+      var target = this.target;
+
+      target.srcRect.x = frame.x;
+      target.srcRect.y = frame.y;
+      target.srcRect.width = frame.width;
+      target.srcRect.height = frame.height;
+      target.width = frame.width;
+      target.height = frame.height;
+    },
+  });
+});</pre>
+</body>
+</html>

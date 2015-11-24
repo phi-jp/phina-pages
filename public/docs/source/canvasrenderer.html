@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+phina.namespace(function() {
+  
+  phina.define(&#39;phina.display.CanvasRenderer&#39;, {
+
+    init: function(canvas) {
+      this.canvas = canvas;
+      this._context = this.canvas.context;
+    },
+    render: function(scene) {
+      if (scene.backgroundColor) {
+        this.canvas.clearColor(scene.backgroundColor);
+      }
+      else {
+        this.canvas.clear();
+      }
+      
+      this._context.save();
+      this.renderChildren(scene);
+      this._context.restore();
+    },
+    
+    renderChildren: function(obj) {
+      // 子供たちも実行
+      if (obj.children.length &gt; 0) {
+        var tempChildren = obj.children.slice();
+        for (var i=0,len=tempChildren.length; i&lt;len; ++i) {
+          this.renderObject(tempChildren[i]);
+        }
+      }
+    },
+
+    renderObject: function(obj) {
+      if (obj.visible === false) return ;
+
+      obj._calcWorldMatrix &amp;&amp; obj._calcWorldMatrix();
+      obj._calcWorldAlpha &amp;&amp; obj._calcWorldAlpha();
+
+      var context = this.canvas.context;
+
+      context.globalAlpha = obj._worldAlpha;
+      context.globalCompositeOperation = obj.blendMode;
+
+      if (obj._worldMatrix) {
+        // 行列をセット
+        var m = obj._worldMatrix;
+        context.setTransform( m.m00, m.m10, m.m01, m.m11, m.m02, m.m12 );
+      }
+
+      if (obj.clip) {
+
+        context.save();
+
+        obj.clip(this.canvas);
+        context.clip();
+
+        if (obj.draw) obj.draw(this.canvas);
+
+        // 子供たちも実行
+        if (obj.renderChildBySelf === false &amp;&amp; obj.children.length &gt; 0) {
+            var tempChildren = obj.children.slice();
+            for (var i=0,len=tempChildren.length; i&lt;len; ++i) {
+                this.renderObject(tempChildren[i]);
+            }
+        }
+
+        context.restore();
+      }
+      else {
+        if (obj.draw) obj.draw(this.canvas);
+
+        // 子供たちも実行
+        if (obj.renderChildBySelf === false &amp;&amp; obj.children.length &gt; 0) {
+          var tempChildren = obj.children.slice();
+          for (var i=0,len=tempChildren.length; i&lt;len; ++i) {
+            this.renderObject(tempChildren[i]);
+          }
+        }
+
+      }
+    },
+
+  });
+
+});
+</pre>
+</body>
+</html>

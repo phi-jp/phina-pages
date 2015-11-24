@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+
+
+(function() {
+
+  if (!phina.global.Event) return ;
+
+<span id='global-Event'>  /**
+</span>   * @class global.Event
+   * 既存のEventオブジェクト拡張
+   */
+    
+<span id='global-Event-method-stop'>  /**
+</span>   * @method stop
+   * イベントのデフォルト処理 &amp; 伝達を止める
+   */
+  Event.prototype.stop = function() {
+    // イベントキャンセル
+    this.preventDefault();
+    // イベント伝達を止める
+    this.stopPropagation();
+  };
+
+})();
+
+(function() {
+
+  if (!phina.global.MouseEvent) return ;
+
+<span id='global-MouseEvent'>  /**
+</span>   * @class global.MouseEvent
+   * MouseEvent クラス
+   */
+  
+<span id='global-MouseEvent-method-pointX'>  /**
+</span>   * @method    pointX
+   * マウスのX座標.
+   */
+  MouseEvent.prototype.getter(&quot;pointX&quot;, function() {
+    return this.clientX - this.target.getBoundingClientRect().left;
+    // return this.pageX - this.target.getBoundingClientRect().left - window.scrollX;
+  });
+  
+<span id='global-MouseEvent-method-pointY'>  /**
+</span>   * @method    pointY
+   * マウスのY座標.
+   */
+  MouseEvent.prototype.getter(&quot;pointY&quot;, function() {
+    return this.clientY - this.target.getBoundingClientRect().top;
+    // return this.pageY - this.target.getBoundingClientRect().top - window.scrollY;
+  });
+    
+})();
+
+
+(function() {
+    
+  if (!phina.global.TouchEvent) return ;
+  
+  
+<span id='global-TouchEvent'>  /**
+</span>   * @class global.TouchEvent
+   * TouchEvent クラス
+   */
+  
+<span id='global-TouchEvent-method-pointX'>  /**
+</span>   * @method    pointX
+   * タッチイベント.
+   */
+  TouchEvent.prototype.getter(&quot;pointX&quot;, function() {
+      return this.touches[0].clientX - this.target.getBoundingClientRect().left;
+      // return this.touches[0].pageX - this.target.getBoundingClientRect().left - tm.global.scrollX;
+  });
+  
+<span id='global-TouchEvent-method-pointY'>  /**
+</span>   * @method    pointY
+   * タッチイベント.
+   */
+  TouchEvent.prototype.getter(&quot;pointY&quot;, function() {
+      return this.touches[0].clientY - this.target.getBoundingClientRect().top;
+      // return this.touches[0].pageY - this.target.getBoundingClientRect().top - tm.global.scrollY;
+  });  
+    
+})();
+
+
+(function() {
+    
+  if (!phina.global.Touch) return ;
+  
+<span id='global-Touch'>  /**
+</span>   * @class global.Touch
+   * TouchEvent クラス
+   */
+  
+<span id='global-Touch-method-pointX'>  /**
+</span>   * @method    pointX
+   * タッチイベント.
+   */
+  Touch.prototype.getter(&quot;pointX&quot;, function() {
+      return this.clientX - this.target.getBoundingClientRect().left;
+  });
+
+<span id='global-Touch-method-pointY'>  /**
+</span>   * @method    pointY
+   * タッチイベント.
+   */
+  Touch.prototype.getter(&quot;pointY&quot;, function() {
+      return this.clientY - this.target.getBoundingClientRect().top;
+  });
+    
+})();
+</pre>
+</body>
+</html>

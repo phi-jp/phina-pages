@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+
+phina.namespace(function() {
+
+<span id='phina-accessory-Tweener'>  /**
+</span>   * @class phina.accessory.Tweener
+   * Tweener
+   */
+  phina.define(&#39;phina.accessory.Tweener&#39;, {
+    superClass: &#39;phina.accessory.Accessory&#39;,
+
+<span id='phina-accessory-Tweener-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(target) {
+      this.superInit(target);
+
+      this._loop = false;
+      this._init();
+    },
+
+    _init: function() {
+      this._tasks = [];
+      this._index = 0;
+      this.playing = true;
+      this._update = this._updateTask;
+    },
+
+    update: function(app) {
+      this._update(app);
+    },
+
+    to: function(props, duration, easing) {
+      this._add({
+        type: &#39;tween&#39;,
+        mode: &#39;to&#39;,
+        props: props,
+        duration: duration,
+        easing: easing,
+      });
+      return this;
+    },
+
+    by: function(props, duration, easing) {
+      this._add({
+        type: &#39;tween&#39;,
+        mode: &#39;by&#39;,
+        props: props,
+        duration: duration,
+        easing: easing,
+      });
+
+      return this;
+    },
+
+    from: function(props, duration, easing) {
+      this._add({
+        type: &#39;tween&#39;,
+        mode: &#39;from&#39;,
+        props: props,
+        duration: duration,
+        easing: easing,
+      });
+      return this;
+    },
+
+    wait: function(time) {
+      this._add({
+        type: &#39;wait&#39;,
+        data: {
+          limit: time,
+        },
+      });
+      return this;
+    },
+
+    call: function(func, self, args) {
+      this._add({
+        type: &#39;call&#39;,
+        data: {
+          func: func,
+          self: self || this,
+          args: args,
+        },
+      });
+      return this;
+    },
+
+<span id='phina-accessory-Tweener-method-set'>    /**
+</span>     * プロパティをセット
+     * @param {Object} key
+     * @param {Object} value
+     */
+    set: function(key, value) {
+      var values = null;
+      if (arguments.length == 2) {
+        values = {};
+        values[key] = value;
+      }
+      else {
+        values = key;
+      }
+      this._tasks.push({
+        type: &quot;set&quot;,
+        data: {
+          values: values
+        }
+      });
+
+      return this;
+    },
+
+    moveTo: function(x, y, duration, easing) {
+      return this.to({x:x,y:y}, duration, easing);
+    },
+    moveBy: function(x, y, duration, easing) {
+      return this.by({x:x,y:y}, duration, easing);
+    },
+
+    fade: function(value, duration, easing) {
+      return this.to({alpha:value}, duration, easing);
+    },
+
+    fadeOut: function(duration, easing) {
+      return this.fade(0.0, duration, easing)
+    },
+
+    fadeIn: function(duration, easing) {
+      return this.fade(1.0, duration, easing)
+    },
+
+<span id='phina-accessory-Tweener-method-play'>    /**
+</span>     * アニメーション開始
+     */
+    play: function() {
+      this.playing = true;
+      return this;
+    },
+
+<span id='phina-accessory-Tweener-method-pause'>    /**
+</span>     * アニメーションを一時停止
+     */
+    pause: function() {
+      this.playing = false;
+      return this;
+    },
+
+    stop: function() {
+      this.playing = false;
+      this.rewind();
+      return this;
+    },
+
+<span id='phina-accessory-Tweener-method-rewind'>    /**
+</span>     * アニメーションを巻き戻す
+     */
+    rewind: function() {
+      this._update = this._updateTask;
+      this._index = 0;
+      this.play();
+      return this;
+    },
+
+    yoyo: function() {
+      // TODO: 最初の値が分からないので反転できない...
+      this._update = this._updateTask;
+      this._index = 0;
+      this._tasks.each(function(task) {
+        if (task.type === &#39;tween&#39;) {
+
+        }
+      });
+      this.play();
+
+      return this;
+    },
+
+<span id='phina-accessory-Tweener-method-setLoop'>    /**
+</span>     * アニメーションループ設定
+     * @param {Boolean} flag
+     */
+    setLoop: function(flag) {
+      this._loop = flag;
+      return this;
+    },
+
+<span id='phina-accessory-Tweener-method-clear'>    /**
+</span>     * アニメーションをクリア
+     */
+    clear: function() {
+      this._init();
+      return this;
+    },
+
+    fromJSON: function(json) {
+      if (json.loop !== undefined) {
+        this.setLoop(json.loop);
+      }
+
+      json.tweens.each(function(t) {
+        var t = t.clone();
+        var method = t.shift();
+        this[method].apply(this, t);
+      }, this);
+
+      return this;
+    },
+
+    _add: function(params) {
+      this._tasks.push(params);
+    },
+
+    _updateTask: function(app) {
+      if (!this.playing) return ;
+
+      var task = this._tasks[this._index];
+      if (!task) {
+        if (this._loop) {
+          this.rewind();
+          this._update(app);
+        }
+        else {
+          this.playing = false;
+        }
+        return ;
+      }
+      else {
+        ++this._index;
+      }
+
+      if (task.type === &#39;tween&#39;) {
+        this._tween = phina.util.Tween();
+
+        if (task.mode === &#39;to&#39;) {
+          this._tween.to(this.target, task.props, task.duration, task.easing);
+        }
+        else if (task.mode === &#39;by&#39;) {
+          this._tween.by(this.target, task.props, task.duration, task.easing);
+        }
+        else {
+          this._tween.from(this.target, task.props, task.duration, task.easing);
+        }
+        this._update = this._updateTween;
+        this._update(app);
+      }
+      else if (task.type === &#39;wait&#39;) {
+        this._wait = {
+          time: 0,
+          limit: task.data.limit,
+        };
+
+        this._update = this._updateWait;
+        this._update(app);
+      }
+      else if (task.type === &#39;call&#39;) {
+        task.data.func.apply(task.data.self, task.data.args);
+        // 1フレーム消費しないよう再帰
+        this._update(app);
+      }
+      else if (task.type === &#39;set&#39;) {
+        this.target.$extend(task.data.values);
+        // 1フレーム消費しないよう再帰
+        this._update(app);
+      }
+    },
+
+    _updateTween: function(app) {
+      var tween = this._tween;
+      // var time = app.ticker.deltaTime;
+      var time = 1000/app.fps;
+
+      tween.forward(time);
+      this.flare(&#39;tween&#39;);
+
+      if (tween.time &gt;= tween.duration) {
+        delete this._tween;
+        this._tween = null;
+        this._update = this._updateTask;
+      }
+    },
+
+    _updateWait: function(app) {
+      var wait = this._wait;
+      var time = app.ticker.deltaTime;
+      wait.time += time;
+
+      if (wait.time &gt;= wait.limit) {
+        delete this._wait;
+        this._wait = null;
+        this._update = this._updateTask;
+      }
+    },
+  });
+
+  phina.app.Element.prototype.getter(&#39;tweener&#39;, function() {
+    if (!this._tweener) {
+      this._tweener = phina.accessory.Tweener().attachTo(this);
+    }
+    return this._tweener;
+  });
+  
+});</pre>
+</body>
+</html>

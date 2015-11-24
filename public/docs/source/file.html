@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-asset-File'>  /**
+</span>   * @class phina.asset.File
+   * 
+   */
+  phina.define(&#39;phina.asset.File&#39;, {
+    superClass: &quot;phina.asset.Asset&quot;,
+
+<span id='phina-asset-File-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function() {
+      this.superInit();
+    },
+
+    _load: function(resolve) {
+
+      var params = {};
+
+      if (typeof this.src === &#39;string&#39;) {
+        params.$extend({
+          path: this.src,
+        });
+      }
+      else if (typeof this.src === &#39;object&#39;) {
+        params.$extend(this.src);
+      }
+
+      params.$safe({
+        path: &#39;&#39;,
+        dataType: &#39;text&#39;,
+      });
+
+      // load
+      var self = this;
+      var xml = new XMLHttpRequest();
+      xml.open(&#39;GET&#39;, params.path);
+      xml.onreadystatechange = function() {
+        if (xml.readyState === 4) {
+          if ([200, 201, 0].indexOf(xml.status) !== -1) {
+            var data = xml.responseText;
+
+            if (params.dataType === &#39;json&#39;) {
+              data = JSON.parse(data);
+            }
+
+            self.data = data;
+            resolve(self);
+          }
+        }
+      };
+
+      xml.send(null);
+      // this.domElement = new Image();
+      // this.domElement.src = this.src;
+
+      // var self = this;
+      // this.domElement.onload = function() {
+      //   self.loaded = true;
+      //   resolve(self);
+      // };
+    },
+
+  });
+
+});
+
+</pre>
+</body>
+</html>

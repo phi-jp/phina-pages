@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * math.js
+ */
+
+;(function() {
+    
+<span id='global-Math'>  /**
+</span>   * @class global.Math
+   * Mathの拡張
+   */
+
+  
+<span id='global-Math-property-DEG_TO_RAD'>  /**
+</span>   * @property    DEG_TO_RAD
+   * Degree to Radian.
+   */
+  Math.DEG_TO_RAD = Math.PI/180;
+  
+<span id='global-Math-property-RAD_TO_DEG'>  /**
+</span>   * @property    RAD_TO_DEG
+   * Radian to Degree.
+   */
+  Math.RAD_TO_DEG = 180/Math.PI;
+  
+<span id='global-Math-property-PHI'>  /**
+</span>   * @property    PHI
+   * golden ratio
+   */
+  Math.PHI = (1 + Math.sqrt(5)) / 2;
+  
+<span id='global-Math-method-degToRad'>  /**
+</span>   * @method
+   * Degree を Radian に変換
+   */
+  Math.degToRad = function(deg) {
+    return deg * Math.DEG_TO_RAD;
+  };
+  
+<span id='global-Math-method-radToDeg'>  /**
+</span>   * @method
+   * Radian を Degree に変換
+   */
+  Math.radToDeg = function(rad) {
+    return rad * Math.RAD_TO_DEG;
+  };
+  
+
+  
+<span id='global-Math-method-clamp'>  /**
+</span>   * @method clamp
+   * クランプ
+   */
+  Math.method(&quot;clamp&quot;, function(value, min, max) {
+    return (value &lt; min) ? min : ( (value &gt; max) ? max : value );
+  });
+  
+<span id='global-Math-method-inside'>  /**
+</span>   * @method inside
+   * min &lt;= value &lt;= max のとき true を返す
+   */
+  Math.method(&quot;inside&quot;, function(value, min, max) {
+    return (value &gt;= min) &amp;&amp; (value) &lt;= max;
+  });
+  
+<span id='global-Math-method-randint'>  /**
+</span>   * @method randint
+   * ランダムな値を指定された範囲内で生成
+   */
+  Math.method(&quot;randint&quot;, function(min, max) {
+    return Math.floor( Math.random()*(max-min+1) ) + min;
+  });
+  
+<span id='global-Math-method-randfloat'>  /**
+</span>   * @method randfloat
+   * ランダムな値を指定された範囲内で生成
+   */
+  Math.method(&quot;randfloat&quot;, function(min, max) {
+    return Math.random()*(max-min)+min;
+  });
+  
+<span id='global-Math-method-randbool'>  /**
+</span>   * @method randbool
+   * ランダムな値を指定された範囲内で生成
+   */
+  Math.method(&quot;randbool&quot;, function() {
+    return Math.randint(0, 1) === 1;
+  });
+    
+})();</pre>
+</body>
+</html>

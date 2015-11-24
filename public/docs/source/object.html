@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ *
+ */
+
+
+;(function() {
+<span id='global-Object'>  /**
+</span>   * @class global.Object
+   * Objectの拡張
+   */
+
+  
+<span id='global-Object-method-property'>  /**
+</span>   * @method property
+   * 変数を追加
+   * @param   {String} key name
+   * @param   {Object} param
+   */
+  // Object.defineProperty(Object.prototype, &quot;property&quot;, {
+  //   value: function(name, val) {
+  //     Object.defineProperty(this, name, {
+  //       value: val,
+  //       enumerable: true,
+  //       writable: true
+  //     });
+  //   }
+  // });
+
+<span id='global-Object-method-method'>  /**
+</span>   * @method method
+   * 関数を追加
+   * @param   {String} key name
+   * @param   {Function} function
+   */
+  Object.defineProperty(Object.prototype, &quot;method&quot;, {
+    value: function(name, fn) {
+      Object.defineProperty(this, name, {
+        value: fn,
+        enumerable: false,
+        writable: true
+      });
+    }
+  });
+
+
+
+<span id='global-Object-method-setter'>  /**
+</span>   * @method setter
+   * セッターを定義する
+   */
+  Object.prototype.method(&quot;setter&quot;, function(name, fn){
+    Object.defineProperty(this, name, {
+      set: fn,
+      enumerable: false,
+      configurable: true,
+    });
+  });
+
+<span id='global-Object-method-getter'>  /**
+</span>   * @method getter
+   * ゲッターを定義する
+   */
+  Object.prototype.method(&quot;getter&quot;, function(name, fn){
+    Object.defineProperty(this, name, {
+      get: fn,
+      enumerable: false,
+      configurable: true,
+    });
+  });
+
+<span id='global-Object-method-accessor'>  /**
+</span>   * @method accessor
+   * アクセッサ(セッター/ゲッター)を定義する
+   */
+  Object.prototype.method(&quot;accessor&quot;, function(name, param) {
+    Object.defineProperty(this, name, {
+      set: param[&quot;set&quot;],
+      get: param[&quot;get&quot;],
+      enumerable: false,
+      configurable: true,
+    });
+  });
+
+
+<span id='global-Object-method-forIn'>  /**
+</span>   * @method forIn
+   * オブジェクト用ループ処理
+   */
+  Object.prototype.method(&quot;forIn&quot;, function(fn, self) {
+    self = self || this;
+
+    Object.keys(this).forEach(function(key, index) {
+      var value = this[key];
+
+      fn.call(self, key, value, index);
+    }, this);
+
+    return this;
+  });
+
+<span id='global-Object-method-S-get'>  /**
+</span>   * @method  $get
+   * パス指定で値を取得
+   */
+  Object.prototype.method(&#39;$get&#39;, function(key) {
+    return key.split(&#39;.&#39;).reduce(function(t, v) {
+      return t[v];
+    }, this);
+  });
+
+<span id='global-Object-method-S-set'>  /**
+</span>   * @method  $set
+   * パス指定で値を設定
+   */
+  Object.prototype.method(&#39;$set&#39;, function(key, value) {
+    key.split(&#39;.&#39;).reduce(function(t, v, i, arr) {
+      if (i === (arr.length-1)) {
+        t[v] = value;
+      }
+      else {
+        return t[v];
+      }
+    }, this);
+  });
+
+<span id='global-Object-method-S-has'>  /**
+</span>   * @method  $has
+   * そのプロパティを持っているかを判定する
+   */
+  Object.prototype.method(&quot;$has&quot;, function(key) {
+    return this.hasOwnProperty(key);
+  });
+
+<span id='global-Object-method-S-extend'>  /**
+</span>   * @method  $extend
+   * 他のライブラリと競合しちゃうので extend -&gt; $extend としました
+   */
+  Object.prototype.method(&quot;$extend&quot;, function() {
+    Array.prototype.forEach.call(arguments, function(source) {
+      for (var property in source) {
+        this[property] = source[property];
+      }
+    }, this);
+    return this;
+  });
+
+
+<span id='global-Object-method-S-safe'>  /**
+</span>   * @method  $safe
+   * 安全拡張
+   * 上書きしない
+   */
+  Object.prototype.method(&quot;$safe&quot;, function(source) {
+    Array.prototype.forEach.call(arguments, function(source) {
+      for (var property in source) {
+        if (this[property] === undefined) this[property] = source[property];
+      }
+    }, this);
+    return this;
+  });
+  
+  
+<span id='global-Object-method-S-strict'>  /**
+</span>   * @method  $strict
+   * 厳格拡張
+   * すでにあった場合は警告
+   */
+  Object.prototype.method(&quot;$strict&quot;, function(source) {
+    Array.prototype.forEach.call(arguments, function(source) {
+      for (var property in source) {
+        console.assert(!this[property], &quot;tm error: {0} is Already&quot;.format(property));
+        this[property] = source[property];
+      }
+    }, this);
+    return this;
+  });
+
+<span id='global-Object-method-S-pick'>  /**
+</span>   * @method  $pick
+   * ピック
+   */
+  Object.prototype.method(&quot;$pick&quot;, function() {
+    var temp = {};
+
+    Array.prototype.forEach.call(arguments, function(key) {
+      if (key in this) temp[key] = this[key];
+    }, this);
+
+    return temp;
+  });
+
+<span id='global-Object-method-S-omit'>  /**
+</span>   * @method  $omit
+   * オミット
+   */
+  Object.prototype.method(&quot;$omit&quot;, function() {
+    var temp = {};
+
+    for (var key in this) {
+      if (Array.prototype.indexOf.call(arguments, key) == -1) {
+        temp[key] = this[key];
+      }
+    }
+
+    return temp;
+  });
+
+  if (!Object.observe) {
+    Object.method(&#39;observe&#39;, function(obj, callback) {
+      var keys = Object.keys(obj);
+      keys.forEach(function(key) {
+        var tempKey = &#39;__&#39; + key;
+        var tempValue = obj[key];
+        obj[tempKey] = tempValue;
+        
+        obj.accessor(key, {
+          get: function() {
+            return this[tempKey];
+          },
+          set: function(v) {
+            this[tempKey] = v;
+            callback();
+          },
+        });
+      });
+    });
+  }
+
+  if (!Object.unobserve) {
+    Object.method(&#39;unobserve&#39;, function(obj, callback) {
+      console.assert(false);
+    });
+  }
+
+})();
+
+
+</pre>
+</body>
+</html>

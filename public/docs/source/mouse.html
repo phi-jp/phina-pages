@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+;(function() {
+
+<span id='phina-input-Mouse'>  /**
+</span>   * @class phina.input.Mouse
+   * @extends phina.input.Input
+   */
+  phina.define(&#39;phina.input.Mouse&#39;, {
+
+    superClass: &#39;phina.input.Input&#39;,
+
+<span id='phina-input-Mouse-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(domElement) {
+      this.superInit(domElement);
+
+      this.id = 0;
+
+      var self = this;
+      this.domElement.addEventListener(&#39;mousedown&#39;, function(e) {
+        self._start(e.pointX, e.pointY, 1&lt;&lt;e.flags);
+      });
+
+      this.domElement.addEventListener(&#39;mouseup&#39;, function(e) {
+        self._end(1&lt;&lt;e.flags);
+      });
+      this.domElement.addEventListener(&#39;mousemove&#39;, function(e) {
+        self._move(e.pointX, e.pointY);
+      });
+    },
+
+<span id='phina-input-Mouse-method-getButton'>    /**
+</span>     * ボタン取得
+     */
+    getButton: function(button) {
+      if (typeof(button) == &quot;string&quot;) {
+        button = BUTTON_MAP[button];
+      }
+      
+      return (this.now &amp; button) != 0;
+    },
+
+<span id='phina-input-Mouse-method-getButtonDown'>    /**
+</span>     * ボタンダウン取得
+     */
+    getButtonDown: function(button) {
+      if (typeof(button) === &#39;string&#39;) {
+        button = BUTTON_MAP[button];
+      }
+
+      return (this.start &amp; button) != 0;
+    },
+        
+<span id='phina-input-Mouse-method-getButtonUp'>    /**
+</span>     * ボタンアップ取得
+     */
+    getButtonUp: function(button) {
+      if (typeof(button) == &quot;string&quot;) {
+        button = BUTTON_MAP[button];
+      }
+      
+      return (this.end &amp; button) != 0;
+    },
+
+    _static: {
+<span id='phina-input-Mouse-static-property-BUTTON_LEFT'>      /** @static @property */
+</span>      BUTTON_LEFT: 0x1,
+<span id='phina-input-Mouse-static-property-BUTTON_MIDDLE'>      /** @static @property */
+</span>      BUTTON_MIDDLE: 0x2,
+<span id='phina-input-Mouse-static-property-BUTTON_RIGHT'>      /** @static @property */
+</span>      BUTTON_RIGHT: 0x4,
+    }
+  });
+
+  var BUTTON_MAP = {
+    &quot;left&quot;  : phina.input.Mouse.BUTTON_LEFT,
+    &quot;middle&quot;: phina.input.Mouse.BUTTON_MIDDLE,
+    &quot;right&quot; : phina.input.Mouse.BUTTON_RIGHT
+  };
+
+  phina.input.Mouse.prototype.getPointing = function() { return this.getButton(&quot;left&quot;); };
+  phina.input.Mouse.prototype.getPointingStart = function() { return this.getButtonDown(&quot;left&quot;); };
+  phina.input.Mouse.prototype.getPointingEnd = function() { return this.getButtonUp(&quot;left&quot;); };
+
+})();</pre>
+</body>
+</html>

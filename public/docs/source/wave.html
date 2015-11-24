@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-effect-Wave'>  /**
+</span>   * @class phina.effect.Wave
+   * Button
+   */
+  phina.define(&#39;phina.effect.Wave&#39;, {
+    superClass: &#39;phina.display.CircleShape&#39;,
+<span id='phina-effect-Wave-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(params) {
+      this.superInit({
+      	fill: &#39;white&#39;,
+      	stroke: false,
+      });
+
+      var tweener = phina.accessory.Tweener().attachTo(this);
+      tweener
+        .to({scaleX:2, scaleY:2, alpha:0}, 500)
+        .call(function() {
+          this.remove();
+        }, this);
+    },
+  });
+
+});
+</pre>
+</body>
+</html>

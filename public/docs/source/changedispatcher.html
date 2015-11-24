@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+// 監視オブジェクト
+// register で key を登録 (デフォルト値も一緒に？)
+// event dispatcher を継承
+// event dispatcher って util じゃね？
+// register で登録した値を変更したら change イベントが走る
+
+
+// 名前候補
+//  middleman(仲立人)
+
+
+phina.namespace(function() {
+
+<span id='phina-util-ChangeDispatcher'>  /**
+</span>   * @class phina.util.ChangeDispatcher
+   */
+  phina.define(&#39;phina.util.ChangeDispatcher&#39;, {
+    superClass: &#39;phina.util.EventDispatcher&#39;,
+
+    init: function() {
+      this.superInit();
+
+      this._observe = true;
+    },
+
+    register: function(key, defaultValue) {
+      if (arguments.length === 1) {
+        var obj = arguments[0];
+        obj.forIn(function(key, value) {
+          this.register(key, value);
+        }, this);
+      }
+      else {
+        var tempKey = &#39;__&#39; + key;
+        this[tempKey] = defaultValue;
+        this.accessor(key, {
+          get: function() {
+            return this[tempKey];
+          },
+          set: function(v) {
+            this[tempKey] = v;
+            if (this._observe) {
+              this.flare(&#39;change&#39;);
+            }
+          },
+        });
+      }
+      return this;
+    },
+
+    observe: function() {
+      this._observe = true;
+    },
+    unobserve: function() {
+      this._observe = false;
+    },
+  });
+
+});</pre>
+</body>
+</html>

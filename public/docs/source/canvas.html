@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-graphics-Canvas'>  /**
+</span>   * @class phina.graphics.Canvas
+   * キャンバス拡張クラス
+   */
+  phina.define(&#39;phina.graphics.Canvas&#39;, {
+    domElement: null,
+    canvas: null,
+    context: null,
+
+<span id='phina-graphics-Canvas-method-init'>    /**
+</span>     * 初期化
+     */
+    init: function(canvas) {
+      if (typeof canvas === &#39;string&#39;) {
+        this.canvas = document.querySelector(canvas);
+      }
+      else {
+        this.canvas = canvas || document.createElement(&#39;canvas&#39;);
+      }
+
+      this.domElement = this.canvas;
+      this.context = this.canvas.getContext(&#39;2d&#39;);
+      this.context.lineCap = &#39;round&#39;;
+      this.context.lineJoin = &#39;round&#39;;
+    },
+
+<span id='phina-graphics-Canvas-method-setSize'>    /**
+</span>     * サイズをセット
+     */
+    setSize: function(width, height) {
+      this.canvas.width   = width;
+      this.canvas.height  = height;
+      return this;
+    },
+
+    setSizeToScreen: function() {
+      this.canvas.style.position  = &quot;fixed&quot;;
+      this.canvas.style.margin    = &quot;0px&quot;;
+      this.canvas.style.padding   = &quot;0px&quot;;
+      this.canvas.style.left      = &quot;0px&quot;;
+      this.canvas.style.top       = &quot;0px&quot;;
+      return this.setSize(window.innerWidth, window.innerHeight);
+    },
+
+    fitScreen: function(isEver) {
+      isEver = isEver === undefined ? true : isEver;
+
+      var _fitFunc = function() {
+        var e = this.domElement;
+        var s = e.style;
+        
+        s.position = &quot;absolute&quot;;
+        s.margin = &quot;auto&quot;;
+        s.left = &quot;0px&quot;;
+        s.top  = &quot;0px&quot;;
+        s.bottom = &quot;0px&quot;;
+        s.right = &quot;0px&quot;;
+
+        var rateWidth = e.width/window.innerWidth;
+        var rateHeight= e.height/window.innerHeight;
+        var rate = e.height/e.width;
+        
+        if (rateWidth &gt; rateHeight) {
+          s.width  = Math.floor(innerWidth)+&quot;px&quot;;
+          s.height = Math.floor(innerWidth*rate)+&quot;px&quot;;
+        }
+        else {
+          s.width  = Math.floor(innerHeight/rate)+&quot;px&quot;;
+          s.height = Math.floor(innerHeight)+&quot;px&quot;;
+        }
+      }.bind(this);
+      
+      // 一度実行しておく
+      _fitFunc();
+
+      // リサイズ時のリスナとして登録しておく
+      if (isEver) {
+        window.addEventListener(&quot;resize&quot;, _fitFunc, false);
+      }
+    },
+
+<span id='phina-graphics-Canvas-method-clear'>    /**
+</span>     * クリア
+     */
+    clear: function(x, y, width, height) {
+      x = x || 0;
+      y = y || 0;
+      width = width || this.width;
+      height= height|| this.height;
+      this.context.clearRect(x, y, width, height);
+      return this;
+    },
+
+    clearColor: function(fillStyle, x, y, width, height) {
+      x = x || 0;
+      y = y || 0;
+      width = width || this.width;
+      height= height|| this.height;
+
+      var context = this.context;
+
+      context.save();
+      context.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0); // 行列初期化
+      context.fillStyle = fillStyle;     // 塗りつぶしスタイルセット
+      context.fillRect(x, y, width, height);
+      context.restore();
+
+      return this;
+    },
+
+
+<span id='phina-graphics-Canvas-method-beginPath'>    /**
+</span>     * パスを開始(リセット)
+     */
+    beginPath: function() {
+      this.context.beginPath();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-closePath'>    /**
+</span>     *  パスを閉じる
+     */
+    closePath: function() {
+      this.context.closePath();
+      return this;
+    },
+
+
+<span id='phina-graphics-Canvas-method-moveTo'>    /**
+</span>     *  新規パス生成
+     */
+    moveTo: function(x, y) {
+      this.context.moveTo(x, y);
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-lineTo'>    /**
+</span>     * パスに追加
+     */
+    lineTo: function(x, y) {
+      this.context.lineTo(x, y);
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-fill'>    /**
+</span>     * パス内を塗りつぶす
+     */
+    fill: function() {
+      this.context.fill();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-stroke'>    /**
+</span>     * パス上にラインを引く
+     */
+    stroke: function() {
+      this.context.stroke();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-clip'>    /**
+</span>     * クリップ
+     */
+    clip: function() {
+      this.context.clip();
+      return this;
+    },
+
+        
+<span id='phina-graphics-Canvas-method-drawPoint'>    /**
+</span>     * 点描画
+     */
+    drawPoint: function(x, y) {
+      return this.strokeRect(x, y, 1, 1);
+    },
+
+<span id='phina-graphics-Canvas-method-line'>    /**
+</span>     * ラインパスを作成
+     */
+    line: function(x0, y0, x1, y1) {
+      return this.moveTo(x0, y0).lineTo(x1, y1);
+    },
+    
+<span id='phina-graphics-Canvas-method-drawLine'>    /**
+</span>     * ラインを描画
+     */
+    drawLine: function(x0, y0, x1, y1) {
+      return this.beginPath().line(x0, y0, x1, y1).stroke();
+    },
+
+<span id='phina-graphics-Canvas-method-drawDashLine'>    /**
+</span>     * ダッシュラインを描画
+     */
+    drawDashLine: function(x0, y0, x1, y1, pattern) {
+      var patternTable = null;
+      if (typeof(pattern) == &quot;string&quot;) {
+        patternTable = pattern;
+      }
+      else {
+        pattern = pattern || 0xf0f0;
+        patternTable = pattern.toString(2);
+      }
+      patternTable = patternTable.padding(16, &#39;1&#39;);
+      
+      var vx = x1-x0;
+      var vy = y1-y0;
+      var len = Math.sqrt(vx*vx + vy*vy);
+      vx/=len; vy/=len;
+      
+      var x = x0;
+      var y = y0;
+      for (var i=0; i&lt;len; ++i) {
+        if (patternTable[i%16] == &#39;1&#39;) {
+          this.drawPoint(x, y);
+          // this.fillRect(x, y, this.context.lineWidth, this.context.lineWidth);
+        }
+        x += vx;
+        y += vy;
+      }
+      
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-drawArrow'>    /**
+</span>     * v0(x0, y0), v1(x1, y1) から角度を求めて矢印を描画
+     * http://hakuhin.jp/as/rotation.html
+     */
+    drawArrow: function(x0, y0, x1, y1, arrowRadius) {
+      var vx = x1-x0;
+      var vy = y1-y0;
+      var angle = Math.atan2(vy, vx)*180/Math.PI;
+      
+      this.drawLine(x0, y0, x1, y1);
+      this.fillPolygon(x1, y1, arrowRadius || 5, 3, angle);
+      
+      return this;
+    },
+
+
+<span id='phina-graphics-Canvas-method-lines'>    /**
+</span>     * lines
+     */
+    lines: function() {
+      this.moveTo(arguments[0], arguments[1]);
+      for (var i=1,len=arguments.length/2; i&lt;len; ++i) {
+        this.lineTo(arguments[i*2], arguments[i*2+1]);
+      }
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-strokeLines'>    /**
+</span>     * ラインストローク描画
+     */
+    strokeLines: function() {
+      this.beginPath();
+      this.lines.apply(this, arguments);
+      this.stroke();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-fillLines'>    /**
+</span>     * ライン塗りつぶし描画
+     */
+    fillLines: function() {
+      this.beginPath();
+      this.lines.apply(this, arguments);
+      this.fill();
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-rect'>    /**
+</span>     * 四角形パスを作成する
+     */
+    rect: function(x, y, width, height) {
+      this.context.rect.apply(this.context, arguments);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-fillRect'>    /**
+</span>     * 四角形塗りつぶし描画
+     */
+    fillRect: function() {
+      this.context.fillRect.apply(this.context, arguments);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-strokeRect'>    /**
+</span>     * 四角形ライン描画
+     */
+    strokeRect: function() {
+      this.context.strokeRect.apply(this.context, arguments);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-roundRect'>    /**
+</span>     * 角丸四角形パス
+     */
+    roundRect: function(x, y, width, height, radius) {
+      var l = x + radius;
+      var r = x + width - radius;
+      var t = y + radius;
+      var b = y + height - radius;
+      
+      /*
+      var ctx = this.context;
+      ctx.moveTo(l, y);
+      ctx.lineTo(r, y);
+      ctx.quadraticCurveTo(x+width, y, x+width, t);
+      ctx.lineTo(x+width, b);
+      ctx.quadraticCurveTo(x+width, y+height, r, y+height);
+      ctx.lineTo(l, y+height);
+      ctx.quadraticCurveTo(x, y+height, x, b);
+      ctx.lineTo(x, t);
+      ctx.quadraticCurveTo(x, y, l, y);
+      /**/
+      
+      this.context.arc(l, t, radius,     -Math.PI, -Math.PI*0.5, false);  // 左上
+      this.context.arc(r, t, radius, -Math.PI*0.5,            0, false);  // 右上
+      this.context.arc(r, b, radius,            0,  Math.PI*0.5, false);  // 右下
+      this.context.arc(l, b, radius,  Math.PI*0.5,      Math.PI, false);  // 左下
+      this.closePath();
+      
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-fillRoundRect'>    /**
+</span>     * 角丸四角形塗りつぶし
+     */
+    fillRoundRect: function(x, y, width, height, radius) {
+      return this.beginPath().roundRect(x, y, width, height, radius).fill();
+    },
+
+<span id='phina-graphics-Canvas-method-strokeRoundRect'>    /**
+</span>     * 角丸四角形ストローク描画
+     */
+    strokeRoundRect: function(x, y, width, height, radius) {
+      return this.beginPath().roundRect(x, y, width, height, radius).stroke();
+    },
+
+<span id='phina-graphics-Canvas-method-circle'>    /**
+</span>     * 円のパスを設定
+     */
+    circle: function(x, y, radius) {
+      this.context.arc(x, y, radius, 0, Math.PI*2, false);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-fillCircle'>    /**
+</span>     * 塗りつぶし円を描画
+     */
+    fillCircle: function(x, y, radius) {
+      var c = this.context;
+      c.beginPath();
+      c.arc(x, y, radius, 0, Math.PI*2, false);
+      c.closePath();
+      c.fill();
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-strokeCircle'>    /**
+</span>     * ストローク円を描画
+     */
+    strokeCircle: function(x, y, radius) {
+      var c = this.context;
+      c.beginPath();
+      c.arc(x, y, radius, 0, Math.PI*2, false);
+      c.closePath();
+      c.stroke();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-arc'>    /**
+</span>     * 円弧のパスを設定
+     */
+    arc: function(x, y, radius, startAngle, endAngle, anticlockwise) {
+      this.context.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-fillArc'>    /**
+</span>     * 塗りつぶし円弧を描画
+     */
+    fillArc: function(x, y, radius, startAngle, endAngle, anticlockwise) {
+      return this.beginPath().arc(x, y, radius, startAngle, endAngle, anticlockwise).fill();
+    },
+    
+<span id='phina-graphics-Canvas-method-strokeArc'>    /**
+</span>     * ストローク円弧を描画
+     */
+    strokeArc: function(x, y, radius, startAngle, endAngle, anticlockwise) {
+      return this.beginPath().arc(x, y, radius, startAngle, endAngle, anticlockwise).stroke();
+    },
+
+
+    pie: function(x, y, radius, startAngle, endAngle, anticlockwise) {
+      var context = this.context;
+      context.beginPath();
+      context.moveTo(0, 0);
+      context.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+      context.closePath();
+      return this;
+    },
+    fillPie: function(x, y, radius, startAngle, endAngle, anticlockwise) {
+      return this.beginPath().pie(x, y, radius, startAngle, endAngle, anticlockwise).fill();
+    },
+    strokePie: function(x, y, radius, startAngle, endAngle, anticlockwise) {
+      return this.beginPath().pie(x, y, radius, startAngle, endAngle, anticlockwise).stroke();
+    },
+
+    
+<span id='phina-graphics-Canvas-method-polygon'>    /**
+</span>     * ポリゴンパス
+     */
+    polygon: function(x, y, size, sides, offsetAngle) {
+      var radDiv = (Math.PI*2)/sides;
+      var radOffset = (offsetAngle!=undefined) ? offsetAngle*Math.PI/180 : -Math.PI/2;
+      
+      this.moveTo(x + Math.cos(radOffset)*size, y + Math.sin(radOffset)*size);
+      for (var i=1; i&lt;sides; ++i) {
+        var rad = radDiv*i+radOffset;
+        this.lineTo(
+          x + Math.cos(rad)*size,
+          y + Math.sin(rad)*size
+        );
+      }
+      this.closePath();
+      return this;
+    },
+<span id='phina-graphics-Canvas-method-fillPolygon'>    /**
+</span>     * ポリゴン塗りつぶし
+     */
+    fillPolygon: function(x, y, radius, sides, offsetAngle) {
+      return this.beginPath().polygon(x, y, radius, sides, offsetAngle).fill();
+    },
+<span id='phina-graphics-Canvas-method-strokePolygon'>    /**
+</span>     * ポリゴンストローク描画
+     */
+    strokePolygon: function(x, y, radius, sides, offsetAngle) {
+      return this.beginPath().polygon(x, y, radius, sides, offsetAngle).stroke();
+    },
+    
+<span id='phina-graphics-Canvas-method-star'>    /**
+</span>     * star
+     */
+    star: function(x, y, radius, sides, sideIndent, offsetAngle) {
+      var x = x || 0;
+      var y = y || 0;
+      var radius = radius || 64;
+      var sides = sides || 5;
+      var sideIndentRadius = radius * (sideIndent || 0.38);
+      var radOffset = (offsetAngle) ? offsetAngle*Math.PI/180 : -Math.PI/2;
+      var radDiv = (Math.PI*2)/sides/2;
+
+      this.moveTo(
+        x + Math.cos(radOffset)*radius,
+        y + Math.sin(radOffset)*radius
+      );
+      for (var i=1; i&lt;sides*2; ++i) {
+        var rad = radDiv*i + radOffset;
+        var len = (i%2) ? sideIndentRadius : radius;
+        this.lineTo(
+          x + Math.cos(rad)*len,
+          y + Math.sin(rad)*len
+        );
+      }
+      this.closePath();
+
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-fillStar'>    /**
+</span>     * 星を塗りつぶし描画
+     */
+    fillStar: function(x, y, radius, sides, sideIndent, offsetAngle) {
+      this.beginPath().star(x, y, radius, sides, sideIndent, offsetAngle).fill();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-strokeStar'>    /**
+</span>     * 星をストローク描画
+     */
+    strokeStar: function(x, y, radius, sides, sideIndent, offsetAngle) {
+      this.beginPath().star(x, y, radius, sides, sideIndent, offsetAngle).stroke();
+      return this;
+    },
+
+    /*
+     * heart
+     */
+    heart: function(x, y, radius, angle) {
+      var half_radius = radius*0.5;
+      var rad = (angle === undefined) ? Math.PI/4 : Math.degToRad(angle);
+
+      // 半径 half_radius の角度 angle 上の点との接線を求める
+      var p = Math.cos(rad)*half_radius;
+      var q = Math.sin(rad)*half_radius;
+
+      // 円の接線の方程式 px + qy = r^2 より y = (r^2-px)/q
+      var x2 = -half_radius;
+      var y2 = (half_radius*half_radius-p*x2)/q;
+
+      // 中心位置調整
+      var height = y2 + half_radius;
+      var offsetY = half_radius-height/2;
+
+      // パスをセット
+      this.moveTo(0+x, y2+y+offsetY);
+
+      this.arc(-half_radius+x, 0+y+offsetY, half_radius, Math.PI-rad, Math.PI*2);
+      this.arc(half_radius+x, 0+y+offsetY, half_radius, Math.PI, rad);
+      this.closePath();
+
+      return this;
+    },
+
+    /*
+     * fill heart
+     */
+    fillHeart: function(x, y, radius, angle) {
+      return this.beginPath().heart(x, y, radius, angle).fill();
+    },
+
+    /*
+     * stroke heart
+     */
+    strokeHeart: function(x, y, radius, angle) {
+      return this.beginPath().heart(x, y, radius, angle).stroke();
+    },
+
+<span id='phina-graphics-Canvas-method-setTransform'>    /**
+</span>     * 行列をセット
+     */
+    setTransform: function(m11, m12, m21, m22, dx, dy) {
+      this.context.setTransform(m11, m12, m21, m22, dx, dy);
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-resetTransform'>    /**
+</span>     * 行列をリセット
+     */
+    resetTransform: function() {
+      this.setTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+      return this;
+    },
+<span id='phina-graphics-Canvas-method-transformCenter'>    /**
+</span>     * 中心に移動
+     */
+    transformCenter: function() {
+      this.context.setTransform(1, 0, 0, 1, this.width/2, this.height/2);
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-translate'>    /**
+</span>     * 移動
+     */
+    translate: function(x, y) {
+      this.context.translate(x, y);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-rotate'>    /**
+</span>     * 回転
+     */
+    rotate: function(rotation) {
+      this.context.rotate(rotation);
+      return this;
+    },
+    
+<span id='phina-graphics-Canvas-method-scale'>    /**
+</span>     * スケール
+     */
+    scale: function(scaleX, scaleY) {
+      this.context.scale(scaleX, scaleY);
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-saveAsImage'>    /**
+</span>     * 画像として保存
+     */
+    saveAsImage: function(mime_type) {
+      mime_type = mime_type || &quot;image/png&quot;;
+      var data_url = this.canvas.toDataURL(mime_type);
+      // data_url = data_url.replace(mime_type, &quot;image/octet-stream&quot;);
+      window.open(data_url, &quot;save&quot;);
+      
+      // toDataURL を使えば下記のようなツールが作れるかも!!
+      // TODO: プログラムで絵をかいて保存できるツール
+    },
+
+
+    _accessor: {
+<span id='phina-graphics-Canvas-property-width'>      /**
+</span>       * 幅
+       */
+      width: {
+        &quot;get&quot;: function()   { return this.canvas.width; },
+        &quot;set&quot;: function(v)  { this.canvas.width = v; }
+      },
+
+<span id='phina-graphics-Canvas-property-height'>      /**
+</span>       * 高さ
+       */
+      height: {
+        &quot;get&quot;: function()   { return this.canvas.height; },
+        &quot;set&quot;: function(v)  { this.canvas.height = v; }
+      },
+
+      fillStyle: {
+        &quot;get&quot;: function()   { return this.context.fillStyle; },
+        &quot;set&quot;: function(v)  { this.context.fillStyle = v; }
+      },
+
+      strokeStyle: {
+        &quot;get&quot;: function()   { return this.context.strokeStyle; },
+        &quot;set&quot;: function(v)  { this.context.strokeStyle = v; }
+      },
+    },
+
+    _static: {
+      dummyCanvas: (function() {
+        if (!phina.isNode()) {
+          return document.createElement(&#39;canvas&#39;);
+        }
+        else {
+          return null;
+        }
+      })(),
+    },
+  });
+});
+</pre>
+</body>
+</html>

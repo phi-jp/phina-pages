@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+
+phina.namespace(function() {
+
+<span id='phina-accessory-Draggable'>  /**
+</span>   * @class phina.accessory.Draggable
+   * Draggable
+   */
+  phina.define(&#39;phina.accessory.Draggable&#39;, {
+    superClass: &#39;phina.accessory.Accessory&#39;,
+
+<span id='phina-accessory-Draggable-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(target) {
+      this.superInit(target);
+
+      this.initialPosition = phina.geom.Vector2(0, 0);
+      var self = this;
+
+      this.on(&#39;attached&#39;, function() {
+        this.target.setInteractive(true);
+
+        this.target.on(&#39;pointstart&#39;, function(e) {
+
+          self.initialPosition.x = this.x;
+          self.initialPosition.y = this.y;
+          self.flare(&#39;dragstart&#39;);
+        });
+        this.target.on(&#39;pointmove&#39;, function(e) {
+          this.x += e.pointer.dx;
+          this.y += e.pointer.dy;
+          self.flare(&#39;drag&#39;);
+        });
+
+        this.target.on(&#39;pointend&#39;, function(e) {
+          self.flare(&#39;dragend&#39;);
+        });
+      });
+    },
+
+    back: function() {
+      // TODO: 
+      this.target.x = this.initialPosition.x;
+      this.target.y = this.initialPosition.y;
+      // this.setInteractive(false);
+      // this.tweener.clear()
+      //     .move(this.initialX, this.initialY, 500, &quot;easeOutElastic&quot;)
+      //     .call(function () {
+      //         this.setInteractive(true);
+      //         this.fire(tm.event.Event(&quot;backend&quot;));
+      //     }.bind(this));
+    },
+
+    enable: function() {
+      this._enable = true;
+    },
+
+  });
+
+  phina.app.Element.prototype.getter(&#39;draggable&#39;, function() {
+    if (!this._draggable) {
+      this._draggable = phina.accessory.Draggable().attachTo(this);
+    }
+    return this._draggable;
+  });
+  
+});</pre>
+</body>
+</html>

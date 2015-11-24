@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+  var BASE_URL = &#39;http://&#39;
+
+<span id='phina-social-Twitter'>  /**
+</span>   * @class phina.social.Twitter
+   * 
+   */
+  phina.define(&#39;phina.social.Twitter&#39;, {
+    superClass: &#39;phina.display.CircleShape&#39;,
+<span id='phina-social-Twitter-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(params) {
+      this.superInit({
+        color: &#39;white&#39;,
+        stroke: false,
+      });
+
+      var tweener = phina.accessory.Tweener().attachTo(this);
+      tweener
+        .to({scaleX:2, scaleY:2, alpha:0}, 500)
+        .call(function() {
+          this.remove();
+        }, this);
+    },
+
+    _static: {
+      baseURL: &#39;http://twitter.com/intent&#39;,
+      defaults: {
+        // type: &#39;tweet&#39;,
+        text: &#39;Hello, world!&#39;,
+        // screen_name: &#39;phi_jp&#39;,
+        hashtags: &#39;javascript,phina&#39;,
+        // url: &#39;http://github.com/phi-jp/phina.js&#39;,
+        url: phina.global.location &amp;&amp; phina.global.location.href,
+        // via: &#39;phi_jp&#39;,
+      },
+
+      createURL: function(options) {
+        options = (options || {}).$safe(this.defaults);
+
+        var queries = [];
+        var euc = encodeURIComponent;
+        options.forIn(function(key, value) {
+          var str = key + &#39;=&#39; + euc(value);
+          queries.push(str);
+        });
+
+        var url = &#39;{baseURL}/{type}?{query}&#39;.format({
+          baseURL: this.baseURL,
+          // type: options.type,
+          type: &#39;tweet&#39;,
+          query: queries.join(&#39;&amp;&#39;),
+        });
+
+        return url;
+      },
+    }
+  });
+
+});
+</pre>
+</body>
+</html>
