@@ -5,7 +5,9 @@ header
         div.col.s12
           a(href='/').brand-logo
             span phina.js
-          ul#nav-mobile.right
+          a.button-collapse(data-activates="nav-mobile")
+            i.material-icons menu
+          ul#nav.right.hide-on-med-and-down
             li
               a(href='http://phiary.me', target='_blank') Tutorial
             li
@@ -14,3 +16,15 @@ header
               a(href='https://gitter.im/phi-jp/phina.js', target='_blank') Community
             li
               a(href='https://twitter.com/phi_jp', target='_blank') Contact
+          ul#nav-mobile.side-nav
+            li
+              a(href='http://phiary.me', target='_blank') Tutorial
+            li
+              a(href='/docs/', target='_blank') Docs
+            li
+              a(href='https://gitter.im/phi-jp/phina.js', target='_blank') Community
+            li
+              a(href='https://twitter.com/phi_jp', target='_blank') Contact
+
+  script.
+    $(".button-collapse").sideNav();
