@@ -122,23 +122,10 @@ block content
           br 
           h3 Examples
           p サンプルたくさんあるよ♪
-          div.examples
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
-            div.box
-              img(src='https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png')
+          div#examples.examples
+            div.box(v-for='item in items')
+              a(:href='item.url', target='_blank')
+                img(:src='item.img')
       div.row
         div.col.s4.m4.center
           img.img-guide-mini(src='images/suika.png')
@@ -160,3 +147,64 @@ block content
           img(src='images/hiyokos.png')
 
   include parts/footer
+
+
+
+  script.
+    var examples = new Vue({
+      el: '#examples',
+      data: {
+        items: [
+          {
+            title: '01',
+            url: 'http://goo.gl/Ru18Ky',
+            img: 'https://www.evernote.com/l/AOJkphKKDAlMq4x1AX103BAW7DizA-U9YvYB/image.png'
+          },
+          {
+            title: '02',
+            url: 'http://goo.gl/GQ0xYi',
+            img: 'https://www.evernote.com/l/AOJtA7a5wj1Fjq3B0JUTlaWyD1meTizEuxQB/image.png'
+          },
+          {
+            title: '03',
+            url: 'http://goo.gl/oAXSaN',
+            img: 'https://www.evernote.com/l/AOJRdQwNiuVNUYqOGsIFA9r6Maby62v_LPwB/image.png'
+          },
+          {
+            title: '04',
+            url: 'http://goo.gl/ne8qRr',
+            img: 'https://www.evernote.com/l/AOJ4ppIIpv9Nb7HSTB0KR1SbnigSFkpEicsB/image.png'
+          },
+          {
+            title: '05',
+            url: 'http://goo.gl/tJ7T0s',
+            img: 'https://www.evernote.com/l/AOIFlFUo-f1N4JCUeJL0ZtVZ9Qki6ISsZ8cB/image.png'
+          },
+
+          {
+            title: 'touchgame',
+            url: 'http://goo.gl/3ZCPsd',
+            img: 'https://www.evernote.com/l/AOJA8UimvGFI4IYaQaOPwMoLC9xvduFL7aUB/image.png'
+          },
+          {
+            title: 'blockbreak',
+            url: 'http://goo.gl/1wV1BU',
+            img: 'https://www.evernote.com/l/AOLl02ZTIwNCtZJp3MfPQmog_ONy1WQ9JowB/image.png'
+          },
+          {
+            title: 'flappy',
+            url: 'http://runstant.com',
+            img: 'https://www.evernote.com/l/AOLSfneLkABPI6gOxeYorqhYUXr1NbkoqgsB/image.png'
+          },
+          {
+            title: 'typing',
+            url: 'http://goo.gl/7kL1KI',
+            img: 'https://www.evernote.com/l/AOLFrwDEmuFIV6O2SRKG3_zUMAYS4XrGOAgB/image.png'
+          },
+        ]
+      }
+    });
+
+
+
+
