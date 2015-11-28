@@ -71,57 +71,12 @@ block content
             div.col.s12.m7
               h5 index.html
               pre
-                code.
-                  &lt;!doctype html&gt;
-
-                  &lt;html&gt;
-                    &lt;head&gt;
-                      &lt;meta charset=&#39;utf-8&#39; /&gt;
-                      &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, user-scalable=no&quot; /&gt;
-                      &lt;meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
-
-                      &lt;title&gt;Getting started | phina.js&lt;/title&gt;
-                      &lt;!-- phina.js を読み込む --&gt;
-                      &lt;script src=&#39;http://cdn.rawgit.com/phi-jp/phina.js/v0.1.0/build/phina.js&#39;&gt;&lt;/script&gt;
-                      &lt;!-- メイン処理 --&gt;
-                      &lt;script src=&#39;main.js&#39;&gt;&lt;/script&gt;
-                    &lt;/head&gt;
-                    &lt;body&gt;
-
-                    &lt;/body&gt;
-                  &lt;/html&gt;
+                code= template.html
 
             div.col.s12.m5
               h5 main.js
               pre
-                code.
-                  // phina.js をグローバル領域に展開
-                  phina.globalize();
-
-                  // MainScene クラスを定義
-                  phina.define(&#39;MainScene&#39;, {
-                    superClass: &#39;CanvasScene&#39;,
-                    init: function() {
-                      this.superInit();
-                      // 背景色を指定
-                      this.backgroundColor = &#39;#444&#39;;
-                      // ラベルを生成
-                      this.label = Label(&#39;Hello, phina.js!&#39;).addChildTo(this);
-                      this.label.x = this.gridX.center(); // x 座標
-                      this.label.y = this.gridY.center(); // y 座標
-                      this.label.fill = &#39;white&#39;; // 塗りつぶし色
-                    },
-                  });
-
-                  // メイン処理
-                  phina.main(function() {
-                    // アプリケーション生成
-                    var app = GameApp({
-                      startLabel: &#39;main&#39;, // メインシーンから開始する
-                    });
-                    // アプリケーション実行
-                    app.run();
-                  });
+                code= template.js
           //- div.
           //-   <div class='runstant'><iframe src='http://goo.gl/x9oSch' width='100%' height='640px' style='border:0px;box-shadow:0px 0px 2px 0px #aaa'></iframe></div>
           br 
