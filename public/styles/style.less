@@ -75,11 +75,12 @@ pre {
 }
 
 .examples {
+  @box-size: 200px;
   .box {
     position: relative;
     display: inline-block;
-    width: 250px;
-    height: 250px;
+    width: @box-size;
+    height: @box-size;
     padding: 0.5rem;
     margin: 0.5rem;
     background-color: white;
@@ -102,11 +103,11 @@ pre {
       height: 100%;
       left: 0px;
       text-align: center;
-      line-height: 250px;
+      line-height: @box-size;
       font-size: 1.5rem;
 
       -webkit-transition: 200ms;
-      top: 250px;
+      top: @box-size;
       opacity: 0;
     };
     &:hover:after {
