@@ -1,5 +1,6 @@
 {
   "name": "phina-pages",
+  "description": "アイディアを即座に形にできるゲームライブラリ",
   "version": "0.0.1",
   "repository": {
     "type": "git"

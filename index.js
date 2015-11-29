@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var express = require("express");
 var zip = require("express-zip");
+var config = require('./package.json');
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -21,10 +22,17 @@ var template = (function() {
   };
 })();
 
+console.log(config);
+
 app.get('/', function(req, res) {
   res.render('index', {
     title: 'Home',
+    description: config.description,
+    keywords: 'javascript,game,library',
     template: template,
+    address: 'phi1618jp@gmail.com',
+    twitter: 'phi_jp',
+    url: 'http://phinajs.com',
   });
 });
 
