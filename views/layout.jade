@@ -10,22 +10,22 @@ html
     meta(name="apple-mobile-web-app-status-bar-style" content="black-translucent")
     link(type="image/x-icon", rel="shortcut icon", href="/images/logo.png")
 
-    title #{title} | phina.js
+    title #{title}
     meta(name="description", content="#{description}")
     meta(name="keywords", content="#{keywords}")
 
     //- for facebook
-    meta(property='og:title', content='#{title} | phina.js')
+    meta(property='og:title', content='#{title}')
     meta(property='og:type', content='website')
     meta(property='og:description', content='#{description}')
     meta(property='og:url', content='#{url}')
     meta(property='og:image', content='/images/logo.png')
-    meta(property='og:site_name', content='#{title} | phina.js')
+    meta(property='og:site_name', content='#{title}')
     meta(property='og:email', content='#{address}')
 
     //- for twitter card
     meta(name="twitter:card", content="summary_large_image")
-    meta(name='twitter:title', content='#{title} | phina.js')
+    meta(name='twitter:title', content='#{title}')
     meta(name='twitter:description', content='#{description}')
     meta(name='twitter:url', content='http://phinajs.com')
     meta(name='twitter:image:src', content='http://phinajs.com/images/logo.png')
@@ -41,6 +41,9 @@ html
     // highlight.js
     link(rel='stylesheet', href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/atelier-dune-light.min.css")
     script(src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js')
+
+    // sharer.js
+    script(src='https://cdn.jsdelivr.net/sharer.js/0.2.4/sharer.min.js')
 
     // vue.js
     script(src='https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.js')

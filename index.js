@@ -26,7 +26,7 @@ console.log(config);
 
 app.get('/', function(req, res) {
   res.render('index', {
-    title: 'Home',
+    title: 'Home | phina.js',
     description: config.description,
     keywords: 'javascript,game,library',
     template: template,
