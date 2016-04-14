@@ -42,24 +42,22 @@ phina.namespace(function() {
       this.up     = {};
       this.last   = {};
 
+      this._keydown = null;
+      this._keyup = null;
+      this._keypress = null;
+
       var self = this;
       this.domElement.addEventListener(&#39;keydown&#39;, function(e) {
         self.key[e.keyCode] = true;
-        self.flare(&#39;keydown&#39;, {
-          keyCode: e.keyCode,
-        });
+        self._keydown = e.keyCode;
       });
 
       this.domElement.addEventListener(&#39;keyup&#39;, function(e) {
         self.key[e.keyCode] = false;
-        self.flare(&#39;keyup&#39;, {
-          keyCode: e.keyCode,
-        });
+        self._keyup = e.keyCode;
       });
       this.domElement.addEventListener(&#39;keypress&#39;, function(e) {
-        self.flare(&#39;keypress&#39;, {
-          keyCode: e.keyCode,
-        });
+        self._keypress = e.keyCode;
       });
     },
 
@@ -76,6 +74,19 @@ phina.namespace(function() {
         
         this.down[k] = (this.press[k] ^ this.last[k]) &amp; this.press[k];
         this.up[k] = (this.press[k] ^ this.last[k]) &amp; this.last[k];
+      }
+
+      if (this._keydown) {
+        this.flare(&#39;keydown&#39;, { keyCode: this._keydown });
+        this._keydown = null;
+      }
+      if (this._keyup) {
+        this.flare(&#39;keyup&#39;, { keyCode: this._keyup });
+        this._keyup = null;
+      }
+      if (this._keypress) {
+        this.flare(&#39;keypress&#39;, { keyCode: this._keypress });
+        this._keypress = null;
       }
       
       return this;
@@ -129,7 +140,7 @@ phina.namespace(function() {
         (this.getKey(&quot;right&quot;)  &lt;&lt; 1) | // 0010
         (this.getKey(&quot;down&quot;));         // 0001
       
-      if (arrowBit != 0 &amp;&amp; phina.input.Keyboard.ARROW_BIT_TO_ANGLE_TABLE.hasOwnProperty(arrowBit)) {
+      if (arrowBit !== 0 &amp;&amp; phina.input.Keyboard.ARROW_BIT_TO_ANGLE_TABLE.hasOwnProperty(arrowBit)) {
         angle = phina.input.Keyboard.ARROW_BIT_TO_ANGLE_TABLE[arrowBit];
       }
       

@@ -25,6 +25,10 @@ phina.namespace(function() {
   phina.define(&#39;phina.asset.Asset&#39;, {
     superClass: &quot;phina.util.EventDispatcher&quot;,
 
+    serverError: false,
+    notFound: false,
+    loadError: false,
+
 <span id='phina-asset-Asset-method-constructor'>    /**
 </span>     * @constructor
      */
@@ -50,6 +54,9 @@ phina.namespace(function() {
         resolve();
       }, 100);
     },
+
+    // ロード失敗時にダミーをセットする
+    loadDummy: function() { },
 
   });
 

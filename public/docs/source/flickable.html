@@ -36,10 +36,12 @@ phina.namespace(function() {
       this.initialPosition = phina.geom.Vector2(0, 0);
       var self = this;
 
-      this.friction = 1.0;
+      this.friction = 0.9;
       this.velocity = phina.geom.Vector2(0, 0);
       this.vertical = true;
       this.horizontal = true;
+
+      this.cacheList = [];
 
       this.on(&#39;attached&#39;, function() {
         this.target.setInteractive(true);
@@ -48,28 +50,35 @@ phina.namespace(function() {
           self.initialPosition.set(this.x, this.y);
           self.velocity.set(0, 0);
         });
-        this.target.on(&#39;pointmove&#39;, function(e) {
+        this.target.on(&#39;pointstay&#39;, function(e) {
           if (self.horizontal) {
             this.x += e.pointer.dx;
           }
           if (self.vertical) {
             this.y += e.pointer.dy;
           }
+
+          if (self.cacheList.length &gt; 3) self.cacheList.shift();
+          self.cacheList.push(e.pointer.deltaPosition.clone());
         });
 
         this.target.on(&#39;pointend&#39;, function(e) {
-          var dp = e.pointer.deltaPosition;
+          // 動きのある delta position を後ろから検索　
+          var delta = self.cacheList.reverse().find(function(v) {
+            return v.lengthSquared() &gt; 10;
+          });
+          self.cacheList.clear();
 
-          if (dp.lengthSquared() &gt; 10) {
-            self.velocity.x = dp.x;
-            self.velocity.y = dp.y;
+          if (delta) {
+            self.velocity.x = delta.x;
+            self.velocity.y = delta.y;
 
             self.flare(&#39;flickstart&#39;, {
-              direction: dp.clone().normalize(),
+              direction: delta.normalize(),
             });
           }
           else {
-            self.cancel();
+            self.flare(&#39;flickcancel&#39;);
           }
 
           // self.flare(&#39;flick&#39;);

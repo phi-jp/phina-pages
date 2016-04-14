@@ -27,14 +27,14 @@ phina.namespace(function() {
    * 
    */
   phina.define(&#39;phina.game.TitleScene&#39;, {
-    superClass: &#39;phina.display.CanvasScene&#39;,
+    superClass: &#39;phina.display.DisplayScene&#39;,
 <span id='phina-game-TitleScene-method-constructor'>    /**
 </span>     * @constructor
      */
     init: function(params) {
       this.superInit(params);
 
-      params = (params || {}).$safe(phina.game.TitleScene.defaults);
+      params = ({}).$safe(params, phina.game.TitleScene.defaults);
 
       this.backgroundColor = params.backgroundColor;
 
@@ -71,7 +71,7 @@ phina.namespace(function() {
           },
         });
 
-        this.on(&#39;pointstart&#39;, function() {
+        this.on(&#39;pointend&#39;, function() {
           this.exit();
         });
       }

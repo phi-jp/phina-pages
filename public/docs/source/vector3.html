@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-geom-Vector3'>  /**
+</span>   * @class phina.geom.Vector3
+   * ベクトルクラス
+   */
+  phina.define(&#39;phina.geom.Vector3&#39;, {
+
+<span id='phina-geom-Vector3-property-x'>    /** x座標 */
+</span>    x: 0,
+<span id='phina-geom-Vector3-property-y'>    /** y座標 */
+</span>    y: 0,
+<span id='phina-geom-Vector3-property-z'>    /** z座標 */
+</span>    z: 0,
+
+<span id='phina-geom-Vector3-method-constructor'>    /**
+</span>     * @constructor
+     */
+    init: function(x, y, z) {
+      this.x = x;
+      this.y = y;
+      this.z = z;
+    },
+
+  });
+
+});
+</pre>
+</body>
+</html>

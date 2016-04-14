@@ -40,6 +40,7 @@
       this._sceneIndex = 0;
 
       this.updater = phina.app.Updater(this);
+      this.interactive = phina.app.Interactive(this);
 
       this.awake = true;
       this.ticker = phina.util.Ticker();
@@ -58,6 +59,9 @@
     },
 
     replaceScene: function(scene) {
+      this.flare(&#39;replace&#39;);
+      this.flare(&#39;changescene&#39;);
+
       var e = null;
       if (this.currentScene) {
         this.currentScene.app = null;
@@ -73,6 +77,7 @@
 
     pushScene: function(scene) {
       this.flare(&#39;push&#39;);
+      this.flare(&#39;changescene&#39;);
 
       this.currentScene.flare(&#39;pause&#39;, {
         app: this,
@@ -96,6 +101,7 @@
      */
     popScene: function() {
       this.flare(&#39;pop&#39;);
+      this.flare(&#39;changescene&#39;);
 
       var scene = this._scenes.pop();
       --this._sceneIndex;
@@ -175,15 +181,21 @@
       this._update();
       this._draw();
 
+      this.interactive.check(this.currentScene);
+
       // stats update
       if (this.stats) this.stats.update();
     },
 
     _update: function() {
       if (this.awake) {
+        // エンターフレームイベント
+        if (this.has(&#39;enterframe&#39;)) {
+          this.flare(&#39;enterframe&#39;);
+        }
+
         this.update &amp;&amp; this.update();
         this.updater.update(this.currentScene);
-        this.interactive.check(this.currentScene);
       }
     },
 
@@ -197,6 +209,11 @@
       currentScene: {
         &quot;get&quot;: function()   { return this._scenes[this._sceneIndex]; },
         &quot;set&quot;: function(v)  { this._scenes[this._sceneIndex] = v; },
+      },
+
+      rootScene: {
+        &quot;get&quot;: function()   { return this._scenes[0]; },
+        &quot;set&quot;: function(v)  { this._scenes[0] = v; },
       },
 
       frame: {

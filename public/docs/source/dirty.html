@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+
+phina.namespace(function() {
+
+
+  phina.define(&#39;phina.display.CanvasElement&#39;, {
+    superClass: &#39;phina.display.DisplayElement&#39;,
+
+    init: function(options) {
+      this.superInit(options);
+
+      console.warn(&#39;[phina warn] CanvasElement は非推奨になりました. DisplayElement をお使いください.&#39;);
+    }
+  });
+
+
+  phina.define(&#39;phina.display.CanvasScene&#39;, {
+    superClass: &#39;phina.display.DisplayScene&#39;,
+
+    init: function(options) {
+      this.superInit(options);
+
+      console.warn(&#39;[phina warn] CanvasScene は非推奨になりました. DisplayScene をお使いください.&#39;);
+    }
+  });
+
+
+});
+
+</pre>
+</body>
+</html>

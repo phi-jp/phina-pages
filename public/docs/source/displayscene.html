@@ -21,13 +21,13 @@ phina.namespace(function() {
 <span id=''>  /**
 </span>   * @class
    */
-  phina.define(&#39;phina.display.CanvasScene&#39;, {
+  phina.define(&#39;phina.display.DisplayScene&#39;, {
     superClass: &#39;phina.app.Scene&#39;,
 
     init: function(params) {
       this.superInit();
 
-      params = (params || {}).$safe(phina.display.CanvasScene.default);
+      params = ({}).$safe(params, phina.display.DisplayScene.default);
 
       this.canvas = phina.graphics.Canvas();
       this.canvas.setSize(params.width, params.height);
@@ -41,6 +41,9 @@ phina.namespace(function() {
 
       // TODO: 一旦むりやり対応
       this.interactive = true;
+      this.setInteractive = function(flag) {
+        this.interactive = flag;
+      };
       this._overFlags = {};
       this._touchFlags = {};
     },

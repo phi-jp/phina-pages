@@ -95,7 +95,7 @@ phina.namespace(function() {
 
       // リサイズ時のリスナとして登録しておく
       if (isEver) {
-        window.addEventListener(&quot;resize&quot;, _fitFunc, false);
+        phina.global.addEventListener(&quot;resize&quot;, _fitFunc, false);
       }
     },
 
@@ -159,6 +159,16 @@ phina.namespace(function() {
      */
     lineTo: function(x, y) {
       this.context.lineTo(x, y);
+      return this;
+    },
+
+    quadraticCurveTo: function() {
+      this.context.quadraticCurveTo.apply(this.context, arguments);
+      return this;
+    },
+
+    bezierCurveTo: function() {
+      this.context.bezierCurveTo.apply(this.context, arguments);
       return this;
     },
 
@@ -433,7 +443,7 @@ phina.namespace(function() {
      */
     polygon: function(x, y, size, sides, offsetAngle) {
       var radDiv = (Math.PI*2)/sides;
-      var radOffset = (offsetAngle!=undefined) ? offsetAngle*Math.PI/180 : -Math.PI/2;
+      var radOffset = (offsetAngle!==undefined) ? offsetAngle*Math.PI/180 : -Math.PI/2;
       
       this.moveTo(x + Math.cos(radOffset)*size, y + Math.sin(radOffset)*size);
       for (var i=1; i&lt;sides; ++i) {
@@ -547,6 +557,44 @@ phina.namespace(function() {
       return this.beginPath().heart(x, y, radius, angle).stroke();
     },
 
+    /*
+     * http://stackoverflow.com/questions/14169234/the-relation-of-the-bezier-curve-and-ellipse
+     */
+    ellipse: function(x, y, w, h) {
+      var ctx = this.context;
+      var kappa = 0.5522848;
+
+      var ox = (w / 2) * kappa; // control point offset horizontal
+      var oy = (h / 2) * kappa; // control point offset vertical
+      var xe = x + w;           // x-end
+      var ye = y + h;           // y-end
+      var xm = x + w / 2;       // x-middle
+      var ym = y + h / 2;       // y-middle
+
+      ctx.moveTo(x, ym);
+      ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+      ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+      ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+      ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+      // ctx.closePath();
+
+      return this;
+    },
+
+    fillEllipse: function(x, y, width, height) {
+      return this.beginPath().ellipse(x, y, width, height).fill();
+    },
+    strokeEllipse: function(x, y, width, height) {
+      return this.beginPath().ellipse(x, y, width, height).stroke();
+    },
+
+    /*
+     * 画像を描画
+     */
+    drawImage: function() {
+      this.context.drawImage.apply(this.context, arguments);
+    },
+
 <span id='phina-graphics-Canvas-method-setTransform'>    /**
 </span>     * 行列をセット
      */
@@ -594,6 +642,22 @@ phina.namespace(function() {
       return this;
     },
 
+<span id='phina-graphics-Canvas-method-save'>    /**
+</span>     * 状態を保存
+     */
+    save: function() {
+      this.context.save();
+      return this;
+    },
+
+<span id='phina-graphics-Canvas-method-restore'>    /**
+</span>     * 状態を復元
+     */
+    restore: function() {
+      this.context.restore();
+      return this;
+    },
+
 <span id='phina-graphics-Canvas-method-saveAsImage'>    /**
 </span>     * 画像として保存
      */
@@ -634,17 +698,100 @@ phina.namespace(function() {
         &quot;get&quot;: function()   { return this.context.strokeStyle; },
         &quot;set&quot;: function(v)  { this.context.strokeStyle = v; }
       },
+
+      globalAlpha: {
+        &quot;get&quot;: function()   { return this.context.globalAlpha; },
+        &quot;set&quot;: function(v)  { this.context.globalAlpha = v; }
+      },
+
+      globalCompositeOperation: {
+        &quot;get&quot;: function()   { return this.context.globalCompositeOperation; },
+        &quot;set&quot;: function(v)  { this.context.globalCompositeOperation = v; }
+      },
+
+      shadowBlur: {
+        &quot;get&quot;: function()   { return this.context.shadowBlur; },
+        &quot;set&quot;: function(v)  { this.context.shadowBlur = v; }
+      },
+
+      shadowColor: {
+        &quot;get&quot;: function()   { return this.context.shadowColor; },
+        &quot;set&quot;: function(v)  { this.context.shadowColor = v; }
+      },
+
+      shadowOffsetX: {
+        &quot;get&quot;: function()   { return this.context.shadowOffsetX; },
+        &quot;set&quot;: function(v)  { this.context.shadowOffsetX = v; }
+      },
+
+      shadowOffsetY: {
+        &quot;get&quot;: function()   { return this.context.shadowOffsetY; },
+        &quot;set&quot;: function(v)  { this.context.shadowOffsetY = v; }
+      },
+
+      lineCap: {
+        &quot;get&quot;: function()   { return this.context.lineCap; },
+        &quot;set&quot;: function(v)  { this.context.lineCap = v; }
+      },
+
+      lineJoin: {
+        &quot;get&quot;: function()   { return this.context.lineJoin; },
+        &quot;set&quot;: function(v)  { this.context.lineJoin = v; }
+      },
+
+      miterLimit: {
+        &quot;get&quot;: function()   { return this.context.miterLimit; },
+        &quot;set&quot;: function(v)  { this.context.miterLimit = v; }
+      },
+
+      lineWidth: {
+        &quot;get&quot;: function()   { return this.context.lineWidth; },
+        &quot;set&quot;: function(v)  { this.context.lineWidth = v; }
+      },
+
+      font: {
+        &quot;get&quot;: function()   { return this.context.font; },
+        &quot;set&quot;: function(v)  { this.context.font = v; }
+      },
+
+      textAlign: {
+        &quot;get&quot;: function()   { return this.context.textAlign; },
+        &quot;set&quot;: function(v)  { this.context.textAlign = v; }
+      },
+
+      textBaseline: {
+        &quot;get&quot;: function()   { return this.context.textBaseline; },
+        &quot;set&quot;: function(v)  { this.context.textBaseline = v; }
+      },
+
+      imageSmoothingEnabled: {
+        &quot;get&quot;: function()   { return this.context.imageSmoothingEnabled; },
+        &quot;set&quot;: function(v)  {
+          this.context.imageSmoothingEnabled = v;
+          this.context.webkitImageSmoothingEnabled = v;
+          this.context.mozImageSmoothingEnabled = v;
+        }
+      },
     },
 
     _static: {
-      dummyCanvas: (function() {
-        if (!phina.isNode()) {
-          return document.createElement(&#39;canvas&#39;);
+      _context: (function() {
+        if (phina.util.Support.canvas) {
+          return document.createElement(&#39;canvas&#39;).getContext(&#39;2d&#39;);
         }
         else {
           return null;
         }
       })(),
+
+      measureText: function(font, text) {
+        this._context.font = font;
+        return this._context.measureText(text);
+      },
+
+      createLinearGradient: function() {
+        return this._context.createLinearGradient.apply(this._context, arguments);
+      },
     },
   });
 });

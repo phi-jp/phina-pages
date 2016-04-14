@@ -31,6 +31,9 @@ phina.namespace(function() {
     /// 子供
     children: null,
 
+    /// 有効化どうか
+    awake: true,
+
 <span id='phina-app-Element-method-constructor'>    /**
 </span>     * @constructor
      */
@@ -109,6 +112,20 @@ phina.namespace(function() {
       return this;
     },
 
+    isAwake: function() {
+      return this.awake;
+    },
+
+    wakeUp: function() {
+      this.awake = true;
+      return this;
+    },
+
+    sleep: function() {
+      this.awake = false;
+      return this;
+    },
+
     fromJSON: function(json) {
 
       var createChildren = function(name, data) {
@@ -134,7 +151,7 @@ phina.namespace(function() {
           });
         }
         else {
-          if (key !== &#39;type&#39;) {
+          if (key !== &#39;type&#39; &amp;&amp; key !== &#39;className&#39;) {
             this[key] = value;
           }
         }

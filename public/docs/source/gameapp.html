@@ -31,58 +31,98 @@
       });
       this.superInit(options);
 
-      var startLabel = (options.assets) ? &#39;loading&#39; : options.startLabel;
+      var startLabel = options.startLabel || &#39;title&#39;;
 
-      var scene = ManagerScene({
-        startLabel: startLabel,
+      var scenes = options.scenes || [
+        {
+          className: &#39;SplashScene&#39;,
+          label: &#39;splash&#39;,
+          nextLabel: &#39;title&#39;,
+        },
 
-        scenes: [
-          {
-            className: &#39;LoadingScene&#39;,
-            arguments: options,
-            label: &#39;loading&#39;,
-            nextLabel: options.startLabel,
-          },
+        {
+          className: &#39;TitleScene&#39;,
+          label: &#39;title&#39;,
+          nextLabel: &#39;main&#39;,
+        },
+        {
+          className: &#39;MainScene&#39;,
+          label: &#39;main&#39;,
+          nextLabel: &#39;result&#39;,
+        },
+        {
+          className: &#39;ResultScene&#39;,
+          label: &#39;result&#39;,
+          nextLabel: &#39;title&#39;,
+        },
+      ];
 
-          {
-            className: &#39;SplashScene&#39;,
-            arguments: options,
-            label: &#39;splash&#39;,
-            nextLabel: &#39;title&#39;,
-          },
-
-          {
-            className: &#39;TitleScene&#39;,
-            arguments: options,
-            label: &#39;title&#39;,
-            nextLabel: &#39;main&#39;,
-          },
-          {
-            className: &#39;MainScene&#39;,
-            arguments: options,
-            label: &#39;main&#39;,
-            nextLabel: &#39;result&#39;,
-          },
-          {
-            className: &#39;ResultScene&#39;,
-            arguments: options,
-            label: &#39;result&#39;,
-            nextLabel: &#39;title&#39;,
-          },
-
-          {
-            className: &#39;PauseScene&#39;,
-            arguments: options,
-            label: &#39;pause&#39;,
-          },
-
-        ]
+      scenes = scenes.each(function(s) {
+        s.arguments = s.arguments || options;
       });
 
-      this.replaceScene(scene);
+      var scene = phina.game.ManagerScene({
+        startLabel: startLabel,
+        scenes: scenes,
+      });
+
+      if (options.assets) {
+        var loadingOptions = ({}).$extend(options, {
+          exitType: &#39;&#39;,
+        });
+        var loadingClass = phina.global.LoadingScene || phina.game.LoadingScene;
+        var loading = loadingClass(loadingOptions);
+        this.replaceScene(loading);
+
+        loading.onloaded = function() {
+          this.replaceScene(scene);
+          if (options.debug) {
+            this._enableDebugger();
+          }
+        }.bind(this);
+
+      }
+      else {
+        this.replaceScene(scene);
+        if (options.debug) {
+          this._enableDebugger();
+        }
+      }
+
+      // 自動でポーズする
+      if (options.autoPause) {
+        this.on(&#39;blur&#39;, function() {
+          var pauseScene = phina.game.PauseScene();
+          this.pushScene(pauseScene);
+        });
+      }
+    },
+
+    _enableDebugger: function() {
+      if (this.gui) return ;
+
+      this.enableDatGUI(function(gui) {
+        var f = gui.addFolder(&#39;scenes&#39;);
+        var funcs = {};
+        this.rootScene.scenes.each(function(scene) {
+          funcs[scene.label] = function() {
+            this.rootScene.replaceScene(scene.label);
+            console.log(this._scenes.length);
+          }.bind(this);
+          return scene;
+        }, this);
+
+        funcs.forIn(function(key, value) {
+          f.add(funcs, key);
+        });
+        f.open();
+
+        this.gui = gui;
+      }.bind(this));
     },
   });
 
-});</pre>
+});
+</pre>
 </body>
 </html>

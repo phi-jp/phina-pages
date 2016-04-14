@@ -25,17 +25,17 @@
       this.superInit();
     },
 
-    exit: function(params) {
+    exit: function(nextLabel, nextArguments) {
       if (!this.app) return ;
 
-      if (typeof params !== &#39;object&#39;) {
-        var temp = {};
-        temp.nextLabel = arguments[0];
-        temp.nextArguments = arguments[1];
-        params = temp;
-      }
-      else if (params) {
-        this.nextArguments = params;
+      if (arguments.length &gt; 0) {
+        if (typeof arguments[0] === &#39;object&#39;) {
+          nextLabel = arguments[0].nextLabel || this.nextLabel;
+          nextArguments = arguments[0];
+        }
+
+        this.nextLabel = nextLabel;
+        this.nextArguments = nextArguments;
       }
 
       this.app.popScene();

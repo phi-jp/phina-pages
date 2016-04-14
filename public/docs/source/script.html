@@ -33,6 +33,7 @@ phina.namespace(function() {
     },
 
     _load: function(resolve) {
+      var self = this;
       this.domElement = document.createElement(&#39;script&#39;);
       this.domElement.src = this.src;
 

@@ -38,7 +38,7 @@
    *          b: 255
    *      }));
    */
-  String.prototype.method(&quot;format&quot;, function(arg) {
+  String.prototype.$method(&quot;format&quot;, function(arg) {
     // 置換ファンク
     var rep_fn = undefined;
     
@@ -52,13 +52,21 @@
         else {
           return arg[k];
         }
-      }
+      };
     }
     // 複数引数だった場合
     else {
       var args = arguments;
 <span id='global-method-rep_fn'>      /** @ignore */
-</span>      rep_fn = function(m, k) { return args[ parseInt(k) ]; }
+</span>      rep_fn = function(m, k) {
+        var v = args[ parseInt(k) ];
+        if (v !== undefined &amp;&amp; v !== null) {
+          return v;
+        }
+        else {
+          return &#39;&#39;;
+        }
+      };
     }
     
     return this.replace( /\{(\w+)\}/g, rep_fn );
@@ -73,7 +81,7 @@
    * &lt;a href=&quot;http://jamesroberts.name/blog/2010/02/22/string-functions-for-javascript-trim-to-camel-case-to-dashed-and-to-underscore/&quot;&gt;Reference&lt;/a&gt;
    * 
    */
-  String.prototype.method(&quot;trim&quot;, function() {
+  String.prototype.$method(&quot;trim&quot;, function() {
     return this.replace(/^\s+|\s+$/g, &quot;&quot;);
   });
   
@@ -90,7 +98,7 @@
    * - [デザインとプログラムの狭間で: javascriptでキャピタライズ（一文字目を大文字にする）](http://design-program.blogspot.com/2011/02/javascript.html)
    * 
    */
-  String.prototype.method(&quot;capitalize&quot;, function() {
+  String.prototype.$method(&quot;capitalize&quot;, function() {
     return this.replace(/\w+/g, function(word){
       return word.capitalizeFirstLetter();
     });
@@ -100,7 +108,7 @@
 </span>   * @method  capitalizeFirstLetter
    * 先頭文字のみキャピタライズ
    */
-  String.prototype.method(&quot;capitalizeFirstLetter&quot;, function() {
+  String.prototype.$method(&quot;capitalizeFirstLetter&quot;, function() {
     return this.charAt(0).toUpperCase() + this.substr(1).toLowerCase();
   });
   
@@ -108,7 +116,7 @@
 </span>   * @method  toDash
    * ダッシュ
    */
-  String.prototype.method(&quot;toDash&quot;, function() {
+  String.prototype.$method(&quot;toDash&quot;, function() {
     return this.replace(/([A-Z])/g, function(m){ return &#39;-&#39;+m.toLowerCase(); });
   });
   
@@ -117,7 +125,7 @@
 </span>   * @method toHash
    * ハッシュ値に変換
    */
-  String.prototype.method(&quot;toHash&quot;, function() {
+  String.prototype.$method(&quot;toHash&quot;, function() {
     return this.toCRC32();
   });
   
@@ -125,10 +133,10 @@
 </span>   * @method  padding
    * 左側に指定された文字を詰めて右寄せにする
    */
-  String.prototype.method(&quot;padding&quot;, function(n, ch) {
+  String.prototype.$method(&quot;padding&quot;, function(n, ch) {
     var str = this.toString();
     n  = n-str.length;
-    ch = ch || &#39; &#39;;
+    ch = (ch || &#39; &#39;)[0];
     
     while(n-- &gt; 0) { str = ch + str; }
     
@@ -139,10 +147,10 @@
 </span>   * @method  paddingLeft
    * 左側に指定された文字を詰めて右寄せにする
    */
-  String.prototype.method(&quot;paddingLeft&quot;, function(n, ch) {
+  String.prototype.$method(&quot;paddingLeft&quot;, function(n, ch) {
     var str = this.toString();
     n  = n-str.length;
-    ch = ch || &#39; &#39;;
+    ch = (ch || &#39; &#39;)[0];
     
     while(n-- &gt; 0) { str = ch + str; }
     
@@ -153,10 +161,10 @@
 </span>   * @method  paddingRight
    * 右側に指定された文字を詰めて左寄せにする
    */
-  String.prototype.method(&quot;paddingRight&quot;, function(n, ch) {
+  String.prototype.$method(&quot;paddingRight&quot;, function(n, ch) {
     var str = this.toString();
     n  = n-str.length;
-    ch = ch || &#39; &#39;;
+    ch = (ch || &#39; &#39;)[0];
     
     while(n-- &gt; 0) { str = str + ch; }
     
@@ -167,7 +175,7 @@
 </span>   * @method  quotemeta
    * メタ文字をクォート
    */
-  String.prototype.method(&quot;quotemeta&quot;, function(n) {
+  String.prototype.$method(&quot;quotemeta&quot;, function(n) {
     return this.replace(/([^0-9A-Za-z_])/g, &#39;\\$1&#39;);
   });
   
@@ -175,7 +183,7 @@
 </span>   * @method  repeat
    * リピート
    */
-  String.prototype.method(&quot;repeat&quot;, function(n) {
+  String.prototype.$method(&quot;repeat&quot;, function(n) {
     // TODO: 確認する
     var arr = Array(n);
     for (var i=0; i&lt;n; ++i) arr[i] = this;
@@ -186,7 +194,7 @@
 </span>   * @method  count
    * その文字が入ってる数をカウント
    */
-  String.prototype.method(&quot;count&quot;, function(str) {
+  String.prototype.$method(&quot;count&quot;, function(str) {
     var re = new RegExp(str, &#39;gm&#39;);
     return this.match(re).length;
   });
@@ -196,7 +204,7 @@
    * 含んでいるかを返す
    * ruby のやつ
    */
-  String.prototype.method(&quot;include&quot;, function(str) {
+  String.prototype.$method(&quot;include&quot;, function(str) {
     return this.indexOf(str) != -1;
   });
   
@@ -204,7 +212,7 @@
 </span>   * @method  toString
    * 配列に変換
    */
-  String.prototype.method(&quot;toArray&quot;, function() {
+  String.prototype.$method(&quot;toArray&quot;, function() {
     var arr = [];
     for (var i=0,len=this.length; i&lt;len; ++i) {
       arr.push(this[i]);
@@ -212,7 +220,7 @@
     return arr;
   });
   
-  String.prototype.method(&quot;toObject&quot;, function(sep, eq) {
+  String.prototype.$method(&quot;toObject&quot;, function(sep, eq) {
     sep = sep || &#39;&amp;&#39;;
     eq  = eq || &#39;=&#39;;
 
@@ -248,7 +256,7 @@
 </span>   * @method  toCRC32
    * CRC32 変換
    */
-  String.prototype.method(&quot;toCRC32&quot;, function() {
+  String.prototype.$method(&quot;toCRC32&quot;, function() {
     var crc = 0, x=0, y=0;
     
     crc = crc ^ (-1);

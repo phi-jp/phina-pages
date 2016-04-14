@@ -29,13 +29,7 @@ phina.namespace(function() {
 </span>     * @constructor
      */
     init: function(options) {
-      options.$safe({
-        width: 640,
-        height: 960,
-        columns: 12,
-        fit: true,
-        append: true,
-      });
+      options = (options || {}).$safe(phina.display.CanvasApp.defaults);
       
       if (!options.query &amp;&amp; !options.domElement) {
         options.domElement = document.createElement(&#39;canvas&#39;);
@@ -58,15 +52,21 @@ phina.namespace(function() {
       this.canvas = phina.graphics.Canvas(this.domElement);
       this.canvas.setSize(options.width, options.height);
 
-      this.backgroundColor = &#39;white&#39;;
+      this.backgroundColor = (options.backgroundColor !== undefined) ? options.backgroundColor : &#39;white&#39;;
 
-      this.replaceScene(phina.display.CanvasScene({
+      this.replaceScene(phina.display.DisplayScene({
         width: options.width,
         height: options.height,
       }));
 
       if (options.fit) {
         this.fitScreen();
+      }
+
+      if (options.pixelated) {
+        // チラつき防止
+        // https://drafts.csswg.org/css-images/#the-image-rendering
+        this.domElement.style.imageRendering = &#39;pixelated&#39;;
       }
 
       // pushScene, popScene 対策
@@ -97,6 +97,16 @@ phina.namespace(function() {
 
     fitScreen: function() {
       this.canvas.fitScreen();
+    },
+
+    _static: {
+      defaults: {
+        width: 640,
+        height: 960,
+        columns: 12,
+        fit: true,
+        append: true,
+      },
     },
 
   });

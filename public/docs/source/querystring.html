@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">
+phina.namespace(function() {
+
+<span id='phina-util-QueryString'>  /**
+</span>   * @class phina.util.QueryString
+   * 
+   */
+  phina.define(&#39;phina.util.QueryString&#39;, {
+    _static: {
+      parse: function(text, sep, eq, isDecode) {
+        text = text || location.search.substr(1);
+        sep = sep || &#39;&amp;&#39;;
+        eq = eq || &#39;=&#39;;
+        var decode = (isDecode) ? decodeURIComponent : function(a) { return a; };
+        return text.split(sep).reduce(function(obj, v) {
+          var pair = v.split(eq);
+          obj[pair[0]] = decode(pair[1]);
+          return obj;
+        }, {});
+      },
+      stringify: function(value, sep, eq, isEncode) {
+        sep = sep || &#39;&amp;&#39;;
+        eq = eq || &#39;=&#39;;
+        var encode = (isEncode) ? encodeURIComponent : function(a) { return a; };
+        return Object.keys(value).map(function(key) {
+          return key + eq + encode(value[key]);
+        }).join(sep);
+      },
+    },
+  });
+
+});
+
+</pre>
+</body>
+</html>

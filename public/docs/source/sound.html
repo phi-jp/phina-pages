@@ -35,7 +35,7 @@ phina.namespace(function() {
      */
     init: function() {
       this.superInit();
-      this.context = phina.asset.Sound.audioContext;
+      this.context = phina.asset.Sound.getAudioContext();
       this.gainNode = this.context.createGain();
     },
 
@@ -55,7 +55,7 @@ phina.namespace(function() {
       this.gainNode.connect(this.context.destination);
       // play
       this.source.start(0);
-
+      
       // check play end
       if (this.source.buffer) {
         var time = (this.source.buffer.duration/this.source.playbackRate.value)*1000;
@@ -68,7 +68,22 @@ phina.namespace(function() {
     },
 
     stop: function() {
-      this.source.stop();
+      // stop
+      if (this.source) {
+        this.source.stop &amp;&amp; this.source.stop(0);
+        this.source = null;
+      }
+
+      return this;
+    },
+
+    pause: function() {
+      this.source.disconnect();
+      return this;
+    },
+
+    resume: function() {
+      this.source.connect(this.gainNode);
       return this;
     },
 
@@ -138,6 +153,7 @@ phina.namespace(function() {
       xml.onreadystatechange = function() {
         if (xml.readyState === 4) {
           if ([200, 201, 0].indexOf(xml.status) !== -1) {
+
             // 音楽バイナリーデータ
             var data = xml.response;
 
@@ -146,15 +162,34 @@ phina.namespace(function() {
               self.loadFromBuffer(buffer);
               r(self);
             }, function() {
-              console.warn(&quot;音声ファイルのデコードに失敗しました。(&quot; + src + &quot;)&quot;);
-              self.loaded = true;
+              console.warn(&quot;音声ファイルのデコードに失敗しました。(&quot; + self.src + &quot;)&quot;);
               r(self);
+              self.flare(&#39;decodeerror&#39;);
             });
+
+          } else if (xml.status === 404) {
+            // not found
+
+            self.loadError = true;
+            self.notFound= true;
+            r(self);
+            self.flare(&#39;loaderror&#39;);
+            self.flare(&#39;notfound&#39;);
+
+          } else {
+            // サーバーエラー
+
+            self.loadError = true;
+            self.serverError = true;
+            r(self);
+            self.flare(&#39;loaderror&#39;);
+            self.flare(&#39;servererror&#39;);
           }
         }
       };
 
       xml.responseType = &#39;arraybuffer&#39;;
+
       xml.send(null);
     },
 
@@ -180,10 +215,14 @@ phina.namespace(function() {
         self.loadFromBuffer(buffer);
         r(self);
       }, function() {
-        console.warn(&quot;音声ファイルのデコードに失敗しました。(&quot; + src + &quot;)&quot;);
+        console.warn(&quot;音声ファイルのデコードに失敗しました。(&quot; + self.src + &quot;)&quot;);
         self.loaded = true;
         r(self);
       });
+    },
+
+    loadDummy: function() {
+      this.loadFromBuffer();
     },
 
     _accessor: {
@@ -215,24 +254,28 @@ phina.namespace(function() {
     },
 
     _static: {
-      audioContext: (function() {
-        if (phina.isNode()) return null;
+      getAudioContext: function() {
+        if (!phina.util.Support.webAudio) return null;
+
+        if (this.context) return this.context;
 
         var g = phina.global;
         var context = null;
 
         if (g.AudioContext) {
-            context = new AudioContext();
+          context = new AudioContext();
         }
         else if (g.webkitAudioContext) {
-            context = new webkitAudioContext();
+          context = new webkitAudioContext();
         }
         else if (g.mozAudioContext) {
-            context = new mozAudioContext();
+          context = new mozAudioContext();
         }
 
+        this.context = context;
+
         return context;
-      })(),
+      },
     },
 
   });

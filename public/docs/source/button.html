@@ -30,7 +30,38 @@ phina.namespace(function() {
 </span>     * @constructor
      */
     init: function(options) {
-      options = (options || {}).$safe({
+      options = (options || {}).$safe(phina.ui.Button.defaults);
+      this.superInit(options);
+
+      this.cornerRadius = options.cornerRadius;
+      this.text         = options.text;
+      this.fontColor    = options.fontColor;
+      this.fontSize     = options.fontSize;
+      this.fontWeight     = options.fontWeight;
+      this.fontFamily   = options.fontFamily;
+
+      this.setInteractive(true);
+      this.on(&#39;pointend&#39;, function() {
+        this.flare(&#39;push&#39;);
+      });
+    },
+    prerender: function(canvas) {
+      canvas.roundRect(-this.width/2, -this.height/2, this.width, this.height, this.cornerRadius);
+    },
+
+    postrender: function(canvas) {
+      var context = canvas.context;
+      // text
+      var font = &quot;{fontWeight} {fontSize}px {fontFamily}&quot;.format(this);
+      context.font = font;
+      context.textAlign = &#39;center&#39;;
+      context.textBaseline = &#39;middle&#39;;
+      context.fillStyle = this.fontColor;
+      context.fillText(this.text, 0, 0);
+    },
+
+    _static: {
+      defaults: {
         width: 200,
         height: 80,
         backgroundColor: &#39;transparent&#39;,
@@ -41,74 +72,19 @@ phina.namespace(function() {
         text: &#39;Hello&#39;,
         fontColor: &#39;white&#39;,
         fontSize: 32,
+        fontWeight: &#39;&#39;,
         fontFamily: &quot;&#39;HiraKakuProN-W3&#39;&quot;, // Hiragino or Helvetica,
-      });
-      this.superInit(options);
-
-      this.cornerRadius = options.cornerRadius;
-      this.text         = options.text;
-      this.fontColor    = options.fontColor;
-      this.fontSize     = options.fontSize;
-      this.fontFamily   = options.fontFamily;
-
-      this.setInteractive(true);
-      this.on(&#39;pointend&#39;, function() {
-        this.flare(&#39;push&#39;);
-      });
-    },
-    _render: function() {
-      var canvas = this.canvas;
-      var context = canvas.context;
-
-      this._renderBackground();
-
-      canvas.transformCenter();
-
-      // stroke
-      if (this.stroke) {
-        canvas.context.lineWidth = this.strokeWidth;
-        canvas.strokeStyle = this.stroke;
-        canvas.strokeRoundRect(-this.width/2, -this.height/2, this.width, this.height, this.cornerRadius);
-      }
-
-      // fill
-      if (this.fill) {
-        canvas.context.fillStyle = this.fill;
-        canvas.fillRoundRect(-this.width/2, -this.height/2, this.width, this.height, this.cornerRadius);
-      }
-
-      // text
-      var font = &quot;{fontSize}px {fontFamily}&quot;.format(this);
-      context.font = font;
-      context.textAlign = &#39;center&#39;;
-      context.textBaseline = &#39;middle&#39;;
-      context.fillStyle = this.fontColor;
-      context.fillText(this.text, 0, 0);
+      },
     },
 
-    _accessor: {
-      cornerRadius: {
-        get: function() { return this._cornerRadius; },
-        set: function(v) { this._dirtyDraw = true; this._cornerRadius = v; },
-      },
-      text: {
-        get: function() { return this._text; },
-        set: function(v) { this._dirtyDraw = true; this._text = v; },
-      },
-      fontColor: {
-        get: function() { return this._fontColor; },
-        set: function(v) { this._dirtyDraw = true; this._fontColor = v; },
-      },
-      fontSize: {
-        get: function() { return this._fontSize; },
-        set: function(v) { this._dirtyDraw = true; this._fontSize = v; },
-      },
-      fontFamily: {
-        get: function() { return this._fontFamily; },
-        set: function(v) { this._dirtyDraw = true; this._fontFamily = v; },
-      },
-
+    _defined: function() {
+      phina.display.Shape.watchRenderProperty.call(this, &#39;cornerRadius&#39;);
+      phina.display.Shape.watchRenderProperty.call(this, &#39;text&#39;);
+      phina.display.Shape.watchRenderProperty.call(this, &#39;fontColor&#39;);
+      phina.display.Shape.watchRenderProperty.call(this, &#39;fontSize&#39;);
+      phina.display.Shape.watchRenderProperty.call(this, &#39;fontFamily&#39;);
     },
+
   });
 
 });

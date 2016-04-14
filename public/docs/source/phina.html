@@ -36,13 +36,13 @@ var phina = phina || {};
 <span id='phina-VERSION'>  /**
 </span>   * バージョン
    */
-  phina.VERSION = &#39;0.0.1&#39;;
+  phina.VERSION = &#39;&lt;%= version %&gt;&#39;;
 
-  phina.method(&#39;isNode&#39;, function() {
+  phina.$method(&#39;isNode&#39;, function() {
     return (typeof module !== &#39;undefined&#39;);
   });
 
-  phina.method(&#39;namespace&#39;, function(fn) {
+  phina.$method(&#39;namespace&#39;, function(fn) {
     fn.call(this);
   });
 
@@ -62,7 +62,7 @@ var phina = phina || {};
 </span>   * @method isMobile
    * mobile かどうかをチェック
    */
-  phina.method(&#39;isMobile&#39;, function() {
+  phina.$method(&#39;isMobile&#39;, function() {
     if (!phina.global.navigator) return false;
     var ua = phina.global.navigator.userAgent;
     return (ua.indexOf(&quot;iPhone&quot;) &gt; 0 || ua.indexOf(&quot;iPad&quot;) &gt; 0 || ua.indexOf(&quot;Android&quot;) &gt; 0);
@@ -87,7 +87,7 @@ phina.namespace(function() {
    * @method createClass
    * クラスを生成
    */
-  phina.method(&#39;createClass&#39;, function(params) {
+  phina.$method(&#39;createClass&#39;, function(params) {
     var props = {};
 
     var _class = function() {
@@ -100,30 +100,70 @@ phina.namespace(function() {
       _class.prototype = Object.create(params.superClass.prototype);
       params.init.owner = _class;
       _class.prototype.superInit = function() {
-        var caller = this.superInit.caller;
-        var subclass = caller.owner;
-        var superclass = subclass.prototype.superClass;
-        var superInit = superclass.prototype.init;
+        this.__counter = this.__counter || 0;
 
+        var superClass = this._hierarchies[this.__counter++];
+        var superInit = superClass.prototype.init;
         superInit.apply(this, arguments);
+
+        this.__counter = 0;
+      };
+      _class.prototype.superMethod = function() {
+        var args = Array.prototype.slice.call(arguments, 0);
+        var name = args.shift();
+        this.__counters = this.__counters || {};
+        this.__counters[name] = this.__counters[name] || 0;
+
+        var superClass = this._hierarchies[ this.__counters[name]++ ];
+        var superMethod = superClass.prototype[name];
+        var rst = superMethod.apply(this, args);
+
+        this.__counters[name] = 0;
+
+        return rst;
       };
       _class.prototype.constructor = _class;
     }
 
+
+    // // 
+    // params.forIn(function(key, value) {
+    //   if (typeof value === &#39;function&#39;) {
+    //     _class.$method(key, value);
+    //   }
+    //   else {
+    //     _class.prototype[key] = value;
+    //   }
+    // });
+    // 継承
     _class.prototype.$extend(params);
-    _class.prototype.selfClass = _class;
+
+    // 継承用
+    _class.prototype._hierarchies = [];
+    var _super = _class.prototype.superClass;
+    while(_super) {
+      _class.prototype._hierarchies.push(_super);
+      _super = _super.prototype.superClass;
+    }
 
     // accessor
     if (params._accessor) {
-      _class.prototype = Object.create(_class.prototype, params._accessor);
+      params._accessor.forIn(function(key, value) {
+        _class.prototype.accessor(key, value);
+      });
+      // _class.prototype = Object.create(_class.prototype, params._accessor);
     }
 
     _class.prototype._creator = function() { return this; };
     _class.prototype._creator.prototype = _class.prototype;
 
-    // static method
+    // static property/method
     if (params._static) {
       _class.$extend(params._static);
+    }
+
+    if (params._defined) {
+      params._defined.call(_class, _class);
     }
 
     return _class;
@@ -133,7 +173,7 @@ phina.namespace(function() {
   /*
    * 
    */
-  phina.method(&#39;using&#39;, function(path) {
+  phina.$method(&#39;using&#39;, function(path) {
     if (!path) {
       return phina.global;
     }
@@ -151,7 +191,7 @@ phina.namespace(function() {
   /*
    * 
    */
-  phina.method(&#39;register&#39;, function(path, _class) {
+  phina.$method(&#39;register&#39;, function(path, _class) {
     var pathes = path.split(/[,.\/ ]|::/);
     var className = pathes.last;
     var parentPath = path.substring(0, path.lastIndexOf(&#39;.&#39;));
@@ -170,12 +210,12 @@ phina.namespace(function() {
    * @method define
    * クラスを定義
    */
-  phina.method(&#39;define&#39;, function(path, params) {
+  phina.$method(&#39;define&#39;, function(path, params) {
     if (params.superClass) {
       if (typeof params.superClass === &#39;string&#39;) {
         var _superClass = phina.using(params.superClass);
         if (typeof _superClass != &#39;function&#39;) {
-          if (_classDefinedCallback[params.superClass] == null) {
+          if (!_classDefinedCallback[params.superClass]) {
             _classDefinedCallback[params.superClass] = [];
           }
           _classDefinedCallback[params.superClass].push(function() {
@@ -213,9 +253,11 @@ phina.namespace(function() {
   });
 
 
-  phina.method(&#39;globalize&#39;, function() {
+  phina.$method(&#39;globalize&#39;, function() {
     phina.forIn(function(key, value) {
       var ns = key;
+
+      if (typeof value !== &#39;object&#39;) return ;
 
       value.forIn(function(key, value) {
         // if (phina.global[key]) {
@@ -232,7 +274,7 @@ phina.namespace(function() {
 
   phina._mainListeners = [];
   phina._mainLoaded = false;
-  phina.method(&#39;main&#39;, function(func) {
+  phina.$method(&#39;main&#39;, function(func) {
     if (phina._mainLoaded) {
       func();
     }
@@ -241,15 +283,26 @@ phina.namespace(function() {
     }
   });
 
-  if (phina.global.addEventListener) {
+  var doc = phina.global.document;
+  if (phina.global.addEventListener &amp;&amp; doc &amp;&amp; doc.readyState !== &#39;complete&#39;) {
     phina.global.addEventListener(&#39;load&#39;, function() {
+      var run = function() {
+        var listeners = phina._mainListeners.clone();
+        phina._mainListeners.clear();
+        listeners.each(function(func) {
+          func();
+        });
 
-      phina._mainListeners.each(function(func) {
-        func();
-      });
-      phina._mainListeners.clear();
-
-      phina._mainLoaded = true;
+        // main 内で main を追加している場合があるのでそのチェック
+        if (phina._mainListeners.length &gt; 0) {
+          run(0);
+        }
+        else {
+          phina._mainLoaded = true;
+        }
+      };
+      // ちょっと遅延させる(画面サイズ問題)
+      setTimeout(run);
     });
   }
   else {

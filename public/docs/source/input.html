@@ -37,9 +37,17 @@
       this.domElement = domElement || window.document;
 
       this.position = phina.geom.Vector2(0, 0);
+      this.startPosition = phina.geom.Vector2(0, 0);
       this.deltaPosition = phina.geom.Vector2(0, 0);
       this.prevPosition = phina.geom.Vector2(0, 0);
       this._tempPosition = phina.geom.Vector2(0, 0);
+
+      this.maxCacheNum = phina.input.Input.defaults.maxCacheNum;
+      this.minDistance = phina.input.Input.defaults.minDistance;
+      this.maxDistance = phina.input.Input.defaults.maxDistance;
+      this.cachePositions = [];
+      this.flickVelocity = phina.geom.Vector2(0, 0);
+
       this.flags = 0;
     },
 
@@ -60,11 +68,20 @@
         this._moveFlag = true;
       }
 
+      if (this.start) {
+        this.startPosition.set(this.position.x, this.position.y);
+      }
+
       // 前回の座標を更新
       this.prevPosition.set(this.position.x, this.position.y);
 
       // 現在の位置を更新
       this.position.set(this._tempPosition.x, this._tempPosition.y);
+
+      if (this.cachePositions.length &gt; this.maxCacheNum) {
+        this.cachePositions.shift();
+      }
+      this.cachePositions.push(this.position.clone());
     },
 
     _start: function(x, y, flag) {
@@ -77,11 +94,31 @@
       var y = this._tempPosition.y;
       this.position.set(x, y);
       this.prevPosition.set(x, y);
+
+      this.flickVelocity.set(0, 0);
+      this.cachePositions.clear();
     },
 
     _end: function(flag) {
       flag = (flag !== undefined) ? flag : 1;
       this.flags &amp;= ~(flag);
+
+      if (this.cachePositions.length &lt; 2) return;
+
+      var first = this.cachePositions.first;
+      var last = this.cachePositions.last;
+
+      var v = phina.geom.Vector2.sub(last, first);
+
+      var len = v.length();
+
+      if (len &gt; this.minDistance) {
+        var normalLen = len.clamp(this.minDistance, this.maxDistance);
+        v.div(len).mul(normalLen);
+        this.flickVelocity.set(v.x, v.y);
+      }
+
+      this.cachePositions.clear();
     },
 
     // スケールを考慮
@@ -131,6 +168,32 @@
       dy: {
         &quot;get&quot;: function()   { return this.deltaPosition.y; },
         &quot;set&quot;: function(v)  { this.deltaPosition.y = v; }
+      },
+
+<span id='phina-input-Input-property-fx'>      /**
+</span>       * @property    fx
+       * fx値
+       */
+      fx: {
+        &quot;get&quot;: function()   { return this.flickVelocity.x; },
+        &quot;set&quot;: function(v)  { this.flickVelocity.x = v; }
+      },
+<span id='phina-input-Input-property-fy'>      /**
+</span>       * @property    fy
+       * fy値
+       */
+      fy: {
+        &quot;get&quot;: function()   { return this.flickVelocity.y; },
+        &quot;set&quot;: function(v)  { this.flickVelocity.y = v; }
+      },
+
+    },
+
+    _static: {
+      defaults: {
+        maxCacheNum: 3,
+        minDistance: 10,
+        maxDistance: 100,
       },
     },
   });

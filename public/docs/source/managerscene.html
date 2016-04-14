@@ -52,20 +52,55 @@ phina.namespace(function() {
       return this;
     },
 
+
+    replaceScene: function(label, args) {
+      var index = (typeof label == &#39;string&#39;) ? this.labelToIndex(label) : label||0;
+
+      var data = this.scenes[index];
+
+      if (!data) {
+        console.error(&#39;phina.js error: `{0}` に対応するシーンがありません.&#39;.format(label));
+      }
+
+      var klass = phina.using(data.className);
+      if (typeof klass !== &#39;function&#39;) {
+        klass = phina.using(&#39;phina.game.&#39; + data.className);
+      }
+
+      var initArguments = {}.$extend(data.arguments, args);
+      var scene = klass.call(null, initArguments);
+      if (!scene.nextLabel) {
+          scene.nextLabel = data.nextLabel;
+      }
+      if (!scene.nextArguments) {
+          scene.nextArguments = data.nextArguments;
+      }
+      this.app.replaceScene(scene);
+
+      this.sceneIndex = index;
+
+      return this;
+    },
+
+
 <span id='phina-game-ManagerScene-method-gotoScene'>    /**
 </span>     * index(or label) のシーンへ飛ぶ
      */
-    gotoScene: function(index, args) {
-      index = (typeof index == &#39;string&#39;) ? this.labelToIndex(index) : index||0;
-
-      // イベント発火
-
-      this.flare(&#39;prepare&#39;);
+    gotoScene: function(label, args) {
+      var index = (typeof label == &#39;string&#39;) ? this.labelToIndex(label) : label||0;
 
       var data = this.scenes[index];
+
+      if (!data) {
+        console.error(&#39;phina.js error: `{0}` に対応するシーンがありません.&#39;.format(label));
+      }
+
       var klass = phina.using(data.className);
-      var initArguments = data.arguments;
-      var initArguments = {}.$extend(initArguments, args);
+      if (typeof klass !== &#39;function&#39;) {
+        klass = phina.using(&#39;phina.game.&#39; + data.className);
+      }
+
+      var initArguments = {}.$extend(data.arguments, args);
       var scene = klass.call(null, initArguments);
       if (!scene.nextLabel) {
           scene.nextLabel = data.nextLabel;
@@ -76,12 +111,6 @@ phina.namespace(function() {
       this.app.pushScene(scene);
 
       this.sceneIndex = index;
-      this.currentScene = scene;
-
-      // イベント発火
-      this.flare(&#39;goto&#39;, {
-        scene: scene,
-      });
 
       return this;
     },
@@ -106,7 +135,7 @@ phina.namespace(function() {
           this.gotoScene(nextIndex, args);
       }
       else {
-          this.fire(tm.event.Event(&quot;finish&quot;));
+          this.flare(&quot;finish&quot;);
       }
 
       return this;

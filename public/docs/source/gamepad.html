@@ -251,7 +251,7 @@
         button = phina.input.Gamepad.BUTTON_CODE[button];
       }
       if (this.buttons[button]) {
-        return this.buttons[button].up
+        return this.buttons[button].up;
       } else {
         return false;
       }
@@ -268,7 +268,7 @@
         (this.getKey(&#39;right&#39;) &lt;&lt; 1) | // 0010
         (this.getKey(&#39;down&#39;)); // 0001
 
-      if (arrowBit != 0 &amp;&amp; ARROW_BIT_TO_ANGLE_TABLE.hasOwnProperty(arrowBit)) {
+      if (arrowBit !== 0 &amp;&amp; ARROW_BIT_TO_ANGLE_TABLE.hasOwnProperty(arrowBit)) {
         angle = ARROW_BIT_TO_ANGLE_TABLE[arrowBit];
       }
 

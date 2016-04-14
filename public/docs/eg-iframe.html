@@ -1,26 +1,52 @@
 <!DOCTYPE html>
+
 <html>
-<head>
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Sencha Examples</title>
+    <title>examples | phina.js</title>
 
-    <script type="text/javascript" src="extjs-build/ext-all.js"></script>
-    <link rel="stylesheet" type="text/css" href="extjs-build/resources/css/ext-all.css">
+    <script src='http://cdn.rawgit.com/phi-jp/phina.js/develop/build/phina.js'></script>
 
-    <script type="text/javascript">
-        function loadInlineExample(code, options, callback) {
-            try {
-                document.body.innerHTML = '';
-                eval(code);
-                callback && callback(true);
-            } catch (e) {
-                document.body.innerHTML = e;
-                callback && callback(false, e);
-            }
+    <style>
+    html, body {
+      /*height: 100px;*/
+    }
+    body {
+      margin: 0;
+      /*border: 1px solid rgba(0, 0, 0, 0.2);*/
+      /*background-color: rgb(250, 250, 250);*/
+      /*color: white;*/
+    }
+    pre {
+      margin: 0;
+      padding: 0.5rem;
+      background-color: rgb(250, 250, 250);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+    </style>
+  </head>
+  <body>
+    <pre id='console'></pre>
+    <script>
+      var log = console.log;
+
+      var domConsole = document.getElementById('console');
+      console.log = function() {
+        // var str = arguments.$toArray().join(', ');
+        var str = Array.prototype.slice.call(arguments).join(',');
+        domConsole.innerHTML = str + '\n';
+      };
+      function loadInlineExample(code, options, callback) {
+        try {
+          // document.body.innerHTML = '';
+          eval(code);
+          callback && callback(true);
+        } catch (e) {
+          document.body.innerHTML = e;
+          callback && callback(false, e);
         }
+      };
     </script>
-</head>
-<body>
-</body>
+  </body>
 </html>

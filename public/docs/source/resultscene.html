@@ -27,14 +27,14 @@ phina.namespace(function() {
    *
    */
   phina.define(&#39;phina.game.ResultScene&#39;, {
-    superClass: &#39;phina.display.CanvasScene&#39;,
+    superClass: &#39;phina.display.DisplayScene&#39;,
 <span id='phina-game-ResultScene-method-constructor'>    /**
 </span>     * @constructor
      */
     init: function(params) {
       this.superInit(params);
 
-      params = (params || {}).$safe(phina.game.ResultScene.defaults);
+      params = ({}).$safe(params, phina.game.ResultScene.defaults);
 
       var message = params.message.format(params);
 
@@ -59,7 +59,7 @@ phina.namespace(function() {
               text: params.score+&#39;&#39;,
               fill: params.fontColor,
               stroke: null,
-              fontSize: 80,
+              fontSize: 72,
             },
             x: this.gridX.span(8),
             y: this.gridY.span(6),
@@ -73,8 +73,8 @@ phina.namespace(function() {
               stroke: null,
               fontSize: 32,
             },
-            x: this.gridX.span(8),
-            y: this.gridY.span(8),
+            x: this.gridX.center(),
+            y: this.gridY.span(9),
           },
 
           shareButton: {
@@ -83,11 +83,15 @@ phina.namespace(function() {
               text: &#39;★&#39;,
               width: 128,
               height: 128,
+              fontColor: params.fontColor,
               fontSize: 50,
               cornerRadius: 64,
+              fill: &#39;rgba(240, 240, 240, 0.5)&#39;,
+              // stroke: &#39;#aaa&#39;,
+              // strokeWidth: 2,
             }],
-            x: this.gridX.span(6),
-            y: this.gridY.span(11),
+            x: this.gridX.center(-3),
+            y: this.gridY.span(12),
           },
           playButton: {
             className: &#39;phina.ui.Button&#39;,
@@ -95,11 +99,15 @@ phina.namespace(function() {
               text: &#39;▶&#39;,
               width: 128,
               height: 128,
+              fontColor: params.fontColor,
               fontSize: 50,
               cornerRadius: 64,
+              fill: &#39;rgba(240, 240, 240, 0.5)&#39;,
+              // stroke: &#39;#aaa&#39;,
+              // strokeWidth: 2,
             }],
-            x: this.gridX.span(10),
-            y: this.gridY.span(11),
+            x: this.gridX.center(3),
+            y: this.gridY.span(12),
 
             interactive: true,
             onpush: function() {
@@ -110,15 +118,17 @@ phina.namespace(function() {
       });
 
       if (params.exitType === &#39;touch&#39;) {
-        this.on(&#39;pointstart&#39;, function() {
+        this.on(&#39;pointend&#39;, function() {
           this.exit();
         });
       }
 
       this.shareButton.onclick = function() {
+        var text = &#39;Score: {0}\n{1}&#39;.format(params.score, message);
         var url = phina.social.Twitter.createURL({
-          text: message,
+          text: text,
           hashtags: params.hashtags,
+          url: params.url,
         });
         window.open(url, &#39;share window&#39;, &#39;width=480, height=320&#39;);
       };
@@ -128,7 +138,7 @@ phina.namespace(function() {
       defaults: {
         score: 16,
 
-        message: &#39;this is phina.js project.\nscore: {score}\n&#39;,
+        message: &#39;this is phina.js project.&#39;,
         hashtags: &#39;phina_js,game,javascript&#39;,
         url: phina.global.location &amp;&amp; phina.global.location.href,
 

@@ -23,14 +23,16 @@
     init: function(app) {
       this.app = app;
       this._enable = true;
+      this.multiTouch = true;
       this.cursor = {
         normal: &#39;&#39;,
         hover: &#39;pointer&#39;,
       };
 
-      this.app.domElement.addEventListener(&#39;mouseover&#39;, function() {
-        this.app.domElement.style.cursor = this.cursor.normal;
-      }.bind(this), false);
+      this._holds = [];
+      this.app.on(&#39;changescene&#39;, function() {
+        this._holds.clear();
+      }.bind(this));
     },
 
     enable: function() {
@@ -43,8 +45,18 @@
     },
 
     check: function(root) {
-      if (!this._enable) return ;
-      this._checkElement(root)
+      // カーソルのスタイルを反映
+      if (this.app.domElement) {
+        if (this._holds.length &gt; 0) {
+          this.app.domElement.style.cursor = this.cursor.hover;
+        }
+        else {
+          this.app.domElement.style.cursor = this.cursor.normal;
+        }
+      }
+
+      if (!this._enable || !this.app.pointers) return ;
+      this._checkElement(root);
     },
 
     _checkElement: function(element) {
@@ -52,9 +64,6 @@
 
       // 更新するかを判定
       if (element.awake === false) return ;
-
-      // タッチ判定
-      this._checkPoint(element);
 
       // 子供を更新
       var len = element.children.length;
@@ -64,14 +73,22 @@
           this._checkElement(tempChildren[i]);
         }
       }
+
+      // タッチ判定
+      this._checkPoint(element);
     },
 
     _checkPoint: function(obj) {
-      this.app.pointers.forEach(function(p) {
-        if (p.id !== null) {
-          this.__checkPoint(obj, p);
-        }
-      }, this);
+      if (this.multiTouch) {
+        this.app.pointers.forEach(function(p) {
+          if (p.id !== null) {
+            this.__checkPoint(obj, p);
+          }
+        }, this);
+      }
+      else {
+        this.__checkPoint(obj, this.app.pointer);
+      }
     },
 
     __checkPoint: function(obj, p) {
@@ -81,50 +98,46 @@
       var overFlag = obj.hitTest(p.x, p.y);
       obj._overFlags[p.id] = overFlag;
 
-      if (!prevOverFlag &amp;&amp; overFlag) {
-        obj.flare(&#39;pointover&#39;, {
-          pointer: p,
-        });
+      var e = {
+        pointer: p,
+        interactive: this,
+      };
 
-        if (obj.boundingType) {
-          this.app.domElement.style.cursor = this.cursor.hover;
+      if (!prevOverFlag &amp;&amp; overFlag) {
+        obj.flare(&#39;pointover&#39;, e);
+
+        if (obj.boundingType &amp;&amp; obj.boundingType !== &#39;none&#39;) {
+          this._holds.push(obj);
         }
       }
       if (prevOverFlag &amp;&amp; !overFlag) {
-        obj.flare(&#39;pointout&#39;);
-
-        this.app.domElement.style.cursor = this.cursor.normal;
+        obj.flare(&#39;pointout&#39;, e);
+        this._holds.erase(obj);
       }
 
       if (overFlag) {
         if (p.getPointingStart()) {
           obj._touchFlags[p.id] = true;
-          obj.flare(&#39;pointstart&#39;, {
-            pointer: p,
-          });
+          obj.flare(&#39;pointstart&#39;, e);
           // クリックフラグを立てる
           obj._clicked = true;
         }
       }
 
       if (obj._touchFlags[p.id]) {
-        obj.flare(&#39;pointstay&#39;);
+        obj.flare(&#39;pointstay&#39;, e);
         if (p._moveFlag) {
-          obj.flare(&#39;pointmove&#39;, {
-            pointer: p,
-          });
+          obj.flare(&#39;pointmove&#39;, e);
         }
       }
 
       if (obj._touchFlags[p.id]===true &amp;&amp; p.getPointingEnd()) {
         obj._touchFlags[p.id] = false;
-        obj.flare(&#39;pointend&#39;, {
-          pointer: p,
-        });
+        obj.flare(&#39;pointend&#39;, e);
 
         if (obj._overFlags[p.id]) {
           obj._overFlags[p.id] = false;
-          obj.flare(&#39;pointout&#39;);
+          obj.flare(&#39;pointout&#39;, e);
         }
       }
     },

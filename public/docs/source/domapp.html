@@ -44,10 +44,16 @@
         }
       }
 
+      if (options.fps !== undefined) {
+        this.fps = options.fps;
+      }
+
       this.mouse = phina.input.Mouse(this.domElement);
       this.touch = phina.input.Touch(this.domElement);
       this.touchList = phina.input.TouchList(this.domElement, 5);
       this.keyboard = phina.input.Keyboard(document);
+      // 加速度センサーを生成
+      this.accelerometer = phina.input.Accelerometer();
 
       // ポインタをセット(PC では Mouse, Mobile では Touch)
       this.pointer = this.touch;
@@ -79,9 +85,6 @@
         });
       }.bind(this));
 
-      // interactive
-      this.interactive = phina.app.Interactive(this);
-
       // click 対応
       var eventName = phina.isMobile() ? &#39;touchend&#39; : &#39;mouseup&#39;;
       this.domElement.addEventListener(eventName, this._checkClick.bind(this));
@@ -89,13 +92,25 @@
       // 決定時の処理をオフにする(iPhone 時のちらつき対策)
       this.domElement.addEventListener(&quot;touchstart&quot;, function(e) { e.stop(); });
       this.domElement.addEventListener(&quot;touchmove&quot;, function(e) { e.stop(); });
-    },
 
-    update: function() {
-      this.mouse.update();
-      this.touch.update();
-      this.touchList.update();
-      this.keyboard.update();
+      // ウィンドウフォーカス時イベントリスナを登録
+      phina.global.addEventListener(&#39;focus&#39;, function() {
+        this.flare(&#39;focus&#39;);
+        this.currentScene.flare(&#39;focus&#39;);
+      }.bind(this), false);
+      // ウィンドウブラー時イベントリスナを登録
+      phina.global.addEventListener(&#39;blur&#39;, function() {
+        this.flare(&#39;blur&#39;);
+        this.currentScene.flare(&#39;blur&#39;);
+      }.bind(this), false);
+
+      // 更新関数を登録
+      this.on(&#39;enterframe&#39;, function() {
+        this.mouse.update();
+        this.touch.update();
+        this.touchList.update();
+        this.keyboard.update();
+      });
     },
 
     _checkClick: function(e) {

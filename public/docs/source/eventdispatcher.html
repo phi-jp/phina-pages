@@ -111,7 +111,7 @@
       dispatchEventByType: &#39;flare&#39;,
     };
     methodMap.forIn(function(old, name) {
-      phina.util.EventDispatcher.prototype.method(old, phina.util.EventDispatcher.prototype[name]);
+      phina.util.EventDispatcher.prototype.$method(old, phina.util.EventDispatcher.prototype[name]);
     });
   })();
 

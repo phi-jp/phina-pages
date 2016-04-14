@@ -27,7 +27,7 @@ phina.namespace(function() {
    * 
    */
   phina.define(&#39;phina.game.CountScene&#39;, {
-    superClass: &#39;phina.display.CanvasScene&#39;,
+    superClass: &#39;phina.display.DisplayScene&#39;,
 <span id='phina-game-CountScene-method-constructor'>    /**
 </span>     * @constructor
      */
@@ -43,7 +43,7 @@ phina.namespace(function() {
           label: {
             className: &#39;phina.display.Label&#39;,
             arguments: {
-              fill: &#39;white&#39;,
+              fill: options.fontColor,
               fontSize: options.fontSize,
               stroke: false,
             },
@@ -107,8 +107,8 @@ phina.namespace(function() {
         height: 960,
 
         fontColor: &#39;white&#39;,
-        fontSize: 192,
-        backgroundColor: null,
+        fontSize: 164,
+        backgroundColor: &#39;rgba(50, 50, 50, 1)&#39;,
 
         exitType: &#39;auto&#39;,
       },

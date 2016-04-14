@@ -163,12 +163,13 @@ phina.namespace(function() {
 <span id='phina-geom-Vector2-method-random'>    /**
 </span>     * ランダムベクトルをセット
      */
-    random: function(min, max) {
+    random: function(min, max, len) {
       var degree = phina.util.Random.randfloat(min || 0, max || 360);
       var rad = degree*Math.DEG_TO_RAD;
+      var len = len || 1;
 
-      this.x = Math.cos(rad);
-      this.y = Math.sin(rad);
+      this.x = Math.cos(rad)*len;
+      this.y = Math.sin(rad)*len;
 
       return this;
     },
@@ -189,6 +190,25 @@ phina.namespace(function() {
       return &quot;{x:{x}, y:{y}}&quot;.format(this);
     },
 
+<span id='phina-geom-Vector2-method-getDirection'>    /**
+</span>     * 大体の向きを文字列で取得
+     * @return {String}
+     */
+    getDirection: function() {
+      var angle = this.toDegree();
+      if (angle &lt; 45) {
+        return &quot;right&quot;;
+      } else if (angle &lt; 135) {
+        return &quot;down&quot;;
+      } else if (angle &lt; 225) {
+        return &quot;left&quot;
+      } else if (angle &lt; 315) {
+        return &quot;up&quot;;
+      } else {
+        return &quot;right&quot;;
+      }
+    },
+
 <span id='phina-geom-Vector2-method-toAngle'>    /**
 </span>     * 角度に変換
      * @return {Number}
@@ -197,15 +217,45 @@ phina.namespace(function() {
       var rad = Math.atan2(this.y, this.x);
       return (rad + Math.PI*2)%(Math.PI*2);
     },
-
+    
 <span id='phina-geom-Vector2-method-fromAngle'>    /**
-</span>     * 角度(degree)と長さでベクトルをセット
+</span>     * 角度(radian)と長さでベクトルをセット
      */
     fromAngle: function(rad, len) {
       len = len || 1;
       this.x = Math.cos(rad)*len;
       this.y = Math.sin(rad)*len;
       
+      return this;
+    },
+
+<span id='phina-geom-Vector2-method-toDegree'>    /**
+</span>     * 角度に変換(degree)
+     * @return {Number}
+     */
+    toDegree: function() {
+      return this.toAngle().toDegree();
+    },
+    
+<span id='phina-geom-Vector2-method-fromDegree'>    /**
+</span>     * 角度(degree)と長さでベクトルをセット
+     */
+    fromDegree: function(deg, len) {
+      return this.fromAngle(deg.toRadian(), len);
+    },
+
+<span id='phina-geom-Vector2-method-rotate'>    /**
+</span>     * 任意の角度(radian)で回転
+     */
+    rotate: function(rad, center) {
+      center = center || phina.geom.Vector2(0, 0);
+
+      var x1 = this.x - center.x;
+      var y1 = this.y - center.y;
+      var x2 = x1 * Math.cos(rad) - y1 * Math.sin(rad);
+      var y2 = x1 * Math.sin(rad) + y1 * Math.cos(rad);
+      this.set( center.x + x2, center.y + y2 );
+
       return this;
     },
 
@@ -324,6 +374,17 @@ phina.namespace(function() {
         return Math.abs(lhs.x-rhs.x) + Math.abs(lhs.y-rhs.y);
       },
       
+<span id='phina-geom-Vector2-static-method-normal'>      /**
+</span>       * @method
+       * @static
+       * 法線ベクトル
+       */
+      normal: function(a, b) {
+        var temp = phina.geom.Vector2.sub(a, b);
+
+        return phina.geom.Vector2(-temp.y, temp.x);
+      },
+
 <span id='phina-geom-Vector2-static-method-reflect'>      /**
 </span>       * @method
        * @static
@@ -333,7 +394,7 @@ phina.namespace(function() {
         var len = phina.geom.Vector2.dot(v, normal);
         var temp= phina.geom.Vector2.mul(normal, 2*len);
         
-        return phina.geom.sub(v, temp);
+        return phina.geom.Vector2.sub(v, temp);
       },
 
 <span id='phina-geom-Vector2-static-method-lerp'>      /**
@@ -361,15 +422,18 @@ phina.namespace(function() {
           // cos...
       },
 
-      random: function(len, min, max) {
-        min = min || 0;
-        max = max || 360;
-        len = len || 1;
-        return phina.geom.Vector2().setDegree(Math.randf(min, max), len);
+      random: function(min, max, len) {
+        return phina.geom.Vector2().random(min, max).mul(len||1);
       },
     },
 
   });
+
+  phina.geom.Vector2.ZERO = phina.geom.Vector2(0, 0);
+  phina.geom.Vector2.LEFT = phina.geom.Vector2(-1, 0);
+  phina.geom.Vector2.RIGHT= phina.geom.Vector2(1, 0);
+  phina.geom.Vector2.UP   = phina.geom.Vector2(0, -1);
+  phina.geom.Vector2.DOWN = phina.geom.Vector2(0, 1);
 
 });
 </pre>

@@ -38,17 +38,7 @@
 </span>   * @method  format
    * 日付フォーマットに合わせた文字列を返す
    */
-  Date.prototype.method(&#39;format&#39;, function(pattern) {
-    /*
-    var str = &#39;{y}/{m}/{d}&#39;.format({
-      y: this.getYear()+1900,
-      m: this.getMonth()+1,
-      d: this.getDate(),
-    });
-    
-    return str;
-    */
-    
+  Date.prototype.$method(&#39;format&#39;, function(pattern) {
     var year    = this.getFullYear();
     var month   = this.getMonth();
     var date    = this.getDate();
@@ -57,57 +47,69 @@
     var minutes = this.getMinutes();
     var seconds = this.getSeconds();
     var millseconds = this.getMilliseconds();
-    var str = &#39;&#39;;
     
-    for (var i=0,len=pattern.length; i&lt;len; ++i) {
-      var ch = pattern.charAt(i);
-      var temp = &#39;&#39;;
-      switch(ch) {
-        // 日
-        case &#39;d&#39;: temp = date.padding(2, &#39;0&#39;); break;
-        case &#39;D&#39;: temp = WEEK[day].substr(0, 3); break;
-        case &#39;j&#39;: temp = date; break;
-        case &#39;l&#39;: temp = WEEK[day]; break;
-        // case &#39;N&#39;: temp = ; break;
-        // case &#39;S&#39;: temp = ; break;
-        // case &#39;w&#39;: temp = ; break;
-        // case &#39;z&#39;: temp = ; break;
-        
-        // 月
-        case &#39;F&#39;: temp = MONTH[month]; break;
-        case &#39;m&#39;: temp = (month+1).padding(2, &#39;0&#39;); break;
-        case &#39;M&#39;: temp = MONTH[month].substr(0, 3); break;
-        case &#39;n&#39;: temp = (month+1); break;
-        // case &#39;t&#39;: temp = (month+1); break;
-        
-        // 年
-        // case &#39;L&#39;: temp = ; break;
-        // case &#39;o&#39;: temp = ; break;
-        case &#39;Y&#39;: temp = year; break;
-        case &#39;y&#39;: temp = year.toString().substr(2, 2); break;
-        
-        
-        // 時間
-        // case &quot;a&quot;: temp = ; break;
-        // case &quot;A&quot;: temp = ; break;
-        // case &quot;B&quot;: temp = ; break;
-        // case &quot;g&quot;: temp = ; break;
-        case &quot;G&quot;: temp = hours; break;
-        // case &quot;h&quot;: temp = ; break;
-        case &quot;H&quot;: temp = hours.padding(2, &#39;0&#39;); break;
-        case &quot;i&quot;: temp = minutes.padding(2, &#39;0&#39;); break;
-        case &quot;s&quot;: temp = seconds.padding(2, &#39;0&#39;); break;
-        case &quot;S&quot;: temp = millseconds.padding(3, &#39;0&#39;); break;
-        
-        default : temp = ch; break;
-      }
-      str += temp;
-    }
-    return str;
+    var patterns = {
+      &#39;yyyy&#39;: String(year).padding(4, &#39;0&#39;),
+      &#39;yy&#39;: year.toString().substr(2, 2),
+      &#39;y&#39;: year,
+
+      &#39;MMMM&#39;: MONTH[month],
+      &#39;MMM&#39;: MONTH[month].substr(0, 3),
+      &#39;MM&#39;: String(month+1).padding(2, &#39;0&#39;),
+      &#39;M&#39;: (month+1),
+
+      &#39;dd&#39;: String(date).padding(2, &#39;0&#39;),
+      &#39;d&#39;: date,
+
+      &#39;EEEE&#39;: WEEK[day],
+      &#39;EEE&#39;: WEEK[day].substr(0, 3),
+
+      &#39;HH&#39;: String(hours).padding(2, &#39;0&#39;),
+      &#39;H&#39;: hours,
+
+      &#39;mm&#39;: String(minutes).padding(2, &#39;0&#39;),
+      &#39;m&#39;: minutes,
+
+      &#39;ss&#39;: String(seconds).padding(2, &#39;0&#39;),
+      &#39;s&#39;: seconds,
+      
+      // // date
+      // &#39;d&#39;: String(&#39;00&#39; + date).slice(-2),
+      // &#39;D&#39;: WEEK[day].substr(0, 3),
+      // &#39;j&#39;: date,
+      // &#39;l&#39;: WEEK[day],
+      
+      // // month
+      // &#39;m&#39;: String(&#39;00&#39; + (month+1)).slice(-2),
+      // &#39;M&#39;: MONTH[month].substr(0, 3),
+      // &#39;n&#39;: (month+1),
+      // &#39;F&#39;: MONTH[month],
+      
+      // // year
+      // &#39;y&#39;: year.toString().substr(2, 2),
+      // &#39;Y&#39;: year,
+      
+      // // time
+      // &#39;G&#39;: hours,
+      // &#39;H&#39;: String(&#39;00&#39; + hours).slice(-2),
+      // &#39;i&#39;: String(&#39;00&#39; + minutes).slice(-2),
+      // &#39;s&#39;: String(&#39;00&#39; + seconds).slice(-2),
+      // &#39;S&#39;: String(&#39;000&#39; + millseconds).slice(-3),
+    };
+
+    var regstr = &#39;(&#39; + Object.keys(patterns).join(&#39;|&#39;) + &#39;)&#39;;
+    var re = new RegExp(regstr, &#39;g&#39;);
+
+    return pattern.replace(re, function(str) {
+      return patterns[str];
+    });
   });
 
 
-  Date.prototype.method(&#39;calculateAge&#39;, function(birthday, when) {
+  /*
+   * http://qiita.com/n0bisuke/items/dd537bd4cbe9ab501ce8
+   */
+  Date.$method(&#39;calculateAge&#39;, function(birthday, when) {
     // birthday
     if (typeof birthday === &#39;string&#39;) {
       birthday = new Date(birthday);

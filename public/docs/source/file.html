@@ -61,7 +61,10 @@ phina.namespace(function() {
 
             if (params.dataType === &#39;json&#39;) {
               data = JSON.parse(data);
+            } else if (params.dataType === &#39;xml&#39;) {
+              data = (new DOMParser()).parseFromString(data, &quot;text/xml&quot;);
             }
+            self.dataType = params.dataType;
 
             self.data = data;
             resolve(self);

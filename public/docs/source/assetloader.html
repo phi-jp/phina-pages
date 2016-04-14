@@ -18,14 +18,14 @@
   <pre class="prettyprint lang-js">
 phina.namespace(function() {
 
-<span id='phina-asset-AssetManager'>  /**
-</span>   * @class phina.asset.AssetManager
+<span id='phina-asset-AssetLoader'>  /**
+</span>   * @class phina.asset.AssetLoader
    * 
    */
   phina.define(&#39;phina.asset.AssetLoader&#39;, {
     superClass: &quot;phina.util.EventDispatcher&quot;,
 
-<span id='phina-asset-AssetManager-method-constructor'>    /**
+<span id='phina-asset-AssetLoader-method-constructor'>    /**
 </span>     * @constructor
      */
     init: function(params) {
@@ -50,19 +50,45 @@ phina.namespace(function() {
           var func = phina.asset.AssetLoader.assetLoadFunctions[type];
           var flow = func(key, value);
           flow.then(function(asset) {
+            if (self.cache) {
+              phina.asset.AssetManager.set(type, key, asset);
+            }
             self.flare(&#39;progress&#39;, {
               key: key,
               asset: asset,
               progress: (++counter/flows.length),
             });
-            if (self.cache) {
-              phina.asset.AssetManager.set(type, key, asset);
-            }
           });
           flows.push(flow);
         });
       });
 
+
+      if (self.cache) {
+
+        self.on(&#39;progress&#39;, function(e) {
+          if (e.progress &gt;= 1.0) {
+            // load失敗時、対策
+            params.forIn(function(type, assets) {
+              assets.forIn(function(key, value) {
+                var asset = phina.asset.AssetManager.get(type, key);
+                if (asset.loadError) {
+                  var dummy = phina.asset.AssetManager.get(type, &#39;dummy&#39;);
+                  if (dummy) {
+                    if (dummy.loadError) {
+                      dummy.loadDummy();
+                      dummy.loadError = false;
+                    }
+                    phina.asset.AssetManager.set(type, key, dummy);
+                  } else {
+                    asset.loadDummy();
+                  }
+                }
+              });
+            });
+          }
+        });
+      }
       return phina.util.Flow.all(flows).then(function(args) {
         self.flare(&#39;load&#39;);
       });
@@ -94,6 +120,24 @@ phina.namespace(function() {
           font.setFontName(key);
           return font.load(path);
         },
+        json: function(key, path) {
+          var text = phina.asset.File();
+          return text.load({
+            path: path,
+            dataType: &quot;json&quot;,
+          });
+        },
+        xml: function(key, path) {
+          var text = phina.asset.File();
+          return text.load({
+            path: path,
+            dataType: &quot;xml&quot;,
+          });
+        },
+        text: function(key, path) {
+          var text = phina.asset.File();
+          return text.load(path);
+        }
       }
     }
 

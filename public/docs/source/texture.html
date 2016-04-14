@@ -15,12 +15,11 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">
-phina.namespace(function() {
+  <pre class="prettyprint lang-js">phina.namespace(function() {
 
 <span id='phina-asset-Texture'>  /**
 </span>   * @class phina.asset.Texture
-   * 
+   *
    */
   phina.define(&#39;phina.asset.Texture&#39;, {
     superClass: &quot;phina.asset.Asset&quot;,
@@ -34,6 +33,12 @@ phina.namespace(function() {
 
     _load: function(resolve) {
       this.domElement = new Image();
+
+      var isLocal = (location.protocol == &#39;file:&#39;);
+      if ( !isLocal &amp;&amp; !(/^data:/.test(this.src)) ) {
+        // this.domElement.crossOrigin = &#39;Anonymous&#39;; // クロスオリジン解除
+      }
+
       this.domElement.src = this.src;
 
       var self = this;
@@ -50,10 +55,77 @@ phina.namespace(function() {
       };
     },
 
+    clone: function () {
+      var image = this.domElement;
+      var canvas = phina.graphics.Canvas().setSize(image.width, image.height);
+      var t = phina.asset.Texture();
+      canvas.context.drawImage(image, 0, 0);
+      t.domElement = canvas.domElement;
+      return t;
+    },
+
+    transmit: function(color) {
+      // imagaオブジェクトをゲット
+      var image = this.domElement;
+      // 新規canvas作成
+      var canvas = phina.graphics.Canvas().setSize(image.width, image.height);
+      // 新規canvasに描画
+      canvas.context.drawImage(image, 0, 0);
+      // canvas全体のイメージデータ配列をゲット
+      var imageData = canvas.context.getImageData(0, 0, canvas.width, canvas.height);
+      var data = imageData.data;
+      // 透過色の指定がなければ左上のrgb値を抽出
+      var r = (color !== undefined) ? color.r : data[0];
+      var g = (color !== undefined) ? color.g : data[1];
+      var b = (color !== undefined) ? color.b : data[2];
+      // 配列を4要素目から4つ飛び（アルファ値）でループ
+      (3).step(data.length, 4, function(i) {
+        // rgb値を逆算でゲットし、左上のrgbと比較
+        if (data[i - 3] === r &amp;&amp; data[i - 2] === g &amp;&amp; data[i - 1] === b) {
+          // 一致した場合はアルファ値を書き換える
+          data[i] = 0;
+        }
+      });
+      // 書き換えたイメージデータをcanvasに戻す
+      canvas.context.putImageData(imageData, 0, 0);
+
+      this.domElement = canvas.domElement;
+    },
+
+    filter: function (filters) {
+      if (!filters) {
+        return this;
+      }
+      if (!Array.isArray(filters)) {
+        filters = [filters];
+      }
+      var image = this.domElement;
+      var w = image.width;
+      var h = image.height;
+      var canvas = phina.graphics.Canvas().setSize(w, h);
+      var imageData = null;
+
+      canvas.context.drawImage(image, 0, 0);
+      imageData = canvas.context.getImageData(0, 0, w, h);
+      filters.forEach( function (fn) {
+        if (typeof fn == &#39;function&#39;) {
+          h.times( function (y) {
+            w.times( function (x) {
+              var i = (y * w + x) * 4;
+              var pixel = imageData.data.slice(i, i + 4);
+              fn(pixel, i, x, y, imageData);
+            });
+          });
+        }
+      });
+      canvas.context.putImageData(imageData, 0, 0);
+      this.domElement = canvas.domElement;
+      return this;
+    },
+
   });
 
 });
-
 </pre>
 </body>
 </html>

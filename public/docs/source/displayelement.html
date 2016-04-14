@@ -18,38 +18,34 @@
   <pre class="prettyprint lang-js">
 phina.namespace(function() {
 
-<span id='phina-display-CanvasElement'>  /**
-</span>   * @class phina.display.CanvasElement
+<span id='phina-display-DisplayElement'>  /**
+</span>   * @class phina.display.DisplayElement
    * 
    */
-  phina.define(&#39;phina.display.CanvasElement&#39;, {
+  phina.define(&#39;phina.display.DisplayElement&#39;, {
     superClass: &#39;phina.app.Object2D&#39;,
 
-<span id='phina-display-CanvasElement-property-visible'>    /** 表示フラグ */
+<span id='phina-display-DisplayElement-property-visible'>    /** 表示フラグ */
 </span>    visible: true,
-<span id='phina-display-CanvasElement-property-alpha'>    /** アルファ */
+<span id='phina-display-DisplayElement-property-alpha'>    /** アルファ */
 </span>    alpha: 1.0,
-<span id='phina-display-CanvasElement-property-blendMode'>    /** ブレンドモード */
+<span id='phina-display-DisplayElement-property-blendMode'>    /** ブレンドモード */
 </span>    blendMode: &quot;source-over&quot;,
 
-<span id='phina-display-CanvasElement-property-renderChildBySelf'>    /** 子供を 自分のCanvasRenderer で描画するか */
+<span id='phina-display-DisplayElement-property-renderChildBySelf'>    /** 子供を 自分のCanvasRenderer で描画するか */
 </span>    renderChildBySelf: false,
 
     init: function(options) {
       options = (options || {});
       
-      this.superInit();
+      this.superInit(options);
 
       this.visible = true;
       this.alpha = 1.0;
       this._worldAlpha = 1.0;
-
-      this.width = options.width || 64;
-      this.height = options.height || 64;
-      this.radius = options.radius || 32;
     },
 
-<span id='phina-display-CanvasElement-method-setVisible'>    /**
+<span id='phina-display-DisplayElement-method-setVisible'>    /**
 </span>     * 表示/非表示をセット
      */
     setVisible: function(flag) {
@@ -57,7 +53,7 @@ phina.namespace(function() {
       return this;
     },
 
-<span id='phina-display-CanvasElement-method-show'>    /**
+<span id='phina-display-DisplayElement-method-show'>    /**
 </span>     * 表示
      */
     show: function() {
@@ -65,7 +61,7 @@ phina.namespace(function() {
       return this;
     },
 
-<span id='phina-display-CanvasElement-method-hide'>    /**
+<span id='phina-display-DisplayElement-method-hide'>    /**
 </span>     * 非表示
      */
     hide: function() {
@@ -73,7 +69,7 @@ phina.namespace(function() {
       return this;
     },
 
-<span id='phina-display-CanvasElement-method-_calcWorldAlpha'>    /**
+<span id='phina-display-DisplayElement-method-_calcWorldAlpha'>    /**
 </span>     * @private
      */
     _calcWorldAlpha: function() {
