@@ -23,39 +23,54 @@
     
 <span id='global-Math'>  /**
 </span>   * @class global.Math
-   * Mathの拡張
+   * # 拡張した Math クラス
+   * 数学的な処理を扱う Math クラスを拡張しています。
    */
 
   
 <span id='global-Math-property-DEG_TO_RAD'>  /**
-</span>   * @property    DEG_TO_RAD
-   * Degree to Radian.
+</span>   * @property DEG_TO_RAD
+   * 度をラジアンに変換するための定数です。
    */
   Math.DEG_TO_RAD = Math.PI/180;
   
 <span id='global-Math-property-RAD_TO_DEG'>  /**
-</span>   * @property    RAD_TO_DEG
-   * Radian to Degree.
+</span>   * @property RAD_TO_DEG
+   * ラジアンを度に変換するための定数です。
    */
   Math.RAD_TO_DEG = 180/Math.PI;
   
 <span id='global-Math-property-PHI'>  /**
-</span>   * @property    PHI
-   * golden ratio
+</span>   * @property PHI
+   * 黄金比です。
    */
   Math.PHI = (1 + Math.sqrt(5)) / 2;
   
-<span id='global-Math-method-degToRad'>  /**
-</span>   * @method
-   * Degree を Radian に変換
+<span id='global-Math-static-method-degToRad'>  /**
+</span>   * @static
+   * @method degToRad
+   * 度をラジアンに変換します。
+   *
+   * ### Example
+   *     Math.degToRad(180); // =&gt; 3.141592653589793
+   *
+   * @param {Number} deg 度
+   * @return {Number} ラジアン
    */
   Math.degToRad = function(deg) {
     return deg * Math.DEG_TO_RAD;
   };
   
-<span id='global-Math-method-radToDeg'>  /**
-</span>   * @method
-   * Radian を Degree に変換
+<span id='global-Math-static-method-radToDeg'>  /**
+</span>   * @static
+   * @method radToDeg
+   * ラジアンを度に変換します。
+   *
+   * ### Example
+   *     Math.radToDeg(Math.PI/4); // =&gt; 45
+   *
+   * @param {Number} rad ラジアン
+   * @return {Number} 度
    */
   Math.radToDeg = function(rad) {
     return rad * Math.RAD_TO_DEG;
@@ -63,41 +78,84 @@
   
 
   
-<span id='global-Math-method-clamp'>  /**
-</span>   * @method clamp
-   * クランプ
+<span id='global-Math-static-method-clamp'>  /**
+</span>   * @static
+   * @method clamp
+   * 指定した値を指定した範囲に収めた結果を返します。
+   *
+   * ### Example
+   *     Math.clamp(120, 0, 640); // =&gt; 120
+   *     Math.clamp(980, 0, 640); // =&gt; 640
+   *     Math.clamp(-80, 0, 640); // =&gt; 0
+   *
+   * @param {Number} value 値
+   * @param {Number} min  範囲の下限
+   * @param {Number} max  範囲の上限
+   * @return {Number} 丸めた結果の値
    */
   Math.$method(&quot;clamp&quot;, function(value, min, max) {
     return (value &lt; min) ? min : ( (value &gt; max) ? max : value );
   });
   
-<span id='global-Math-method-inside'>  /**
-</span>   * @method inside
-   * min &lt;= value &lt;= max のとき true を返す
+<span id='global-Math-static-method-inside'>  /**
+</span>   * @static
+   * @method inside
+   * 指定した値が指定した値の範囲にあるかどうかを返します。
+   *
+   * ### Example
+   *     Math.inside(980, 0, 640); // =&gt; false
+   *     Math.inside(120, 0, 640); // =&gt; true
+   *
+   * @param {Number} value チェックする値
+   * @param {Number} min  範囲の下限
+   * @param {Number} max  範囲の上限
+   * @return {Boolean} 範囲内に値があるかないか
    */
   Math.$method(&quot;inside&quot;, function(value, min, max) {
     return (value &gt;= min) &amp;&amp; (value) &lt;= max;
   });
   
-<span id='global-Math-method-randint'>  /**
-</span>   * @method randint
-   * ランダムな値を指定された範囲内で生成
+<span id='global-Math-static-method-randint'>  /**
+</span>   * @static
+   * @method randint
+   * 指定された範囲内でランダムな整数値を生成します。
+   *
+   * ### Example
+   *     Math.randint(-4, 4); // =&gt; -4、0、3、4 など
+   *
+   * @param {Number} min  範囲の最小値
+   * @param {Number} max  範囲の最大値
+   * @return {Number} ランダムな整数値
    */
   Math.$method(&quot;randint&quot;, function(min, max) {
     return Math.floor( Math.random()*(max-min+1) ) + min;
   });
   
-<span id='global-Math-method-randfloat'>  /**
-</span>   * @method randfloat
-   * ランダムな値を指定された範囲内で生成
+<span id='global-Math-static-method-randfloat'>  /**
+</span>   * @static
+   * @method randfloat
+   * 指定された範囲内でランダムな数値を生成します。
+   *
+   * ### Example
+   *     Math.randfloat(-4, 4); // =&gt; -2.7489193824000937 など
+   *
+   * @param {Number} min  範囲の最小値
+   * @param {Number} max  範囲の最大値
+   * @return {Number} ランダムな数値
    */
   Math.$method(&quot;randfloat&quot;, function(min, max) {
     return Math.random()*(max-min)+min;
   });
   
-<span id='global-Math-method-randbool'>  /**
-</span>   * @method randbool
-   * ランダムな値を指定された範囲内で生成
+<span id='global-Math-static-method-randbool'>  /**
+</span>   * @static
+   * @method randbool
+   * ランダムに真偽値を生成します。
+   *
+   * ### Example
+   *     Math.randbool(); // =&gt; true または false
+   *
+   * @return {Boolean} ランダムな真偽値
    */
   Math.$method(&quot;randbool&quot;, function() {
     return Math.randint(0, 1) === 1;

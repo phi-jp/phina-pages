@@ -16,20 +16,36 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">/*
- *
+ * number.js
  */
 
 
 ;(function() {
 <span id='global-Number'>  /**
 </span>   * @class global.Number
-   * Numberの拡張
+   * # 拡張した Number クラス
+   * 数値を扱う Number クラスを拡張しています。
    */
 
 <span id='global-Number-method-round'>  /**
-</span>   * @method  round
-   * 四捨五入
-   * 桁数指定版
+</span>   * @method round
+   * 指定した小数の位を四捨五入した値を返します。
+   *
+   * 負の値を指定すると整数部の位を四捨五入できます。
+   *
+   * ### Example
+   *     (13.87).round(); // =&gt; 14
+   *     (-1.87).round(); // =&gt; -2
+   *     (-1.27).round(); // =&gt; -1
+   *     
+   *     (2.345).round(); // =&gt; 2
+   *     (2.345).round(1); // =&gt; 2.3
+   *     (2.345).round(2); // =&gt; 2.35
+   *
+   *     (12345.67).round(-3); // =&gt; 12000
+   *
+   * @param {Number} [figure=0] 四捨五入する位
+   * @return {Number} 小数第 figure 位で四捨五入した値
    */
   Number.prototype.$method(&quot;round&quot;, function(figure) {
     figure = figure || 0;
@@ -40,9 +56,23 @@
   });
   
 <span id='global-Number-method-ceil'>  /**
-</span>   * @method  ceil
-   * 切り上げ.
-   * 桁数指定版
+</span>   * @method ceil
+   * 指定した小数の位を切り上げた値を返します。
+   *
+   * 負の値を指定すると整数部の位を切り上げられます。
+   *
+   * ### Example
+   *     (-1.27).ceil(); // =&gt; -1
+   *     (-1.87).ceil(); // =&gt; -1
+   *     
+   *     (2.345).ceil(); // =&gt; 3
+   *     (2.345).ceil(1); // =&gt; 2.4
+   *     (2.345).ceil(2); // =&gt; 2.35
+   *
+   *     (12345.67).ceil(-3); // =&gt; 13000
+   *
+   * @param {Number} [figure=0] 切り上げる位
+   * @return {Number} 小数第 figure 位で切り上げた値
    */
   Number.prototype.$method(&quot;ceil&quot;,  function(figure) {
     figure = figure || 0;
@@ -51,10 +81,25 @@
     temp = Math.ceil(temp);
     return temp/base;
   });
+
 <span id='global-Number-method-floor'>  /**
-</span>   * @method  floor
-   * 切り捨て
-   * 桁数指定版
+</span>   * @method floor
+   * 指定した小数の位を切り下げた値を返します。
+   *
+   * 負の値を指定すると整数部の位を切り下げられます。
+   *
+   * ### Example
+   *     (-1.27).floor(); // =&gt; -2
+   *     (-1.87).floor(); // =&gt; -2
+   *     
+   *     (2.345).floor(); // =&gt; 2
+   *     (2.345).floor(1); // =&gt; 2.3
+   *     (2.345).floor(2); // =&gt; 2.34
+   *
+   *     (12345.67).floor(-3); // =&gt; 12000
+   *
+   * @param {Number} [figure=0] 切り下げる位
+   * @return {Number} 小数第 figure 位で切り下げた値
    */
   Number.prototype.$method(&quot;floor&quot;,  function(figure) {
     figure = figure || 0;
@@ -69,24 +114,44 @@
   });
   
 <span id='global-Number-method-toInt'>  /**
-</span>   * @method  toInt
-   * integer 型に変換する
+</span>   * @method toInt
+   * 数値を整数に変換します。
+   *
+   * ### Example
+   *     (42.195).toInt(); // =&gt; 42
+   *
+   * @return {Number} 整数値
    */
   Number.prototype.$method(&quot;toInt&quot;,  function() {
     return (this | 0);
   });
   
 <span id='global-Number-method-toHex'>  /**
-</span>   * @method  toHex
-   * 16進数化
+</span>   * @method toHex
+   * 数値を16進数表記にした文字列を返します。
+   *
+   * ### Example
+   *     (26).toHex(); // =&gt; &quot;1a&quot;
+   *     (-26).toHex(); // =&gt; &quot;-1a&quot;
+   *     (26.25).toHex(); // =&gt; &quot;1a.4&quot;
+   *
+   * @return {String} 16進数表記の文字列
    */
   Number.prototype.$method(&quot;toHex&quot;,  function() {
     return this.toString(16);
   });
   
 <span id='global-Number-method-toBin'>  /**
-</span>   * @method  toBin
-   * 2進数化
+</span>   * @method toBin
+   * 数値を2進数表記にした文字列を返します。
+   *
+   * ### Example
+   *     (6).toBin(); // =&gt; &quot;110&quot;
+   *     (-6).toBin(); // =&gt; &quot;-110&quot;
+   *     (0xA3).toBin(); // =&gt; &quot;10100011&quot;
+   *     (6.25).toHex(); // =&gt; &quot;110.01&quot;
+   *
+   * @return {String} 2進数表記の文字列
    */
   Number.prototype.$method(&quot;toBin&quot;,  function() {
     return this.toString(2);
@@ -94,16 +159,37 @@
   
   
 <span id='global-Number-method-toUnsigned'>  /**
-</span>   * @method  toUnsigned
-   * unsigned 型に変換する
+</span>   * @method toUnsigned
+   * 数値を unsigned int 型に変換します。
+   *
+   * 数値を符号無し整数として評価した値を返します。  
+   * Javascriptのビット演算では数値を符号付きの32bit整数として扱うため、RGBA を
+   * 整数値で表現して演算する場合、期待通りの結果が得られない場合があります。
+   * そこで本関数で unsigned int 型に変換することで期待通りの値を得ることができます。
+   *
+   * ### Example
+   *     rgba = 0xfeffffff &amp; 0xff000000; // =&gt; -33554432
+   *     rgba.toHex(); // =&gt; &quot;-2000000&quot;
+   *     rgba.toUnsigned().toHex(); // =&gt; &quot;fe000000&quot;
+   *
+   * @return {Number} unsigned int 型に変換した値
    */
   Number.prototype.$method(&quot;toUnsigned&quot;,  function() {
     return this &gt;&gt;&gt; 0;
   });
   
 <span id='global-Number-method-padding'>  /**
-</span>   * @method  padding
-   * 文字埋め
+</span>   * @method padding
+   * 指定した桁になるように文字を埋めます。
+   *
+   * ### Example
+   *     (123).padding(5); // =&gt; &quot;00123&quot;
+   *     (123).padding(5, &quot;_&quot;); // =&gt; &quot;__123&quot;
+   *     (-12).padding(5); // =&gt; &quot;-0012&quot;
+   *
+   * @param {Number} n 桁数
+   * @param {String} [ch=&quot;0&quot;] 埋める文字
+   * @return {String} 桁数を揃えた文字列
    */
   Number.prototype.$method(&quot;padding&quot;,  function(n, ch) {
     var str = this+&#39;&#39;;
@@ -121,8 +207,17 @@
 
 
 <span id='global-Number-method-times'>  /**
-</span>   * @method  times
-   * 数値分繰り返す
+</span>   * @method times
+   * 0 から自分自身の数-1まで、カウンタをインクリメントしながら関数を繰り返し実行します。
+   *
+   * ### Example
+   *     arr = [];
+   *     (5).times(function(i){
+   *       arr.push(i);
+   *     }); // =&gt; [0, 1, 2, 3, 4]
+   *
+   * @param {Function} fn コールバック関数
+   * @param {Object} [self=this] 関数内で this として参照される値。デフォルトは自分自身。
    */
   Number.prototype.$method(&quot;times&quot;,  function(fn, self) {
     self = self || this;
@@ -133,8 +228,25 @@
   });
 
 <span id='global-Number-method-upto'>  /**
-</span>   * @method  upto
-   * インクリメント繰り返し
+</span>   * @method upto
+   * 自分自身の数から指定した数まで、カウンタをインクリメントしながら関数を繰り返し実行します。
+   *
+   * 指定した数が自分自身の数より小さい場合は関数は実行されません。
+   *
+   * ### Example
+   *     arr = [];
+   *     (6).upto(8, function(i){
+   *       arr.push(i);
+   *     });
+   *     arr; // =&gt; [6, 7, 8]
+   *
+   *     (3).upto(0, function(i){
+   *       arr.push(i);
+   *     });
+   *     arr; // =&gt; [6, 7, 8]
+   *
+   * @param {Function} fn コールバック関数。引数にカウンタが渡される。
+   * @param {Object} [self=this] 関数内で this として参照される値。デフォルトは自分自身。
    */
   Number.prototype.$method(&quot;upto&quot;,  function(t, fn, self) {
     self = self || this;
@@ -145,8 +257,19 @@
   });
   
 <span id='global-Number-method-downto'>  /**
-</span>   * @method  downto
-   * デクリメント繰り返し
+</span>   * @method downto
+   * 自分自身の数から指定した数まで、カウンタをデクリメントしながら関数を繰り返し実行します。
+   *
+   * 指定した数が自分自身の数より大きい場合は関数は実行されません。
+   *
+   * ### Example
+   *     arr = [];
+   *     (7).downto(4, function(i){
+   *       arr.push(i);
+   *     }); // =&gt; [7, 6, 5, 4]
+   *
+   * @param {Function} fn コールバック関数。引数にカウンタが渡される。
+   * @param {Object} [self=this] 関数内で this として参照される値。デフォルトは自分自身。
    */
   Number.prototype.$method(&quot;downto&quot;,  function(t, fn, self) {
     self = self || this;
@@ -158,21 +281,42 @@
 
 <span id='global-Number-method-step'>  /**
 </span>   * @method step
-   * ステップ繰り返し(float対応)
+   * 自分自身の値から指定した数まで、カウンタを増分させながら関数を繰り返し実行します。
+   *
+   * 上限値や増分値は float 型を指定することができます。
+   *
+   * ### Example
+   *     var arr = [];
+   *     (2.4).step(5.3, 0.8, function(n) {
+   *       arr.push(n);
+   *      }); // =&gt; [2.4, 3.2, 4.0, 4.8]
+   *
+   * @param {Number} limit カウンタの上限値
+   * @param {Number} step カウンタを増分する量
+   * @param {Function} fn コールバック関数。引数にカウンタが渡される。
+   * @param {Object} [self=this] 関数内で this として参照される値。デフォルトは自分自身。
    */
   Number.prototype.$method(&quot;step&quot;,  function(limit, step, fn, self) {
     self = self || this;
-    if (this &lt; limit &amp;&amp; step &gt; 0 || this &gt; limit &amp;&amp; step &lt; 0) {
-      for (var i=+this; i&lt;=limit; i+=step) {
-        fn.call(self, i, this);
-      }
+    for (var i=+this; i&lt;=limit; i+=step) {
+      fn.call(self, i, this);
     }
     return this;
   });
 
 <span id='global-Number-method-map'>  /**
-</span>   * @method  map
-   * return で返された値の配列を作る
+</span>   * @method map
+   * 0から自分自身の値-1までカウンタをインクリメントさせながらコールバック関数を繰り返し実行し、
+   * その返り値を要素とする配列を生成します。
+   *
+   * ### Example
+   *     (5).map(function(i) {
+   *       return i*i;
+   *     }); // =&gt; [0, 1, 4, 9, 16]
+   *
+   * @param {Function} fn コールバック関数。引数にカウンタが渡される。
+   * @param {Object} [self=this] 関数内で this として参照される値。デフォルトは自分自身。
+   * @return {Array} 生成した配列
    */
   Number.prototype.$method(&quot;map&quot;,  function(fn, self) {
     self = self || this;
@@ -187,97 +331,193 @@
 
 <span id='global-Number-method-abs'>  /**
 </span>   * @method abs
-   * 絶対値
+   * 絶対値を返します。
+   *
+   * ### Example
+   *     (-5).abs(); // =&gt; 5
+   *     (+5).abs(); // =&gt; 5
+   *
+   * @return {Number} 絶対値
    */
   Number.prototype.$method(&quot;abs&quot;, function() { return Math.abs(this) });
 
 <span id='global-Number-method-acos'>  /**
 </span>   * @method acos
-   * アークコサイン
+   * アークコサイン（ラジアン単位）を返します。
+   *
+   * ### Example
+   *     (0).asin(); // =&gt; 0
+   *     (1).asin(); // =&gt; 1.5707963267948966
+   *
+   * @return {Number} アークコサイン
    */
   Number.prototype.$method(&quot;acos&quot;, function() { return Math.acos(this) });
 
 <span id='global-Number-method-asin'>  /**
 </span>   * @method asin
-   * アークサイン
+   * アークサイン（ラジアン単位）を返します。
+   *
+   * ### Example
+   *     (1).acos(); // =&gt; 0
+   *     (-1).acos(); // =&gt; 3.141592653589793
+   *
+   * @return {Number} アークサイン
    */
   Number.prototype.$method(&quot;asin&quot;, function() { return Math.asin(this) });
 
 <span id='global-Number-method-atan'>  /**
 </span>   * @method atan
-   * アークタンジェント
+   * アークタンジェント（ラジアン単位）を返します。
+   *
+   * ### Example
+   *     (0).atan(); // =&gt; 0
+   *     (1).atan(); // =&gt; 0.7853981633974483
+   *
+   * @return {Number} アークタンジェント
    */
   Number.prototype.$method(&quot;atan&quot;, function() { return Math.atan(this) });
 
 <span id='global-Number-method-cos'>  /**
 </span>   * @method cos
-   * コサイン
+   * コサイン（ラジアン単位）を返します。
+   *
+   * ### Example
+   *     (Math.PI/3).cos(); // =&gt; 0.5
+   *
+   * @return {Number} コサイン
    */
   Number.prototype.$method(&quot;cos&quot;, function() { return Math.cos(this) });
 
 <span id='global-Number-method-exp'>  /**
 </span>   * @method exp
-   * E^num
+   * e&lt;sup&gt;this&lt;/sup&gt; を返します。ここで e は自然対数の底であるネイピア数（オイラー数）です。
+   *
+   * ### Example
+   *     (2).exp(); // =&gt; e&lt;sup&gt;2&lt;/sup&gt;
+   *     (0).exp(); // =&gt; 1
+   *
+   * @return {Number} e&lt;sup&gt;x&lt;/sup&gt;
    */
   Number.prototype.$method(&quot;exp&quot;, function() { return Math.exp(this) });
 
 <span id='global-Number-method-log'>  /**
 </span>   * @method log
-   * 自然対数
+   * 自然対数を返します。
+   *
+   * ### Example
+   *     (Math.E * Math.E * Math.E).log(); // =&gt; 3
+   *     (1).log(); // =&gt; 0
+   *     (0).log(); // =&gt; -Infinity
+   *
+   * @return {Number} 自然対数
    */
   Number.prototype.$method(&quot;log&quot;, function() { return Math.log(this) });
 
 <span id='global-Number-method-max'>  /**
 </span>   * @method max
-   * max
+   * 自分自身と引数の値を比べ、大きい方の値を返します。
+   *
+   * ### Example
+   *     (15).max(10); // =&gt; 15
+   *     (15).max(90); // =&gt; 90
+   *
+   * @param {Number} value 比較する値
+   * @return {Number} 最大値
    */
   Number.prototype.$method(&quot;max&quot;, function(value) { return Math.max(this, value) });
 
 <span id='global-Number-method-min'>  /**
 </span>   * @method min
-   * min
+   * 自分自身と引数の値を比べ、小さい方の値を返します。
+   *
+   * ### Example
+   *     (15).min(10); // =&gt; 10
+   *     (15).min(90); // =&gt; 15
+   *
+   * @param {Number} value 比較する値
+   * @return {Number} 最小値
    */
   Number.prototype.$method(&quot;min&quot;, function(value) { return Math.min(this, value) });
 
 <span id='global-Number-method-clamp'>  /**
 </span>   * @method clamp
-   * clamp
+   * 指定した範囲に収めた値を返します。
+   *
+   * ### Example
+   *     (200).clamp(0, 640); // =&gt; 200
+   *     (-15).clamp(0, 640); // =&gt; 0
+   *     (999).clamp(0, 640); // =&gt; 640
+   *
+   * @param {Number} min 範囲の下限
+   * @param {Number} max 範囲の上限
+   * @return {Number} 範囲内に収めた値
    */
   Number.prototype.$method(&quot;clamp&quot;, function(min, max) { return Math.clamp(this, min, max) });
 
 <span id='global-Number-method-pow'>  /**
 </span>   * @method pow
-   * 乗数
+   * 自分自身を exponent 乗した値、つまり this&lt;sup&gt;exponent&lt;/sup&gt; の値を返します。
+   *
+   * ### Example
+   *     (3).pow(2); // =&gt; 9
+   *
+   * @param {Number} exponent 累乗する指数
+   * @return {Number} 累乗した結果の値
    */
   Number.prototype.$method(&quot;pow&quot;, function(exponent) { return Math.pow(this, exponent) });
 
 <span id='global-Number-method-sin'>  /**
 </span>   * @method sin
-   * サイン
+   * サイン（ラジアン単位）を返します。
+   *
+   * ### Example
+   *     (Math.PI/4).sin(); // =&gt; 0.7071067811865476
+   *
+   * @return {Number} サイン
    */
   Number.prototype.$method(&quot;sin&quot;, function() { return Math.sin(this) });
 
 <span id='global-Number-method-sqrt'>  /**
 </span>   * @method sqrt
-   * 平方根
+   * 平方根を返します。
+   *
+   * ### Example
+   *     (49).sqrt(); // =&gt; 7
+   *
+   * @return {Number} 平方根
    */
   Number.prototype.$method(&quot;sqrt&quot;, function() { return Math.sqrt(this) });
 
 <span id='global-Number-method-tan'>  /**
 </span>   * @method tan
-   * タンジェント
+   * タンジェント（ラジアン単位）を返します。
+   *
+   * ### Example
+   *     (Math.PI/4).tan(); // =&gt; 1.0
+   *
+   * @return {Number} タンジェント
    */
   Number.prototype.$method(&quot;tan&quot;, function() { return Math.tan(this) });
 
 <span id='global-Number-method-toDegree'>  /**
 </span>   * @method toDegree
-   * to degree
+   * ラジアンを度に変換します。
+   *
+   * ### Example
+   *     Math.radToDeg(Math.PI/4); // =&gt; 45
+   *
+   * @return {Number} 度
    */
   Number.prototype.$method(&quot;toDegree&quot;, function() { return (this*Math.RAD_TO_DEG); });
 
 <span id='global-Number-method-toRadian'>  /**
 </span>   * @method toRadian
-   * to degree
+   * 度をラジアンに変換します。
+   *
+   * ### Example
+   *     (180).toRadian(); // =&gt; 3.141592653589793
+   *
+   * @return {Number} ラジアン
    */
   Number.prototype.$method(&quot;toRadian&quot;, function() { return this*Math.DEG_TO_RAD; });
 
