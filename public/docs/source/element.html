@@ -161,22 +161,22 @@ phina.namespace(function() {
     },
 
     toJSON: function() {
+      var keys = Object.keys(phina.using(this.className).defaults || {});
+
+      this._hierarchies.forEach(function(e) {
+        var d = e.defaults;
+        if (d) {
+          Object.keys(d).forEach(function(k) {
+            if (keys.indexOf(k) === -1) {
+              keys.push(k);
+            }
+          });
+        }
+      });
+      
+      keys.push(&#39;name&#39;, &#39;className&#39;);
+      
       var json = {};
-
-      // this.forIn(function(key, value) {
-      //   if (key[0] === &#39;_&#39;) return ;
-      //   json[key] = value;
-      // });
-
-      var keys = [
-        &#39;x&#39;, &#39;y&#39;,
-        &#39;rotation&#39;,
-        &#39;scaleX&#39;, &#39;scaleY&#39;,
-        &#39;originX&#39;, &#39;originY&#39;,
-        &#39;className&#39;,
-        &#39;name&#39;,
-      ];
-
       keys.each(function(key) {
         json[key] = this[key];
       }, this);
@@ -187,8 +187,8 @@ phina.namespace(function() {
 
       if (children.length) {
         json.children = {};
-        children.each(function(child) {
-          json.children[child.name] = child;
+        children.each(function(child, i) {
+          json.children[child.name || (child.className + &#39;_&#39; + i)] = child;
         });
       }
 
