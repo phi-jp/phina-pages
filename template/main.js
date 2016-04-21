@@ -3,7 +3,7 @@ phina.globalize();
 
 // MainScene クラスを定義
 phina.define('MainScene', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
     this.superInit();
     // 背景色を指定
